@@ -1,8 +1,8 @@
 # Qwen3.8-Flash-Next on 4× RTX 3090 (llama.cpp)
 
-Serve **Qwen3.8-Flash-Next** (125B-A3B MoE + 51B n-gram embedding + 4B MTP head, arch `qwen4exp`) on a single 4× RTX 3090 box — **two concurrent users at the full native 262,144-token context each**, with n-gram speculative decoding for a free +45% on agentic work.
+Serve **Qwen3.8-Flash-Next** (125B-A3B MoE + 51B n-gram embedding + 4B MTP head, arch `qwen4exp`) on a single 4× RTX 3090 box — at **up to 102 tok/s with MTP speculative decoding**, or **two concurrent users at the full native 262,144-token context each**.
 
-Deployed and battle-tested 2026-08-26, day-0 of the model's release.
+Deployed day-0 of the model's release (2026-08-26) and updated 2026-09-02 when working MTP heads landed. Every number here was measured on the box, not copied from a model card.
 
 ## Results
 
@@ -11,7 +11,7 @@ Deployed and battle-tested 2026-08-26, day-0 of the model's release.
 | Quant | unsloth **UD-IQ4_XS** GGUF (93.7 GB on disk, ~60 GB in VRAM) |
 | Context | **2 dedicated slots × 262,144 tokens** (`-c 524288 --parallel 2`) |
 | Decode, freeform | 40–49 tok/s solo · ~30 tok/s each with 2 concurrent users |
-| Decode, copy/edit/tool tasks | **62 tok/s median with `--spec-type ngram-mod`** (43 without, +45%) |
+| Decode, copy/edit/tool tasks | **96-102 tok/s with unsloth MTP head** (58.8 without, up to 1.74x); 62 tok/s with `ngram-mod` on IQ4_XS |
 | Prefill | ~311 tok/s |
 | TTFT (warm) | ~150–170 ms |
 | Load time | ~85 s |
@@ -47,12 +47,93 @@ Runs the server in the same CUDA container the binary was built against (`--netw
 - `--jinja` — the model's embedded chat template
 - `--spec-type ngram-mod` — see below
 
-## Speculative decoding: what works and what doesn't
+## Speculative decoding: MTP is the winner (updated 2026-09-02)
 
-- **`--spec-type ngram-mod` works and is free.** Drafts from contextual repetition, no draft model needed. On copy/edit/tool-call output (i.e. what agents generate all day): 43 → 62 tok/s median. Freeform prose: neutral, no penalty. Credit to [0xBakeer/qwen38-flash-next-spark](https://github.com/0xBakeer/qwen38-flash-next-spark) for proving this flag on this model. Their single-Spark setup required `--parallel 1` with spec decode; on this 4×3090 build **concurrency + ngram-mod is stable** (verified under sustained 2-user load).
-- **`--spec-type draft-mtp` does not work *yet* — but not for the reason you'd think.** llama.cpp has had an MTP framework since May 2026, and it correctly initializes for this model, then fails with `model doesn't contain MTP layers`: unsloth's GGUFs currently ship without the 4B MTP head. The day an MTP-bearing GGUF appears, it's a flag flip and (based on Qwen3.6 precedent) roughly another 1.7×.
-- **External draft models are a dead end** for this MoE (expert-scaling dynamics — see 0xBakeer's notes).
-- **Quantized KV cache aborts** on this arch. Keep KV f16.
+**Use unsloth's MTP head.** On 2026-09-02 unsloth published real MTP draft heads in the
+[`MTP/` folder](https://huggingface.co/unsloth/Qwen3.8-Flash-Next-GGUF/tree/main/MTP) of the GGUF repo.
+They are a different class of artifact from the third-party heads published in the days after release,
+and they turn speculative decoding from a 2x *loss* into a **1.4-1.7x win** on this box.
+
+Measured here, same binary, same model, same prompts, temperature 0, 3 runs each, `--parallel 1`:
+
+| task | MTP off | MTP on | gain |
+|---|---:|---:|---|
+| count to 100 | 58.8 tok/s | **102.3 tok/s** | **1.74x** |
+| code generation | 58.8 | **96.1** | 1.63x |
+| freeform prose | 58.7 | **81.6** | 1.39x |
+| JSON edit | 58.4 | **95.5** | 1.64x |
+
+Draft acceptance ran **0.66 on prose to 0.92 on structured output**. For reference, unsloth measured
+1.67x on a B200; four 3090s beat that ratio, because a slower target model makes each accepted draft
+token worth relatively more.
+
+Getting the pieces (no build required — unsloth ship prebuilt binaries):
+
+```bash
+# 1. the MTP head (2.6 GB)
+hf download unsloth/Qwen3.8-Flash-Next-GGUF --local-dir models/qwen38fn-gguf     --include "*mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf*"
+
+# 2. a binary that knows qwen4exp MTP (stock llama.cpp does not)
+#    https://github.com/unslothai/llama.cpp/releases  tag b10715-mix-86bd2d3 or newer
+curl -LO https://github.com/unslothai/llama.cpp/releases/download/b10715-mix-86bd2d3/app-b10715-mix-86bd2d3-linux-x64-cuda12-portable.tar.gz
+tar xzf app-b10715-mix-86bd2d3-linux-x64-cuda12-portable.tar.gz
+```
+
+Then run — and read trap 2 below before you trust the speed you get:
+
+```bash
+./launch-mtp-q4kxl.sh          # MTP on
+SPEC=0 ./launch-mtp-q4kxl.sh   # same everything, speculation off (for honest A/B)
+python3 bench_mtp.py count100 3
+```
+
+### Four traps, each of which cost a boot cycle
+
+1. **`--no-repack` is mandatory for K-quants on a low-RAM box.** `UD-Q4_K_XL` tries to repack weights
+   into a **41.3 GiB** CPU buffer; with 31 GB of system RAM it dies with
+   `failed to allocate CPU_REPACK buffer of size 44354764800`. IQ-quants (`UD-IQ4_XS`) never trigger
+   this, which is why the older lane worked without the flag.
+2. **unsloth's `cuda12-portable` tarball ships no CUDA runtime.** `libggml-cuda.so` needs
+   `libcudart.so.12` and `libcublas.so.12`, neither of which is in the archive. When they are missing the
+   backend fails to `dlopen` **silently** — the server starts, answers requests, and runs entirely on CPU.
+   There is no error in the log. Point `LD_LIBRARY_PATH` at a CUDA runtime and
+   **always confirm with `nvidia-smi` that VRAM is actually in use after boot.**
+3. **A `shared-` head prints a scary error and then works.** `borrow_shared_tensor: this model is a draft
+   head without its own 'token_embd.weight'` plus `failed to fit params` are expected: the auto-fit loads
+   the head alone to measure it, before the model it borrows from exists. Pass `-c` and `-ngl` yourself.
+4. **Pass `-md` explicitly.** The heads live in an `MTP/` subfolder that sidecar auto-discovery does not
+   search, so `--spec-type draft-mtp` alone silently runs with no draft at all.
+
+### Context cost
+
+`UD-Q4_K_XL` + MTP fits **131,072 tokens** on 96 GB of VRAM (88.8 GiB resident, and the allocator retries
+its way in — one card ends with 61 MiB free). The context drop versus the 2x262K ngram-mod lane is
+**mostly the quant, not MTP**: Q4_K_XL is ~10 GB larger than IQ4_XS, while the shared MTP head is only
+~2.6 GB. Pairing the head with `UD-IQ4_XS` should buy most of that context back.
+
+### What we tested before this, and why it failed
+
+Third-party heads published in the first days after release (`quimmedes`, `agentionai`) drafted at only
+**~0.35 acceptance** and netted **~20 tok/s against a 43 tok/s baseline — a 2x loss**. That held across
+head quant (Q4_K_M and Q8_0), context size, `--parallel`, `-kvu`, and batch sizes. A separate head
+(`dzannotti`) with a fuller MTP block **segfaults the CUDA backend at load** (its author tested only
+ROCm and Vulkan). The lesson worth keeping: **a speculative-decoding claim means nothing without the
+hardware and sampler it was measured on**, and acceptance rate is the number to check first — the log
+line `draft acceptance = 0.66139 (325 accepted / 491 generated)` tells you within one request whether a
+head is worth keeping.
+
+### ngram-mod: still useful, no extra file
+
+`--spec-type ngram-mod` drafts from repetition in the context with no draft model at all: 43 -> 62 tok/s
+on copy/edit/tool output, neutral on prose. It was the best option on this box before the unsloth heads
+existed, and it remains the right choice when you cannot spare the ~2.6 GB.
+
+### Other speculation notes
+
+- **External draft models** are a dead end for this MoE (expert-scaling dynamics).
+- **Quantized KV cache** (`-ctk/-ctv q8_0`) aborts on this arch in the mainline-derived builds. Keep KV at f16.
+- **MTP is for low concurrency.** unsloth measure a net loss (0.81-0.87x) at concurrency 8; a busy model has
+  no idle capacity for a draft to exploit. All numbers above are `--parallel 1`.
 
 ## Ops notes
 
@@ -69,6 +150,8 @@ Runs the server in the same CUDA container the binary was built against (`--netw
 | `launch-qwen38fn-gguf.sh` | The exact production launcher |
 | `bench_decode.py` | 3-run decode/TTFT bench (freeform) |
 | `bench_agentic.py` | Copy/edit-style bench (shows the ngram-mod gain) |
+| `launch-mtp-q4kxl.sh` | MTP launcher (`SPEC=0` disables speculation for A/B) |
+| `bench_mtp.py` | Four-task bench: count100 / code / prose / jsonedit |
 
 ## Credits
 
