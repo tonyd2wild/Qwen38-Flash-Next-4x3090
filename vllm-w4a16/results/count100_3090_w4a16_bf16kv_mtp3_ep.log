@@ -1,0 +1,6 @@
+ENDPOINT UP 19:41:06
+warmup {'tag': 'warmup', 'ttft_s': 1.03, 'wall_s': 1.657, 'chunks': 1, 'chars': 2, 'text_head': 'OK'}
+run 1: completion_tokens=391 prompt_tokens=29 wall=2.41s ttft~0.205s -> 177.1 tok/s | head: '1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1'
+run 2: completion_tokens=391 prompt_tokens=29 wall=2.16s ttft~0.185s -> 197.9 tok/s | head: '1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1'
+run 3: completion_tokens=391 prompt_tokens=29 wall=2.18s ttft~0.16s -> 193.5 tok/s | head: '1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1'
+COUNT100 3090_w4a16_bf16kv_mtp3_ep: median 193.5 tok/s (runs 177.1, 193.5, 197.9)

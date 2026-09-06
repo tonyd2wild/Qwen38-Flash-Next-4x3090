@@ -4,6 +4,15 @@ Serve **Qwen3.8-Flash-Next** (125B-A3B MoE + 51B n-gram embedding + 4B MTP head,
 
 Deployed day-0 of the model's release (2026-08-26) and updated 2026-09-02 when working MTP heads landed. Every number here was measured on the box, not copied from a model card.
 
+## Two lanes
+
+| Lane | Engine | Quant | Speculation | Count to 100 (single stream) | Context |
+|---|---|---|---|---|---|
+| 1 (this page) | llama.cpp PR build | unsloth UD-IQ4_XS GGUF | unsloth MTP head | 96 to 102 tok/s on copy/edit tasks | 2 x 262K slots |
+| 2 ([`vllm-w4a16/`](vllm-w4a16/)) | upstream vLLM nightly | Intel AutoRound W4A16 + FP8 n-gram table on the SSD (our patch) | albucino's INT4 MTP draft, MTP3, expert parallel | **194 tok/s** | 64K, 2 seats, 186K-token pool |
+
+Lane 2 was added 2026-09-06. Same box, same model, different engine; pick by what you need: full 262K slots (lane 1) or peak single-stream speed with an OpenAI-compatible vLLM server (lane 2).
+
 ## Results
 
 | Metric | Value |
@@ -143,6 +152,8 @@ existed, and it remains the right choice when you cannot spare the ~2.6 GB.
 - System RAM matters less than you'd think: this box has 31 GB and the process RSS is ~3 GB. The n-gram table pages through the OS cache.
 
 ## Files
+
+- `vllm-w4a16/`: lane 2, the vLLM recipe (launcher, patch, speed test, results, its own README and credits).
 
 | File | What |
 |---|---|
