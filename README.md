@@ -6,21 +6,22 @@ The 125B-A6B hybrid MoE with its 51B n-gram table and the MTP draft, served from
 |---|---|---|
 | Count to 100, single stream, temperature 0 | **193.3 tok/s median** (no draft: 55.8) | 96 to 102 tok/s on copy/edit tasks, 40 to 49 freeform |
 | Real prompts, single stream (prose / chat / code) | **109.5 / 108.4 / 145.8 tok/s** ([log](vllm-w4a16/results/realprompts_3090_262k_s6_2026-09-06.txt)) | 40 to 49 freeform (above) |
-| 6 parallel coding agents (tool round-trips, 12,189 tokens) | **317 tok/s sustained, 570 peak burst**, 53 tok/s per agent, TTFT 0.47 s | not run |
-| Context | **262,144 native**, 6 seats, KV pool 299,800 tokens (fp8 e5m2, gmu 0.95; 362,077 at 0.97, which OOMed under fleet load) | 2 x 262,144 slots (f16 KV) |
+| 6 parallel coding agents (tool round-trips, 12,189 tokens; gmu 0.97 boot) | **317 tok/s sustained, 570 peak burst**, 53 tok/s per agent, TTFT 0.47 s | not run |
+| 6 concurrent agents at gmu 0.95 ([results](vllm-w4a16/results/sixagent_gmu095_boot19_2026-09-06.md)) | 0 OOM, TTFT p99 7.5 s on 2.5K to 3.8K prompts; 252.6 tok/s aggregate, 48 tok/s per stream on 700-token outputs | not run |
+| Context | **262,144 native**, 6 seats, KV pool 279,462 tokens with vision on (fp8 e5m2 KV, bf16 mamba state, gmu 0.95); text-only 299,800 | 2 x 262,144 slots (f16 KV) |
 | Quant | Intel AutoRound W4A16 experts (Marlin), BF16 attention, FP8 n-gram table | unsloth UD-IQ4_XS GGUF |
 | Speculation | albucino's INT4 MTP draft, 3 tokens, expert parallel | unsloth MTP head |
 | Where the 47.7 GB table lives | on the NVMe, 16 rows per token read per step by our patch, inside CUDA graphs | left out of VRAM by llama.cpp's lookup-only path |
 | Serving | OpenAI-compatible vLLM on :8090, tools and reasoning parsers | llama.cpp server on :8090 |
-| Vision | **Off in the default recipe** (`--language-model-only` drops the 0.84 GiB BF16 tower to keep the KV pool for 262K). Vision on: 131K context, pool 160,199, same speed, see the [lane README](vllm-w4a16/README.md#vision) | not wired |
+| Vision | **On, at the full 262K** since boot 19 (needs the 1 MP image-profiling cap and bf16 mamba state, both in the recipe). `LM_ONLY=1` drops the tower if you want the text-only pool. [Lane README](vllm-w4a16/README.md#vision) | not wired |
 
 ## Default lane: vLLM in four lines
 
 ```bash
 hf download albucino/Qwen3.8-Flash-Next-W4A16-FP8PLE --local-dir ~/models/qwen38fn-w4a16-fp8ple   # 129 GB, the draft is inside
 cp -R vllm-w4a16/patch ~/patches/qwen4exp-ple-mmap
-LM_ONLY=1 NCCL_MODE=nvl PLE_MODE=staged GRAPHS=nocompile MTP=3 TP=4 GMU=0.95 SEQS=6 CHUNK=2048 MAXLEN=262144 \
-KV_DTYPE=fp8_e5m2 CAPTURE_SIZES=4,8,12,16,20,24 EXTRA="--quantization gptq_marlin --enable-expert-parallel" bash vllm-w4a16/launch/qwen38fn-w4a16-3090-tp4.sh
+LM_ONLY=0 NCCL_MODE=nvl PLE_MODE=staged GRAPHS=nocompile MTP=3 TP=4 GMU=0.95 SEQS=6 CHUNK=2048 MAXLEN=262144 \
+KV_DTYPE=fp8_e5m2 CAPTURE_SIZES=4,8,12,16,20,24 EXTRA="--quantization gptq_marlin --enable-expert-parallel --mm-processor-kwargs {\"max_pixels\":1048576} --mamba-ssm-cache-dtype bfloat16" bash vllm-w4a16/launch/qwen38fn-w4a16-3090-tp4.sh
 ```
 
 Endpoint `http://<box>:8090/v1`, model `qwen3.8-flash-next`. Load is about 2 minutes. The lane README has the boot-by-boot ladder (55.8 with no draft, 103.5 with the draft, 193.5 once expert parallel put the experts on Marlin, the memory passes that took the pool from 46K to 300K tokens), the Ampere findings (FP8 e4m3 KV does not compile on 3090s; e5m2 does through our overlay variant and passed the needle test at 7K, 28K and 53K), the caveats, and the credits.

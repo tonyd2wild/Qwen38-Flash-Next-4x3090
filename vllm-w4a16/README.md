@@ -33,9 +33,9 @@ The speed came from three things, measured one boot at a time (ledger below):
 
 ```bash
 # patch dir on the box: ~/patches/qwen4exp-ple-mmap (contents of patch/)
-LM_ONLY=1 NCCL_MODE=nvl PLE_MODE=staged GRAPHS=nocompile MTP=3 TP=4 GMU=0.95 SEQS=6 CHUNK=2048 \
+LM_ONLY=0 NCCL_MODE=nvl PLE_MODE=staged GRAPHS=nocompile MTP=3 TP=4 GMU=0.95 SEQS=6 CHUNK=2048 \
 MAXLEN=262144 KV_DTYPE=fp8_e5m2 CAPTURE_SIZES=4,8,12,16,20,24 \
-EXTRA="--quantization gptq_marlin --enable-expert-parallel" \
+EXTRA="--quantization gptq_marlin --enable-expert-parallel --mm-processor-kwargs {\"max_pixels\":1048576} --mamba-ssm-cache-dtype bfloat16" \
 bash launch/qwen38fn-w4a16-3090-tp4.sh
 ```
 
@@ -57,10 +57,12 @@ Knobs in the launcher: `PLE_MODE` (staged | mmap | none), `GRAPHS` (nocompile = 
 | 11 | fp8_e5m2 KV through a variant of the attention overlay (`patch/upstream-overlays/*_e5m2.py`) | Runs on Ampere. 191.8 tok/s, pool 299,431 at 64K. Needle in a haystack answered correctly at 7K, 28K and 53K (prefill 1,265 / 1,699 / 2,347 tok/s). |
 | 12 | max context 262,144, 6 seats | 193.3 tok/s, pool 362,077. **The default.** |
 | 13 | gmu 0.95 instead of 0.97 (after a CUDA OOM under fleet load at 0.97: 310 MiB free, 512 MiB asked) | 193.3 tok/s. Pool 299,800 at 262K (1.14x), about 800 MiB headroom per card. **Serving default.** |
-| 14 | vision tower on (`LM_ONLY=0`), 131K | 196.1 tok/s (prose 110.3). Pool 160,199 at 131K (1.22x). Image described correctly. **Tony's daily-driver boot.** |
+| 14 | vision tower on (`LM_ONLY=0`), 131K | 196.1 tok/s (prose 110.3). Pool 160,199 at 131K (1.22x). Image described correctly. |
 | 15 | vision + `--mm-processor-kwargs '{"max_pixels":1048576}'` | 194.6 tok/s. **Pool 160,199 to 243,608 at 131K (1.86x)**: the profiler was running a 16.7 MP image; the cap drops the encoder budget from 16,384 to 2,048 tokens. Image test still correct. |
 | 16 | `--kv-cache-memory-bytes` 2.01 GiB explicit (vLLM had used 1.65, offered 2.31) | Pool **fell** to 238,312: the explicit budget still has the CUDA graph reserve taken out of it. Dropped. |
 | 17 | `--mamba-ssm-cache-dtype bfloat16` (checkpoint pins fp32) | 192.6 tok/s, prose 107.3. **Pool 265,888 at 131K (2.03x)**, +9%; attention block 1600 to 832. Needle correct at 9.8K / 39K / 74K prompt tokens; image correct. |
+| 18 | 230K with vision | aborted before the pool print; Tony asked for the full 262K instead |
+| 19 | **vision on at the full 262,144** (boot 17 flags + `MAXLEN=262144`) | 191.7 tok/s, prose 110.4, code 141.7. **Pool 279,462 at 262K (1.07x)**. Needle correct at 199,594 and 244,245 prompt tokens. Six-agent load at gmu 0.95: 0 OOM, TTFT p99 7.5 s, 252.6 tok/s aggregate ([results](results/sixagent_gmu095_boot19_2026-09-06.md)). **The daily driver.** |
 
 Not possible on these cards, and why: FP8 e4m3 and NVFP4 KV (Triton and SM100 kernels), NVFP4 or FP8 expert checkpoints (no Ampere kernels), a DFlash2 or EAGLE drafter for this model (none exists), applying albucino's own vLLM overlay (27 whole-file replacements against a different vLLM tree; reuse his checkpoint and flag shapes, not his files).
 
@@ -74,7 +76,7 @@ Three research passes (saved under `research/`: upstream knobs, an on-box memory
 
 ## Vision
 
-**The default recipe ships without vision.** `LM_ONLY=1` passes `--language-model-only`, which drops the vision tower at load. Qwen3.8-Flash-Next is a vision-language model; the tower in this checkpoint is 27 layers, 1152 wide, **0.84 GiB in BF16**, and vLLM loads it whole on every tensor-parallel rank, so vision costs 0.84 GiB of KV budget per card plus vLLM's image-encoding reservation. That is the whole reason the default drops it: with the tower resident, the 262,144-token pool does not fit on 24 GB cards.
+**Since boot 19 the default recipe runs WITH vision at the full 262,144 context** (pool 279,462). Before the 1 MP image cap and the bf16 mamba state it did not fit, which is why boots 10 to 13 shipped text-only: `LM_ONLY=1` passes `--language-model-only`, which drops the vision tower at load, and is still the knob if you want the text-only pool (299,800 at 262K on boot 13, more with the two newer flags). Qwen3.8-Flash-Next is a vision-language model; the tower in this checkpoint is 27 layers, 1152 wide, **0.84 GiB in BF16**, and vLLM loads it whole on every tensor-parallel rank, so vision costs 0.84 GiB of KV budget per card plus vLLM's image-encoding reservation. That is the whole reason the default drops it: with the tower resident, the 262,144-token pool does not fit on 24 GB cards.
 
 Vision on = the same launcher with `LM_ONLY=0 MAXLEN=131072` (boot 14, ledger row 39): **pool 160,199 tokens at 131K, 1.22x**, encoder cache 16,384 tokens, load 102 s. Adding `--mm-processor-kwargs '{"max_pixels":1048576}'` (boot 15) lifts that to **243,608** because the profiler stops running a 16.7 MP image, and `--mamba-ssm-cache-dtype bfloat16` (boot 17) to **265,888**. A 547x900 screenshot cost 513 prompt tokens and was described correctly in 3.4 s; count-to-100 stayed at 196.1 tok/s and prose at 110.3 (two runs each, box quiet). vLLM warns that the MTP draft does not take image embeddings, so drafting is text-only on image turns and the target verifies as usual. Text-only at the same settings (boot 13, row 38) is 299,800 tokens at 262K, so the tower and its encoder cache cost about 140K tokens of pool. Image requests go through the normal chat completions `image_url` content parts. Clients pointed at the text-only boot must not send images (they return HTTP 400).
 
@@ -108,6 +110,7 @@ The count test is the MTP draft's best case (long runs of predictable tokens). P
     | 40 | **4x3090 VISION + 1 MP image cap: as row 39 + `--mm-processor-kwargs {"max_pixels":1048576}`** | 0.95 | 131,072 | fp8_e5m2 | FULL_DECODE_ONLY, capture 4..24 | 3 | 243,608 | n/a | 1.86x @131K | encoder budget 16,384 → 2,048 tokens (profiled with 2 images of the new max); worker print: consumed 19.73 GiB, peak activation 0.59, graphs 0.26, KV 1.65 GiB, suggests 2.31 GiB to fully utilize; init engine 96 s | +83,409 tokens (+52%) from one flag; image test still correct (513 tok in, 3.4 s); count-to-100 194.6 (195.9/194.6/194.4) |
     | 41 | 4x3090 vision + 1 MP cap + **KV_BYTES=2161310925 (2.01 GiB explicit)** (as row 40, only change) | n/a (skipped) | 131,072 | fp8_e5m2 | FULL_DECODE_ONLY, capture 4..24 | 3 | 238,312 | n/a | 1.82x @131K | vLLM "reserved 2.01 GiB for KV Cache as specified... skipped memory profiling"; init engine 94.8 s | **LOST pool vs row 40 (243,608)**: the explicit budget still has the cudagraph estimate taken out of it, so 2.01 GiB manual < the profiler's own allocation at gmu 0.95; not kept, not tested further |
     | 42 | **4x3090 vision + 1 MP cap + `--mamba-ssm-cache-dtype bfloat16`** (as row 40, only change; checkpoint pins fp32) | 0.95 | 131,072 | fp8_e5m2 | FULL_DECODE_ONLY, capture 4..24 | 3 | 265,888 | n/a | 2.03x @131K | attention block 1600 → 832 tokens, mamba page padded 0.48%; worker print unchanged (19.73 consumed, 0.59 peak, 0.26 graphs, 1.65 KV); init engine 99.4 s | +22,280 tokens (+9.1%) vs row 40; needle CORRECT at 9,826 / 39,127 / 74,013 prompt tokens (prefill 1,398 / 2,124 / 2,196 tok/s); image test correct; count-to-100 192.6 (192.3/193.0/192.6), prose 107.3 (row 40: 194.6 / row 39: 110.3, within noise) |
+    | 43 | **4x3090 DAILY DRIVER: VISION ON at FULL 262,144 ctx** (as row 42 + MAXLEN 262144; boot 18 at 235,520 was aborted before its pool print when Tony asked for 262K) | 0.95 | 262,144 | fp8_e5m2 | FULL_DECODE_ONLY, capture 4..24 | 3 | 279,462 | n/a | 1.07x @262K | vision tower on, 1 MP image cap, bf16 mamba state; worker print unchanged; init engine 96.6 s | needle CORRECT at 199,594 and 244,245 prompt tokens (prefill 2,193 / 2,225 tok/s, TTFT 91 / 110 s); image correct; count-to-100 191.7 (192.9/190.9/191.7), prose 110.4, code 141.7; six-agent load: 0 OOM, 0 preempt, TTFT p99 7.53 s on 2.5K-3.8K prompts, 252.6 tok/s aggregate on 6x700-token outputs, 48 tok/s per stream |
 
 ## Files
 
