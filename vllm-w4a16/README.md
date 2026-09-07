@@ -58,12 +58,17 @@ Knobs in the launcher: `PLE_MODE` (staged | mmap | none), `GRAPHS` (nocompile = 
 | 12 | max context 262,144, 6 seats | 193.3 tok/s, pool 362,077. **The default.** |
 | 13 | gmu 0.95 instead of 0.97 (after a CUDA OOM under fleet load at 0.97: 310 MiB free, 512 MiB asked) | 193.3 tok/s. Pool 299,800 at 262K (1.14x), about 800 MiB headroom per card. **Serving default.** |
 | 14 | vision tower on (`LM_ONLY=0`), 131K | 196.1 tok/s (prose 110.3). Pool 160,199 at 131K (1.22x). Image described correctly. **Tony's daily-driver boot.** |
+| 15 | vision + `--mm-processor-kwargs '{"max_pixels":1048576}'` | 194.6 tok/s. **Pool 160,199 to 243,608 at 131K (1.86x)**: the profiler was running a 16.7 MP image; the cap drops the encoder budget from 16,384 to 2,048 tokens. Image test still correct. |
 
 Not possible on these cards, and why: FP8 e4m3 and NVFP4 KV (Triton and SM100 kernels), NVFP4 or FP8 expert checkpoints (no Ampere kernels), a DFlash2 or EAGLE drafter for this model (none exists), applying albucino's own vLLM overlay (27 whole-file replacements against a different vLLM tree; reuse his checkpoint and flag shapes, not his files).
 
 ## Caveats
 
 Counting to 100 is the easiest possible text for a draft (100% acceptance). Prose, code and long context will accept fewer draft tokens; the same 40-prompt harness the Spark lanes use lives in the sister repo and has not been run on this box yet. e5m2 KV keeps 2 mantissa bits; the needle test passed at every rung we ran, and BF16 KV is one knob away (`KV_DTYPE=auto`, pool 186K at 64K). The box holds one model at a time: this lane cannot coexist with the 27B and 35B lanes.
+
+## More pool: the 2026-09-06 evening hunt
+
+Three research passes (saved under `research/`: upstream knobs, an on-box memory audit of boot 14, a survey of every Flash-Next checkpoint on the Hub) fed the boots from 15 on. What held: the vision cost was the profiling image, not the tower (boot 15); vLLM prints its own KV budget suggestion and `KV_BYTES` can take part of the 5% gmu never requests (boot 16); the DeltaNet state is pinned to fp32 by the checkpoint and `--mamba-ssm-cache-dtype bfloat16` halves it (untested here). What did not: sharing the draft's embeddings and lm_head (vLLM already does), prefix caching, encoder data-parallel, block-size flags, swap, CPU offload. The Hub has one materially smaller checkpoint (ranxianglei's 296-expert prune, roughly 12.6 GiB per card) at a quality cost we have not measured.
 
 ## Vision
 
@@ -98,6 +103,7 @@ The count test is the MTP draft's best case (long runs of predictable tokens). P
     | 37 | **4x3090 DEFAULT: TP4 + MTP3 + EP + LM only, fp8_e5m2 KV, 262,144 ctx, 6 seats** | 0.97 | 262,144 | fp8_e5m2 | FULL_DECODE_ONLY, capture 4..24 | 3 | 362,077 | n/a | 1.38x @262K | as row 36 with MAXLEN 262144, SEQS 6, CAPTURE_SIZES 4,8,12,16,20,24; 18.83 GiB/card, load 107 s, available KV 2.79 GiB/card | count-to-100 193.3 tok/s median (182.7/193.3/197.8); headline of tonyd2wild/Qwen38-Flash-Next-4x3090 |
     | 38 | **4x3090 TEXT-ONLY SERVING: as row 37 with gmu 0.95** (after death 1: CUDA OOM under fleet load at gmu 0.97, 310 MiB free) | 0.95 | 262,144 | fp8_e5m2 | FULL_DECODE_ONLY, capture 4..24 | 3 | 299,800 | n/a | 1.14x @262K | only change = GMU 0.95; init engine 87.8 s; ~800 MiB headroom per card | count-to-100 193.3 (one reading, same as row 37) |
     | 39 | **4x3090 VISION ON (Tony's daily driver): as row 38 with LM_ONLY=0, 131,072 ctx** | 0.95 | 131,072 | fp8_e5m2 | FULL_DECODE_ONLY, capture 4..24 | 3 | 160,199 | n/a | 1.22x @131K | vision tower 0.84 GiB BF16 per rank + encoder cache 16,384 tokens; init engine 101.9 s; draft warns it ignores image embeddings (text-only draft inputs, target verifies) | image test correct (KPI dashboard screenshot, 513 tok in, 3.4 s); count-to-100 196.1 median quiet (196.2/196.1/191.6), prose 110.3; first runs 57.8/151.9 overlapped fleet restarts |
+    | 40 | **4x3090 VISION + 1 MP image cap: as row 39 + `--mm-processor-kwargs {"max_pixels":1048576}`** | 0.95 | 131,072 | fp8_e5m2 | FULL_DECODE_ONLY, capture 4..24 | 3 | 243,608 | n/a | 1.86x @131K | encoder budget 16,384 → 2,048 tokens (profiled with 2 images of the new max); worker print: consumed 19.73 GiB, peak activation 0.59, graphs 0.26, KV 1.65 GiB, suggests 2.31 GiB to fully utilize; init engine 96 s | +83,409 tokens (+52%) from one flag; image test still correct (513 tok in, 3.4 s); count-to-100 194.6 (195.9/194.6/194.4) |
 
 ## Files
 
