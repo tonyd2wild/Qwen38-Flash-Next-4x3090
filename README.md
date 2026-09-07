@@ -5,6 +5,7 @@ The 125B-A6B hybrid MoE with its 51B n-gram table and the MTP draft, served from
 | | Default lane: vLLM ([`vllm-w4a16/`](vllm-w4a16/)) | Lane 2: llama.cpp (below) |
 |---|---|---|
 | Count to 100, single stream, temperature 0 | **193.3 tok/s median** (no draft: 55.8) | 96 to 102 tok/s on copy/edit tasks, 40 to 49 freeform |
+| Real prompts, single stream (prose / chat / code) | **109.5 / 108.4 / 145.8 tok/s** ([log](vllm-w4a16/results/realprompts_3090_262k_s6_2026-09-06.txt)) | 40 to 49 freeform (above) |
 | Context | **262,144 native**, 6 seats, KV pool 362,077 tokens (fp8 e5m2) | 2 x 262,144 slots (f16 KV) |
 | Quant | Intel AutoRound W4A16 experts (Marlin), BF16 attention, FP8 n-gram table | unsloth UD-IQ4_XS GGUF |
 | Speculation | albucino's INT4 MTP draft, 3 tokens, expert parallel | unsloth MTP head |

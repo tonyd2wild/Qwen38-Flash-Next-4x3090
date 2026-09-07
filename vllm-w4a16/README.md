@@ -63,6 +63,19 @@ Not possible on these cards, and why: FP8 e4m3 and NVFP4 KV (Triton and SM100 ke
 
 Counting to 100 is the easiest possible text for a draft (100% acceptance). Prose, code and long context will accept fewer draft tokens; the same 40-prompt harness the Spark lanes use lives in the sister repo and has not been run on this box yet. e5m2 KV keeps 2 mantissa bits; the needle test passed at every rung we ran, and BF16 KV is one knob away (`KV_DTYPE=auto`, pool 186K at 64K). The box holds one model at a time: this lane cannot coexist with the 27B and 35B lanes.
 
+## Real prompts, not just the count
+
+Same 262K/6-seat config, streaming, temperature 0, max_tokens 450, two runs each (`results/realprompts_3090_262k_s6_2026-09-06.txt`):
+
+| Prompt | tok/s (median of 2) | TTFT |
+|---|---|---|
+| prose, 400-word explainer | 109.5 | 0.15 to 0.21 s |
+| chat, 300-word summary | 108.4 | 0.17 to 0.21 s |
+| code, Python function with docstring | 145.8 | 0.16 to 0.19 s |
+| count to 100 | 193.3 (ladder median) | 0.16 s |
+
+The count test is the MTP draft's best case (long runs of predictable tokens). Prose lands at a bit over half of it, code in between. Six concurrent requests from the coding-agent monitor showed 545 to 561 tok/s aggregate in the engine log.
+
 ## Ledger rows (from the sister repo's `kv_pool_ledger.md`)
 
     | 30 | **4x RTX 3090 (x86, Ampere) TP4, albucino W4A16 + FP8 PLE on SSD (our patch)** | 0.96 | 65,536 | bf16 (FP8 e4m3 KV does not compile on Ampere) | FULL_DECODE_ONLY, no compile, capture 1,2 | 0 (no draft in this checkpoint) | 114,135 | n/a | 1.74x @64K | gptq_marlin, seqs 2, chunk 2048, staged gather, NCCL_P2P_DISABLE=1; weights 19.76 GiB/card, load 161 s; boot 4 of the evening (boots 1-3: table alloc OOM → selector fix; FP8 KV Triton dtype; 131K did not fit) | count-to-100 single stream 55.8 tok/s median (53.1/55.8/56.1), 18 ms per step, TTFT 150 ms |

@@ -1,0 +1,9 @@
+Real-prompt single-stream check, 2026-09-06 ~8:05 PM ET, 3090 box :8090, the default 262K/6-seat/e5m2/MTP3/EP/LM-only config.
+Streaming chat completions, temperature 0, max_tokens 450, decode rate = completion_tokens / (last chunk - first chunk). Two runs each.
+
+prose  (400-word NVLink vs PCIe explainer):      450 tok, ttft 0.21s / 0.15s, 109.6 / 109.3 tok/s  -> median 109.5
+chat   (300-word GoAffPro payouts summary):      450/424 tok, ttft 0.17s / 0.21s, 108.7 / 108.0 tok/s -> median 108.4
+code   (Python nvidia-smi CSV parser + docstring): 388/389 tok, ttft 0.16s / 0.19s, 143.0 / 148.6 tok/s -> median 145.8
+count-to-100 (same session, one run):            391 tok, ttft 0.16s, 194.3 tok/s (ladder median 193.3)
+
+Engine log during a separate 6-request burst from the coding-agent monitor the same minute: 545 to 561 tok/s aggregate at 6 running requests.
