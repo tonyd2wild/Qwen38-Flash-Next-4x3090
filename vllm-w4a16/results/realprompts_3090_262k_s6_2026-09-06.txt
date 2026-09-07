@@ -14,4 +14,4 @@ Six parallel coding agents (coding-agent latency monitor, 2026-09-06 8:06 PM ET,
 
 2026-09-06 8:15 PM ET: boot 12b (gmu 0.97) died with CUDA OOM during serving on all four workers (512 MiB requested, 310 MiB free) while the Hermes fleet, JARVIS and the six-agent monitor hit it together.
 Boot 13 (gmu 0.95, text only, 262K/6 seats): pool 299,800 (1.14x), count-to-100 193.3.
-Boot 14 (gmu 0.95, vision on, 131K/6 seats): pool 160,199 (1.22x), encoder cache 16,384; image test (547x900 KPI dashboard screenshot, 513 prompt tokens) answered correctly in 3.4 s; count-to-100 194.7 steady (57.8 and 151.9 on runs that overlapped fleet traffic).
+Boot 14 (gmu 0.95, vision on, 131K/6 seats): pool 160,199 (1.22x), encoder cache 16,384; image test (547x900 KPI dashboard screenshot, 513 prompt tokens) answered correctly in 3.4 s; count-to-100 196.1 median and prose 110.3 once the box was quiet (57.8 and 151.9 on the first runs overlapped the fleet restarts).
