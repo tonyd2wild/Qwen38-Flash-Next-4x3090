@@ -11,3 +11,7 @@ Engine log during a separate 6-request burst from the coding-agent monitor the s
 Six parallel coding agents (coding-agent latency monitor, 2026-09-06 8:06 PM ET, run by Tony):
   Total 12,189 tokens in 39 s; aggregate 317.2 tok/s sustained, 313.3 wall-avg, 569.8 peak burst;
   per-stream 54.1 high / 51.6 low / 52.9 avg tok/s; TTFT 0.47 s avg; E2E 39 s avg.
+
+2026-09-06 8:15 PM ET: boot 12b (gmu 0.97) died with CUDA OOM during serving on all four workers (512 MiB requested, 310 MiB free) while the Hermes fleet, JARVIS and the six-agent monitor hit it together.
+Boot 13 (gmu 0.95, text only, 262K/6 seats): pool 299,800 (1.14x), count-to-100 193.3.
+Boot 14 (gmu 0.95, vision on, 131K/6 seats): pool 160,199 (1.22x), encoder cache 16,384; image test (547x900 KPI dashboard screenshot, 513 prompt tokens) answered correctly in 3.4 s; count-to-100 194.7 steady (57.8 and 151.9 on runs that overlapped fleet traffic).

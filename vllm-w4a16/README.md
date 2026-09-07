@@ -33,7 +33,7 @@ The speed came from three things, measured one boot at a time (ledger below):
 
 ```bash
 # patch dir on the box: ~/patches/qwen4exp-ple-mmap (contents of patch/)
-LM_ONLY=1 NCCL_MODE=nvl PLE_MODE=staged GRAPHS=nocompile MTP=3 TP=4 GMU=0.97 SEQS=6 CHUNK=2048 \
+LM_ONLY=1 NCCL_MODE=nvl PLE_MODE=staged GRAPHS=nocompile MTP=3 TP=4 GMU=0.95 SEQS=6 CHUNK=2048 \
 MAXLEN=262144 KV_DTYPE=fp8_e5m2 CAPTURE_SIZES=4,8,12,16,20,24 \
 EXTRA="--quantization gptq_marlin --enable-expert-parallel" \
 bash launch/qwen38fn-w4a16-3090-tp4.sh
@@ -56,6 +56,8 @@ Knobs in the launcher: `PLE_MODE` (staged | mmap | none), `GRAPHS` (nocompile = 
 | 10 | plus language-model-only, gmu 0.97, 64K, 2 seats | 194.2 tok/s. 18.8 GB per card, pool 186,016. |
 | 11 | fp8_e5m2 KV through a variant of the attention overlay (`patch/upstream-overlays/*_e5m2.py`) | Runs on Ampere. 191.8 tok/s, pool 299,431 at 64K. Needle in a haystack answered correctly at 7K, 28K and 53K (prefill 1,265 / 1,699 / 2,347 tok/s). |
 | 12 | max context 262,144, 6 seats | 193.3 tok/s, pool 362,077. **The default.** |
+| 13 | gmu 0.95 instead of 0.97 (after a CUDA OOM under fleet load at 0.97: 310 MiB free, 512 MiB asked) | 193.3 tok/s. Pool 299,800 at 262K (1.14x), about 800 MiB headroom per card. **Serving default.** |
+| 14 | vision tower on (`LM_ONLY=0`), 131K | 194.7 tok/s. Pool 160,199 at 131K (1.22x). Image described correctly. |
 
 Not possible on these cards, and why: FP8 e4m3 and NVFP4 KV (Triton and SM100 kernels), NVFP4 or FP8 expert checkpoints (no Ampere kernels), a DFlash2 or EAGLE drafter for this model (none exists), applying albucino's own vLLM overlay (27 whole-file replacements against a different vLLM tree; reuse his checkpoint and flag shapes, not his files).
 
@@ -67,7 +69,7 @@ Counting to 100 is the easiest possible text for a draft (100% acceptance). Pros
 
 **The default recipe ships without vision.** `LM_ONLY=1` passes `--language-model-only`, which drops the vision tower at load. Qwen3.8-Flash-Next is a vision-language model; the tower in this checkpoint is 27 layers, 1152 wide, **0.84 GiB in BF16**, and vLLM loads it whole on every tensor-parallel rank, so vision costs 0.84 GiB of KV budget per card plus vLLM's image-encoding reservation. That is the whole reason the default drops it: with the tower resident, the 262,144-token pool does not fit on 24 GB cards.
 
-Vision on = the same launcher with `LM_ONLY=0` and a smaller `MAXLEN` (131,072 is the size the tower leaves room for; measured pool for that boot is listed in the ladder below once run). Image requests go through the normal chat completions `image_url` content parts. Clients pointed at the text-only boot must not send images (they return HTTP 400).
+Vision on = the same launcher with `LM_ONLY=0 MAXLEN=131072` (boot 14, ledger row 39): **pool 160,199 tokens at 131K, 1.22x**, encoder cache 16,384 tokens, load 102 s. A 547x900 screenshot cost 513 prompt tokens and was described correctly in 3.4 s; count-to-100 stayed at 194.7 tok/s. vLLM warns that the MTP draft does not take image embeddings, so drafting is text-only on image turns and the target verifies as usual. Text-only at the same settings (boot 13, row 38) is 299,800 tokens at 262K, so the tower and its encoder cache cost about 140K tokens of pool. Image requests go through the normal chat completions `image_url` content parts. Clients pointed at the text-only boot must not send images (they return HTTP 400).
 
 ## Real prompts, not just the count
 
@@ -94,6 +96,8 @@ The count test is the MTP draft's best case (long runs of predictable tokens). P
     | 35 | **4x3090 TP4 + MTP3 + EP + `--language-model-only`, gmu 0.97, 64K, seqs 2** (serving config) | 0.97 | 65,536 | bf16 | FULL_DECODE_ONLY, capture 4,8 | 3 | 186,016 | n/a | 2.84x @64K | as row 34 + LM_ONLY=1 (vision tower dropped), gmu 0.97; weights+draft 18.83 GiB/card, load 113 s, available KV 2.96 GiB/card | count-to-100 194.2 tok/s median (161.8/194.2/196.4), same as row 34 |
     | 36 | 4x3090 TP4 + MTP3 + EP + LM only, **fp8_e5m2 KV via our overlay variant** | 0.97 | 65,536 | fp8_e5m2 | FULL_DECODE_ONLY, capture 4,8 | 3 | 299,431 | n/a | 4.57x @64K | as row 35 with KV_DTYPE=fp8_e5m2 (upstream-overlays/{qsa,ops_qsa}_e5m2.py); needle 7K/28K/53K all correct, prefill 1,265/1,699/2,347 | count-to-100 191.8 (174.8/191.8/191.9) = same as BF16; pool 1.6x |
     | 37 | **4x3090 DEFAULT: TP4 + MTP3 + EP + LM only, fp8_e5m2 KV, 262,144 ctx, 6 seats** | 0.97 | 262,144 | fp8_e5m2 | FULL_DECODE_ONLY, capture 4..24 | 3 | 362,077 | n/a | 1.38x @262K | as row 36 with MAXLEN 262144, SEQS 6, CAPTURE_SIZES 4,8,12,16,20,24; 18.83 GiB/card, load 107 s, available KV 2.79 GiB/card | count-to-100 193.3 tok/s median (182.7/193.3/197.8); headline of tonyd2wild/Qwen38-Flash-Next-4x3090 |
+    | 38 | **4x3090 TEXT-ONLY SERVING: as row 37 with gmu 0.95** (after death 1: CUDA OOM under fleet load at gmu 0.97, 310 MiB free) | 0.95 | 262,144 | fp8_e5m2 | FULL_DECODE_ONLY, capture 4..24 | 3 | 299,800 | n/a | 1.14x @262K | only change = GMU 0.95; init engine 87.8 s; ~800 MiB headroom per card | count-to-100 193.3 (one reading, same as row 37) |
+    | 39 | **4x3090 VISION ON (Tony's daily driver): as row 38 with LM_ONLY=0, 131,072 ctx** | 0.95 | 131,072 | fp8_e5m2 | FULL_DECODE_ONLY, capture 4..24 | 3 | 160,199 | n/a | 1.22x @131K | vision tower 0.84 GiB BF16 per rank + encoder cache 16,384 tokens; init engine 101.9 s; draft warns it ignores image embeddings (text-only draft inputs, target verifies) | image test correct (KPI dashboard screenshot, 513 tok in, 3.4 s); count-to-100 194.7 steady, earlier runs 57.8/151.9 overlapped fleet traffic |
 
 ## Files
 

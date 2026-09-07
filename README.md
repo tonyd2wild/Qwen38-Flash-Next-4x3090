@@ -7,19 +7,19 @@ The 125B-A6B hybrid MoE with its 51B n-gram table and the MTP draft, served from
 | Count to 100, single stream, temperature 0 | **193.3 tok/s median** (no draft: 55.8) | 96 to 102 tok/s on copy/edit tasks, 40 to 49 freeform |
 | Real prompts, single stream (prose / chat / code) | **109.5 / 108.4 / 145.8 tok/s** ([log](vllm-w4a16/results/realprompts_3090_262k_s6_2026-09-06.txt)) | 40 to 49 freeform (above) |
 | 6 parallel coding agents (tool round-trips, 12,189 tokens) | **317 tok/s sustained, 570 peak burst**, 53 tok/s per agent, TTFT 0.47 s | not run |
-| Context | **262,144 native**, 6 seats, KV pool 362,077 tokens (fp8 e5m2) | 2 x 262,144 slots (f16 KV) |
+| Context | **262,144 native**, 6 seats, KV pool 299,800 tokens (fp8 e5m2, gmu 0.95; 362,077 at 0.97, which OOMed under fleet load) | 2 x 262,144 slots (f16 KV) |
 | Quant | Intel AutoRound W4A16 experts (Marlin), BF16 attention, FP8 n-gram table | unsloth UD-IQ4_XS GGUF |
 | Speculation | albucino's INT4 MTP draft, 3 tokens, expert parallel | unsloth MTP head |
 | Where the 47.7 GB table lives | on the NVMe, 16 rows per token read per step by our patch, inside CUDA graphs | left out of VRAM by llama.cpp's lookup-only path |
 | Serving | OpenAI-compatible vLLM on :8090, tools and reasoning parsers | llama.cpp server on :8090 |
-| Vision | **Off in the default recipe** (`--language-model-only` drops the 0.84 GiB BF16 tower to keep the KV pool for 262K). Vision-on variant with a smaller context: see the [lane README](vllm-w4a16/README.md#vision) | not wired |
+| Vision | **Off in the default recipe** (`--language-model-only` drops the 0.84 GiB BF16 tower to keep the KV pool for 262K). Vision on: 131K context, pool 160,199, same speed, see the [lane README](vllm-w4a16/README.md#vision) | not wired |
 
 ## Default lane: vLLM in four lines
 
 ```bash
 hf download albucino/Qwen3.8-Flash-Next-W4A16-FP8PLE --local-dir ~/models/qwen38fn-w4a16-fp8ple   # 129 GB, the draft is inside
 cp -R vllm-w4a16/patch ~/patches/qwen4exp-ple-mmap
-LM_ONLY=1 NCCL_MODE=nvl PLE_MODE=staged GRAPHS=nocompile MTP=3 TP=4 GMU=0.97 SEQS=6 CHUNK=2048 MAXLEN=262144 \
+LM_ONLY=1 NCCL_MODE=nvl PLE_MODE=staged GRAPHS=nocompile MTP=3 TP=4 GMU=0.95 SEQS=6 CHUNK=2048 MAXLEN=262144 \
 KV_DTYPE=fp8_e5m2 CAPTURE_SIZES=4,8,12,16,20,24 EXTRA="--quantization gptq_marlin --enable-expert-parallel" bash vllm-w4a16/launch/qwen38fn-w4a16-3090-tp4.sh
 ```
 
