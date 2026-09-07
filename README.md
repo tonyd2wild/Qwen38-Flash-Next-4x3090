@@ -12,6 +12,7 @@ The 125B-A6B hybrid MoE with its 51B n-gram table and the MTP draft, served from
 | Speculation | albucino's INT4 MTP draft, 3 tokens, expert parallel | unsloth MTP head |
 | Where the 47.7 GB table lives | on the NVMe, 16 rows per token read per step by our patch, inside CUDA graphs | left out of VRAM by llama.cpp's lookup-only path |
 | Serving | OpenAI-compatible vLLM on :8090, tools and reasoning parsers | llama.cpp server on :8090 |
+| Vision | **Off in the default recipe** (`--language-model-only` drops the 0.84 GiB BF16 tower to keep the KV pool for 262K). Vision-on variant with a smaller context: see the [lane README](vllm-w4a16/README.md#vision) | not wired |
 
 ## Default lane: vLLM in four lines
 

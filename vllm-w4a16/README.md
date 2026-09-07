@@ -63,6 +63,12 @@ Not possible on these cards, and why: FP8 e4m3 and NVFP4 KV (Triton and SM100 ke
 
 Counting to 100 is the easiest possible text for a draft (100% acceptance). Prose, code and long context will accept fewer draft tokens; the same 40-prompt harness the Spark lanes use lives in the sister repo and has not been run on this box yet. e5m2 KV keeps 2 mantissa bits; the needle test passed at every rung we ran, and BF16 KV is one knob away (`KV_DTYPE=auto`, pool 186K at 64K). The box holds one model at a time: this lane cannot coexist with the 27B and 35B lanes.
 
+## Vision
+
+**The default recipe ships without vision.** `LM_ONLY=1` passes `--language-model-only`, which drops the vision tower at load. Qwen3.8-Flash-Next is a vision-language model; the tower in this checkpoint is 27 layers, 1152 wide, **0.84 GiB in BF16**, and vLLM loads it whole on every tensor-parallel rank, so vision costs 0.84 GiB of KV budget per card plus vLLM's image-encoding reservation. That is the whole reason the default drops it: with the tower resident, the 262,144-token pool does not fit on 24 GB cards.
+
+Vision on = the same launcher with `LM_ONLY=0` and a smaller `MAXLEN` (131,072 is the size the tower leaves room for; measured pool for that boot is listed in the ladder below once run). Image requests go through the normal chat completions `image_url` content parts. Clients pointed at the text-only boot must not send images (they return HTTP 400).
+
 ## Real prompts, not just the count
 
 Same 262K/6-seat config, streaming, temperature 0, max_tokens 450, two runs each (`results/realprompts_3090_262k_s6_2026-09-06.txt`):
