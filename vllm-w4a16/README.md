@@ -74,7 +74,9 @@ Same 262K/6-seat config, streaming, temperature 0, max_tokens 450, two runs each
 | code, Python function with docstring | 145.8 | 0.16 to 0.19 s |
 | count to 100 | 193.3 (ladder median) | 0.16 s |
 
-The count test is the MTP draft's best case (long runs of predictable tokens). Prose lands at a bit over half of it, code in between. Six concurrent requests from the coding-agent monitor showed 545 to 561 tok/s aggregate in the engine log.
+The count test is the MTP draft's best case (long runs of predictable tokens). Prose lands at a bit over half of it, code in between.
+
+**Six parallel coding agents** (our coding-agent latency monitor, each agent doing tool round-trips, run by Tony on 2026-09-06 at 8:06 PM ET): 12,189 tokens in 39 s, **317.2 tok/s sustained aggregate** (313.3 wall-average), **569.8 tok/s peak burst**, per-agent 54.1 high / 51.6 low / 52.9 average, TTFT 0.47 s average. The engine log for that minute shows 545 to 561 tok/s generation throughput at 6 running requests.
 
 ## Ledger rows (from the sister repo's `kv_pool_ledger.md`)
 

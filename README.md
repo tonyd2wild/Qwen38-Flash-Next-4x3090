@@ -6,6 +6,7 @@ The 125B-A6B hybrid MoE with its 51B n-gram table and the MTP draft, served from
 |---|---|---|
 | Count to 100, single stream, temperature 0 | **193.3 tok/s median** (no draft: 55.8) | 96 to 102 tok/s on copy/edit tasks, 40 to 49 freeform |
 | Real prompts, single stream (prose / chat / code) | **109.5 / 108.4 / 145.8 tok/s** ([log](vllm-w4a16/results/realprompts_3090_262k_s6_2026-09-06.txt)) | 40 to 49 freeform (above) |
+| 6 parallel coding agents (tool round-trips, 12,189 tokens) | **317 tok/s sustained, 570 peak burst**, 53 tok/s per agent, TTFT 0.47 s | not run |
 | Context | **262,144 native**, 6 seats, KV pool 362,077 tokens (fp8 e5m2) | 2 x 262,144 slots (f16 KV) |
 | Quant | Intel AutoRound W4A16 experts (Marlin), BF16 attention, FP8 n-gram table | unsloth UD-IQ4_XS GGUF |
 | Speculation | albucino's INT4 MTP draft, 3 tokens, expert parallel | unsloth MTP head |
@@ -181,11 +182,22 @@ existed, and it remains the right choice when you cannot spare the ~2.6 GB.
 | `launch-mtp-q4kxl.sh` | MTP launcher (`SPEC=0` disables speculation for A/B) |
 | `bench_mtp.py` | Four-task bench: count100 / code / prose / jsonedit |
 
-### Credits
+## Credits
 
-- [unsloth](https://huggingface.co/unsloth) / danielhanchen — the `qwen4exp` llama.cpp PR and the dynamic GGUF quants
-- [0xBakeer](https://github.com/0xBakeer/qwen38-flash-next-spark) — first public proof of `ngram-mod` speculation on this model, and the PLE-offload analysis
-- The 2Wild fleet (Kai on the Mac, Knox on the 5080) — deploy, debugging, and the benching
+Model: **Qwen3.8-Flash-Next** by the Qwen team at Alibaba Cloud. Engines: **vLLM** (the `qwen4_exp` model code, the Marlin W4A16 MoE kernel, the MTP scheduler; NVIDIA's GPU implementation of this architecture in the nightly is what our patch hooks into) and **llama.cpp**.
+
+vLLM lane (the default):
+- **albucino (Dominik Bucko)**: the checkpoint (Intel AutoRound W4A16 experts + RadixArk FP8 n-gram table + the INT4 group-32 MTP draft) and the 3090 write-up we confirmed here, BF16 KV and expert-parallel layout included. His checkpoint and draft are used; his runtime is not.
+- **Intel** (AutoRound) and **RadixArk** (FP8 n-gram table).
+- **andreasgru** (vLLM PR #54846, FP8 KV on the sparse-attention path, with Nanetnounou's RFC #54426) and **peakcrosser7** (PR #55375, PLE conv-state stride fix): the upstream overlays in `vllm-w4a16/patch/upstream-overlays/`, unchanged except the `_e5m2` variants marked as ours.
+- **Trosfy** (PR #54129) for the shape of the staged gather; **gau-nernst** (PR #55272) for the finding that torch.compile duplicates the table; **blazux** for the FLA shared-memory gate and the piecewise mode on GB10; **pangoleen** and **MiaAI-Lab** for the Spark measurements we compared against.
+- Our patch was written for the DGX Spark first; the one-Spark, TP2 and TP4 lanes on NVIDIA's own NVFP4 checkpoint, with the full research notes and credit map, live at https://github.com/tonyd2wild/Qwen3.8-Flash-Next-NVFP4-DGX-Spark.
+
+llama.cpp lane:
+- [unsloth](https://huggingface.co/unsloth) / danielhanchen: the `qwen4exp` llama.cpp PR, the dynamic GGUF quants and the MTP heads.
+- [0xBakeer](https://github.com/0xBakeer/qwen38-flash-next-spark): first public proof of `ngram-mod` speculation on this model, and the PLE-offload analysis.
+
+The 2Wild fleet (Kai on the Mac, Knox on the 5080): deploy, debugging and the benching. Licensing: Apache-2.0 (`LICENSE`, `NOTICE`); the weights carry their own licenses.
 
 ### Hardware
 

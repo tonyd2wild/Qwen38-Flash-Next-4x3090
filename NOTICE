@@ -1,0 +1,14 @@
+Qwen38-Flash-Next-4x3090
+Copyright 2026 Tony DeAngelo (Tech2Wild / 2Wild). Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This repository redistributes, with modifications, files from vLLM (https://github.com/vllm-project/vllm),
+Copyright contributors to the vLLM project, Apache-2.0:
+  vllm-w4a16/patch/ple_layer.py, vllm-w4a16/patch/compilation.py, vllm-w4a16/patch/model_state.py,
+  vllm-w4a16/patch/mtp_draft_vocab.py and vllm-w4a16/patch/upstream-overlays/*.py
+  (the overlays are vLLM files at the state of the pull requests credited in vllm-w4a16/README.md;
+  the *_e5m2.py variants add fp8_e5m2 to those files and are ours).
+vllm-w4a16/patch/ple_mmap.py, the launchers, tools and results are original to this repository.
+
+The model weights are not part of this repository. The vLLM lane serves albucino/Qwen3.8-Flash-Next-W4A16-FP8PLE
+(Intel AutoRound W4A16 experts, RadixArk FP8 n-gram table, albucino's INT4 MTP draft); the llama.cpp lane serves
+unsloth/Qwen3.8-Flash-Next-GGUF. Qwen3.8-Flash-Next is by the Qwen team at Alibaba Cloud, under its own license.

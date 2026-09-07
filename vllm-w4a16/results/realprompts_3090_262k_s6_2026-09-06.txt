@@ -7,3 +7,7 @@ code   (Python nvidia-smi CSV parser + docstring): 388/389 tok, ttft 0.16s / 0.1
 count-to-100 (same session, one run):            391 tok, ttft 0.16s, 194.3 tok/s (ladder median 193.3)
 
 Engine log during a separate 6-request burst from the coding-agent monitor the same minute: 545 to 561 tok/s aggregate at 6 running requests.
+
+Six parallel coding agents (coding-agent latency monitor, 2026-09-06 8:06 PM ET, run by Tony):
+  Total 12,189 tokens in 39 s; aggregate 317.2 tok/s sustained, 313.3 wall-avg, 569.8 peak burst;
+  per-stream 54.1 high / 51.6 low / 52.9 avg tok/s; TTFT 0.47 s avg; E2E 39 s avg.
