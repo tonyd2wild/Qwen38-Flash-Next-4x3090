@@ -1,4 +1,4 @@
-# Qwen3.8-Flash-Next on 4x RTX 3090: 194 tok/s, full 262K context, in vLLM
+# Qwen3.8-Flash-Next on 4x RTX 3090: 193 tok/s, full 262K context, in vLLM
 
 The 125B-A6B hybrid MoE with its 51B n-gram table and the MTP draft, served from one 4x RTX 3090 box (96 GB VRAM, 31 GB host RAM) by upstream vLLM. Measured 2026-09-06, every number from the box.
 
