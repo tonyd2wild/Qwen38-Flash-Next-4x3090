@@ -39,6 +39,8 @@ EXTRA="--quantization gptq_marlin --enable-expert-parallel --mm-processor-kwargs
 bash launch/qwen38fn-w4a16-3090-tp4.sh
 ```
 
+For the current daily driver (boot 19 plus a pinned KV budget, pool 303,079 at 262K) use `launch/launch-qwen38fn-w4a16-tuned.sh`, see [Tuned lane](#tuned-lane-2026-10-01-pinned-kv-pool-303079-at-262k).
+
 Knobs in the launcher: `PLE_MODE` (staged | mmap | none), `GRAPHS` (nocompile = CUDA graphs for decode with torch.compile off, the only mode that boots here), `MTP` (0 or N; capture sizes must be multiples of N+1), `DRAFT_DIR`, `TP`, `SEQS`, `CHUNK`, `GMU`, `MAXLEN`, `KV_DTYPE`, `KV_BYTES`, `LM_ONLY`, `NCCL_MODE` (nvl | nop2p), `EXTRA`. `--quantization gptq_marlin` is passed but vLLM resolves the AutoRound config to its INC path anyway; the flag is harmless.
 
 ## Ampere findings (each cost one boot)
@@ -62,9 +64,37 @@ Knobs in the launcher: `PLE_MODE` (staged | mmap | none), `GRAPHS` (nocompile = 
 | 16 | `--kv-cache-memory-bytes` 2.01 GiB explicit (vLLM had used 1.65, offered 2.31) | Pool **fell** to 238,312: the explicit budget still has the CUDA graph reserve taken out of it. Dropped. |
 | 17 | `--mamba-ssm-cache-dtype bfloat16` (checkpoint pins fp32) | 192.6 tok/s, prose 107.3. **Pool 265,888 at 131K (2.03x)**, +9%; attention block 1600 to 832. Needle correct at 9.8K / 39K / 74K prompt tokens; image correct. |
 | 18 | 230K with vision | aborted before the pool print; Tony asked for the full 262K instead |
-| 19 | **vision on at the full 262,144** (boot 17 flags + `MAXLEN=262144`) | 191.7 tok/s, prose 110.4, code 141.7. **Pool 279,462 at 262K (1.07x)**. Needle correct at 199,594 and 244,245 prompt tokens. Six-agent load at gmu 0.95: 0 OOM, TTFT p99 7.5 s, 252.6 tok/s aggregate ([results](results/sixagent_gmu095_boot19_2026-09-06.md)). **The daily driver.** |
+| 19 | **vision on at the full 262,144** (boot 17 flags + `MAXLEN=262144`) | 191.7 tok/s, prose 110.4, code 141.7. **Pool 279,462 at 262K (1.07x)**. Needle correct at 199,594 and 244,245 prompt tokens. Six-agent load at gmu 0.95: 0 OOM, TTFT p99 7.5 s, 252.6 tok/s aggregate ([results](results/sixagent_gmu095_boot19_2026-09-06.md)). The daily driver until 2026-10-01. |
+| tuned | boot 19 flags + `--skip-mm-profiling` + `KV_BYTES=2400000000` (2026-10-01) | **Pool 303,079 at 262K (1.16x)**, about 0.65 GiB per card free. A ~155K-token prefill passed (2,249 tok/s, 69 s TTFT). Tool suite 91.3 (61/4/4), agency 67/100 ([results](results/tuned-lane-2026-10-01.md)). **The daily driver.** |
 
 Not possible on these cards, and why: FP8 e4m3 and NVFP4 KV (Triton and SM100 kernels), NVFP4 or FP8 expert checkpoints (no Ampere kernels), a DFlash2 or EAGLE drafter for this model (none exists), applying albucino's own vLLM overlay (27 whole-file replacements against a different vLLM tree; reuse his checkpoint and flag shapes, not his files).
+
+## Tuned lane (2026-10-01): pinned KV, pool 303,079 at 262K
+
+```bash
+MODEL_HOST=<model_dir> PATCH_DIR=<patch_dir> bash launch/launch-qwen38fn-w4a16-tuned.sh
+```
+
+Boot 19 with two flags added: `--skip-mm-profiling` and `--kv-cache-memory-bytes 2400000000`. Same image, checkpoint, patch, port and model id, so clients do not notice the swap.
+
+| | Boot 19 | Tuned |
+|---|---:|---:|
+| Context | 262,144 | 262,144 |
+| KV pool | 279,462 (1.07x) | **303,079 (1.16x)**, +23,617 tokens |
+| Free per card | | about 0.65 GiB |
+| ~155K-token prefill | | 2,249 tok/s, 69 s TTFT, no OOM |
+| Tool suite, 69 scenarios, thinking off | 89.9 and 92.0 (two runs) | 91.3, 126/138 points (61/4/4), median turn 681 ms |
+| 2Wild Agency Benchmark | 67/100 | 67/100, decode 116 tok/s, prefill about 701 tok/s |
+
+Full numbers and the per-category spread: [results/tuned-lane-2026-10-01.md](results/tuned-lane-2026-10-01.md). Vision, tools and thinking-off were checked live on this boot. Count to 100, the real-prompt set and the six-agent load were not rerun; the decode figures in the table are suite averages, not comparable to the count-to-100 headline.
+
+Boot 16 pinned a smaller budget (2.01 GiB at 131K, image profiling still on) and lost pool. This one pins more (2.4e9 bytes, about 2.24 GiB per card) and skips the multimodal profiling pass, and gains 23,617 tokens at the full 262K.
+
+**The rule that keeps it up: leave room for long-prefill transients.** vLLM's boot profiler measures short-context activations only. On the same night an experimental lane on this box booted with the pool auto-sized at gmu 0.95 and then died on a 155K-token prefill (`torch.OutOfMemoryError ... Tried to allocate 512.00 MiB`). Pin `KV_BYTES` below what vLLM would take on its own, keep at least 0.55 GiB per card free, and validate with a 155K+ token prefill. To walk the pin up: +50 MB is about +6.6K pool tokens (about 7.9 KB per token per GPU); go one 50 MB step at a time with a long-prefill probe after each.
+
+### Parked: EXL3
+
+We also brought up `turboderp/Qwen3.8-Flash-Next-exl3` (4.05 bpw) on this box under vLLM with vcruz305's `vllm-exl3` plugin. It runs (TP4, MTP3, vision, zero errors in a 35-cell sweep), but the plugin cannot tensor-parallel the dense layers, so they had to be dequantized to BF16, and that is where the compression lived. At 262K it pools fewer tokens than W4A16 (about 265K pinned); it only out-pools W4A16 below about 163K context (326,148 at 163,840). Parked and not in this repo; the W4A16 tuned lane stays the default.
 
 ## Caveats
 
@@ -115,9 +145,10 @@ The count test is the MTP draft's best case (long runs of predictable tokens). P
 ## Files
 
 - `launch/qwen38fn-w4a16-3090-tp4.sh`: the launcher (docker, TP4, knobs above).
+- `launch/launch-qwen38fn-w4a16-tuned.sh`: the tuned lane (wrapper over the launcher, pinned KV, skip-mm-profiling).
 - `patch/`: our disk-backed PLE table (`ple_layer.py`, `ple_mmap.py`, `model_state.py` for the staged gather), `mtp_draft_vocab.py` (reduced draft vocabulary, not used on this lane yet), `compilation.py` (piecewise mode, unused here), and `upstream-overlays/` (unmodified upstream vLLM PR files, see credits) plus the `_e5m2` variants of two of them for Ampere.
 - `tools/count100_3090.sh`: Tony's speed test, three count-to-100 runs, median.
-- `results/`: the count-to-100 logs for every working boot.
+- `results/`: the count-to-100 logs for every working boot; `tuned-lane-2026-10-01.md` for the tuned lane's memory, prefill and suite numbers.
 
 ## Credits
 
@@ -135,4 +166,5 @@ The count test is the MTP draft's best case (long runs of predictable tokens). P
 - 2026-09-06 8:27 PM ET: vision tower on at 131K (boot 14) at Tony's request; text-only kept as the `LM_ONLY=1` variant.
 - 2026-09-06 8:45 to 9:15 PM ET: pool ladder from three research passes (`research/`): 1 MP image-profiling cap (boot 15, +52%), explicit KV budget (boot 16, lost pool, dropped), bf16 mamba state (boot 17, +9%, needle and image pass).
 - 2026-09-06 9:15 PM ET: boot 19, vision on at the full 262,144, pool 279,462, needle correct at 199,594 and 244,245 prompt tokens, becomes the default recipe. Six-agent load at gmu 0.95 recorded in `results/sixagent_gmu095_boot19_2026-09-06.md`.
+- 2026-10-01: tuned lane (boot 19 + `--skip-mm-profiling` + `KV_BYTES=2400000000`) becomes the daily driver: pool 303,079 at 262K, ~155K-token prefill validated, tool suite 91.3, agency 67/100. EXL3 tried and parked.
 - Still untested: the TP2 x PP2 layout, the 40-prompt harness on this box, the 296-expert pruned checkpoint (ranxianglei), FP8 side layers (Saren's hybrid), requantizing the 1.19 GiB hyperconnection layers.

@@ -8,12 +8,32 @@ The 125B-A6B hybrid MoE with its 51B n-gram table and the MTP draft, served from
 | Real prompts, single stream (prose / chat / code) | **109.5 / 108.4 / 145.8 tok/s** ([log](vllm-w4a16/results/realprompts_3090_262k_s6_2026-09-06.txt)) | 40 to 49 freeform (above) |
 | 6 parallel coding agents (tool round-trips, 12,189 tokens; gmu 0.97 boot) | **317 tok/s sustained, 570 peak burst**, 53 tok/s per agent, TTFT 0.47 s | not run |
 | 6 concurrent agents at gmu 0.95 ([results](vllm-w4a16/results/sixagent_gmu095_boot19_2026-09-06.md)) | 0 OOM, TTFT p99 7.5 s on 2.5K to 3.8K prompts; 252.6 tok/s aggregate, 48 tok/s per stream on 700-token outputs | not run |
-| Context | **262,144 native**, 6 seats, KV pool 279,462 tokens with vision on (fp8 e5m2 KV, bf16 mamba state, gmu 0.95); text-only 299,800 | 2 x 262,144 slots (f16 KV) |
+| Context | **262,144 native**, 6 seats, KV pool **303,079 tokens on the tuned lane** (below), 279,462 on boot 19 with vision on (fp8 e5m2 KV, bf16 mamba state, gmu 0.95); text-only 299,800 | 2 x 262,144 slots (f16 KV) |
 | Quant | Intel AutoRound W4A16 experts (Marlin), BF16 attention, FP8 n-gram table | unsloth UD-IQ4_XS GGUF |
 | Speculation | albucino's INT4 MTP draft, 3 tokens, expert parallel | unsloth MTP head |
 | Where the 47.7 GB table lives | on the NVMe, 16 rows per token read per step by our patch, inside CUDA graphs | left out of VRAM by llama.cpp's lookup-only path |
 | Serving | OpenAI-compatible vLLM on :8090, tools and reasoning parsers | llama.cpp server on :8090 |
 | Vision | **On, at the full 262K** since boot 19 (needs the 1 MP image-profiling cap and bf16 mamba state, both in the recipe). `LM_ONLY=1` drops the tower if you want the text-only pool. [Lane README](vllm-w4a16/README.md#vision) | not wired |
+
+## New lane, 2026-10-01: tuned W4A16, pool 303,079 at the full 262K
+
+The same vLLM recipe with the KV budget pinned and the multimodal profiling pass skipped. It is the daily driver on our box now.
+
+| | Tuned lane ([`launch-qwen38fn-w4a16-tuned.sh`](vllm-w4a16/launch/launch-qwen38fn-w4a16-tuned.sh)) |
+|---|---|
+| Change vs boot 19 | `--skip-mm-profiling` + `--kv-cache-memory-bytes 2400000000` |
+| Context / KV pool | 262,144 / **303,079 tokens (1.16x)**, was 279,462 |
+| Headroom | about 0.65 GiB per card kept free for long-prefill transients |
+| Long prefill | ~155K-token prompt: 2,249 tok/s prefill, 69 s TTFT, no OOM |
+| Tool suite (69 scenarios, thinking off) | quality 91.3, 126/138 points (61 pass / 4 partial / 4 fail), median turn 681 ms, 88.1 tok/s decode during the suite |
+| 2Wild Agency Benchmark (100 tasks) | 67/100, decode 116 tok/s, prefill about 701 tok/s |
+| Vision / tools / thinking off | checked live |
+
+```bash
+MODEL_HOST=<model_dir> PATCH_DIR=<patch_dir> bash vllm-w4a16/launch/launch-qwen38fn-w4a16-tuned.sh
+```
+
+The pin is set below what vLLM would take on its own, on purpose: the boot profiler only sees short-context activations, and an auto-sized pool can boot fine and then OOM on a long prefill. To raise it, +50 MB of `KV_BYTES` is about +6.6K tokens; take one step at a time and rerun a 155K+ token prefill after each. Details, the boot 19 comparison and the parked EXL3 attempt: [lane README](vllm-w4a16/README.md#tuned-lane-2026-10-01-pinned-kv-pool-303079-at-262k), [results](vllm-w4a16/results/tuned-lane-2026-10-01.md).
 
 ## Default lane: vLLM in four lines
 
