@@ -15,7 +15,7 @@ Endpoint on the box: `http://<3090>:8090/v1`, model id `qwen3.8-flash-next`, Ope
 | 51B n-gram (PLE) table | FP8 E4M3 with one global scale, **left on the NVMe**: our patch reads the 16 rows each token needs per step, inside CUDA graphs | RadixArk FP8 table, as packed by albucino; the disk reader is ours (`patch/`) |
 | MTP draft | 1-layer head, experts INT4 group-32, loaded as a **separate draft directory** by stock vLLM (`runtime/mtp-int4-g32` in the same download) | albucino |
 | KV cache | FP8 e5m2 through our variant of the attention overlay (e4m3 does not compile on Ampere; BF16 also works with a 1.6x smaller pool) | |
-| Engine | `vllm/vllm-openai:nightly-8a728663c1c3eeace834a95f5654fa653cc1998c` (multi-arch, amd64 layer) plus the overlays in `patch/upstream-overlays/` | |
+| Engine | vLLM 8a728663: was `vllm/vllm-openai:nightly-8a728663c1c3eeace834a95f5654fa653cc1998c` (since pruned), now built from `container/Containerfile` ([rebuilt image](#rebuilt-image-and-prefix-cache-lane-2026-10-17)); plus the overlays in `patch/upstream-overlays/` | |
 
 Checkpoint: `albucino/Qwen3.8-Flash-Next-W4A16-FP8PLE` (129 GB). Download it with `hf download` into `/home/<you>/models/qwen38fn-w4a16-fp8ple`; the draft ships inside it.
 
@@ -96,6 +96,58 @@ Boot 16 pinned a smaller budget (2.01 GiB at 131K, image profiling still on) and
 
 We also brought up `turboderp/Qwen3.8-Flash-Next-exl3` (4.05 bpw) on this box under vLLM with vcruz305's `vllm-exl3` plugin. It runs (TP4, MTP3, vision, zero errors in a 35-cell sweep), but the plugin cannot tensor-parallel the dense layers, so they had to be dequantized to BF16, and that is where the compression lived. At 262K it pools fewer tokens than W4A16 (about 265K pinned); it only out-pools W4A16 below about 163K context (326,148 at 163,840). Parked and not in this repo; the W4A16 tuned lane stays the default.
 
+## Rebuilt image and prefix-cache lane (2026-10-17)
+
+The `nightly-8a728663` tag the lane pinned was pruned from Docker Hub. `container/Containerfile` rebuilds the same engine: the per-commit wheel `wheels.vllm.ai` publishes for 8a728663 (sha256-checked), on `nvidia/cuda:13.0.3-base-ubuntu24.04` pinned by digest, every Python dep pinned in `container/constraints.txt`. vLLM lands at `/usr/local/lib/python3.12/dist-packages/vllm`, the path the overlays target, and the build fails otherwise. No source build: about 7 minutes cold, 2 with the uv cache, 13.4 GB.
+
+```bash
+docker build -t qwen38fn-vllm:8a728663 -f vllm-w4a16/container/Containerfile vllm-w4a16/container
+bash vllm-w4a16/launch/launch-qwen38fn-w4a16-tuned.sh    # the tuned lane, unchanged: pool 303,079, same as 2026-10-01
+bash vllm-w4a16/launch/launch-qwen38fn-w4a16-prefix.sh   # the tuned lane with prefix caching on
+```
+
+Defaults: `MODEL_HOST=~/models/qwen38fn-w4a16-fp8ple`, `PATCH_DIR=` this folder's `patch/` (no copy needed), `CACHE_HOST=<repo>/.cache/ple` (gitignored), `IMAGE=qwen38fn-vllm:8a728663`, `GPU_ARGS=--gpus all`. Under podman, or a docker CLI talking to podman, pass `GPU_ARGS="--device nvidia.com/gpu=all"` (CDI).
+
+**Launcher changes.** `PREFIX_CACHE=1` swaps `--no-enable-prefix-caching` for `--enable-prefix-caching --mamba-cache-mode align` (at this commit Qwen4Exp caches only in align mode; align needs chunked prefill, which `CHUNK` already gives). `SPEC_EXTRA` adds keys to the speculative config. `--trust-remote-code` is gone (the checkpoint has no `auto_map`; vLLM ships the architecture). `--shm-size` is gone: Docker ignores it with `--ipc host`, podman rejects the pair. The `sudo drop_caches` line is gone. After start the launcher hashes each overlay against the file Python imports in the container and exits on a mismatch, and it refuses to start if the port still answers after the old container is removed.
+
+**The flag prefix caching needs: `"disable_eagle_block_drop":true`.** With MTP on, vLLM 8a728663 cannot tell which KV group belongs to the draft, flags every group (the four Mamba groups too) for EAGLE's trailing-block drop, and a Mamba hit then needs two consecutive checkpoints that align mode never keeps. Boot logs warn "prefix-cache reuse across requests will be disabled", and an exact repeat got 0 hits. Keeping the trailing block only changes what the draft sees; the target verifies every token. The warning still prints with the flag on (it does not read it); the hits below are real.
+
+### Validation (4x3090, PCIe only, no NVLink; prefix lane unless noted)
+
+| Check | Result |
+|---|---|
+| Boot | 7/7 overlays are the imported files; `Using 'MARLIN' WNA16 MoE backend`; `enable_prefix_caching=True`, `mamba_cache_mode='align'`; **pool 299,482** at 262,144 (1.14x; the tuned lane without caching: 303,079); ready in 250-285 s |
+| Count to 100 | **188.8 tok/s** median (186.7 / 188.8 / 189.1), 1,804/1,806 draft tokens accepted; without the flag 191.4 |
+| Same prompt twice | 69,834 tokens: TTFT **51.4 s → 0.81 s**, 98.9% from cache, output identical |
+| 3-turn chat, ~4K new tokens a turn | each turn reuses the last: turn 2 hits 69,056, turn 3 hits 74,048 (turn 2's whole prompt); TTFT 0.8 / 4.0 / 5.2 s |
+| ~155K prefill | 154,942 tokens, correct, no OOM; 183.7 s TTFT, 843 tok/s (tuned lane without caching: 111 s, 1,395 tok/s) |
+| Needle at ~200K | 199,594 tokens, correct, no OOM, 275 s TTFT |
+| Cold vs warm, temperature 0 | identical |
+| Free per card, minimum during long prefills | 0.38 GiB (GPU2 0.24); the tuned lane without caching dips to 0.24 (GPU2 0.10). Below the 0.55 rule above on this box, accepted for a single-user box; GPU2 carries about 140 MiB of something on the host |
+
+**Long cold prompts are slower with caching on, and that is vLLM, not the lane.** In align mode every prefill step gives each Mamba group a new state block, and they are held until the request ends. A cold prompt fills the 299K pool at about 100K tokens, gets preempted and recomputes: the 155K prompt ran 155 steps for 256,446 tokens (1.65x), `num_preemptions_total` 2. Per token the GPU work is the same with and without caching (profiled at depth: 0.57 vs 0.56 ms per token). Below about 100K cold there is no penalty (1,359-1,377 tok/s at 70-84K, cache on). `--mamba-block-size 4992` changed nothing at this commit. Warm turns, the agent pattern, are 60x faster, so the lane keeps caching on.
+
+Half of each deep prefill step is NCCL all-reduce (RING_LL) on this PCIe-only board, which is the gap to the 2,249 tok/s measured on the NVLink board.
+
+### Boot ledger (2026-10-17, rebuilt image)
+
+| Boot | Change | Result |
+|---|---|---|
+| R1 | prefix lane, first try | did not start: podman rejects `--shm-size` with `--ipc host` |
+| R2 | dropped `--shm-size` | ready 285 s, overlays 7/7, MARLIN, align on, pool 299,482, count 191.4. Exact repeat 0 hits (draft-group warning); turns hit 89% |
+| R3 | `disable_eagle_block_drop` | exact repeat hits 96.3% at 11K and 98.9% at 70K (TTFT 51.4 → 0.81 s), outputs identical; count 188.8; 155K prefill 843 tok/s, min free 0.38 / 0.24 GiB |
+| R4 | tuned lane, caching off | pool **303,079** (same as 2026-10-01); 155K at 1,395 tok/s, min free 0.24 / 0.10 GiB |
+| R5 | prefix lane, flag as the wrapper default | pool 299,482; needle at 199,594 correct, 275 s, min free 0.38 / 0.24 GiB |
+| R6 | tuned, caching off, `CHUNK=1664` (align-mode chunk) | 155K at 1,350 tok/s: chunk size is not the cache-on slowdown |
+| R7 | prefix lane, `CHUNK=2496` | 757 tok/s, min free 0.03 GiB on GPU2; PLE staging is sized for 2,048, discarded |
+| R8 | prefix lane + torch profiler | 84K cold at 1,377 tok/s; deep step: 0.95 s per 1,664 tokens, half NCCL all-reduce |
+| R9 | caching off + torch profiler | deep step 1.15 s per 2,048 tokens: same per-token cost as R8 |
+| R10 | prefix lane + iteration log | 155K = 155 steps, 256,446 tokens, KV 99% then 0%, 2 preemptions: the cause |
+| R11 | R10 + `--mamba-block-size 4992` | no change (chunks, hits, preemptions) |
+| R12 | prefix lane, default wrapper | ready, pool 299,482, left running |
+
+One harness note: between R9 and R10 a `docker rm -f` under rootless podman removed the container record but left its server on 8090; R10's first try exited on EADDRINUSE while a test talked to R9. The launcher now stops with a grace period and refuses to start on a live port.
+
 ## Caveats
 
 Counting to 100 is the easiest possible text for a draft (100% acceptance). Prose, code and long context will accept fewer draft tokens; the same 40-prompt harness the Spark lanes use lives in the sister repo and has not been run on this box yet. e5m2 KV keeps 2 mantissa bits; the needle test passed at every rung we ran, and BF16 KV is one knob away (`KV_DTYPE=auto`, pool 186K at 64K). The box holds one model at a time: this lane cannot coexist with the 27B and 35B lanes.
@@ -146,6 +198,9 @@ The count test is the MTP draft's best case (long runs of predictable tokens). P
 
 - `launch/qwen38fn-w4a16-3090-tp4.sh`: the launcher (docker, TP4, knobs above).
 - `launch/launch-qwen38fn-w4a16-tuned.sh`: the tuned lane (wrapper over the launcher, pinned KV, skip-mm-profiling).
+- `launch/launch-qwen38fn-w4a16-prefix.sh`: the tuned lane with prefix caching on (align mode, `disable_eagle_block_drop`).
+- `container/Containerfile`, `container/constraints.txt`: the vLLM 8a728663 image, everything pinned.
+- `tools/prefix_cache_3090.py`: same prompt twice plus a growing 3-turn chat, hits read from `/metrics`. `tools/needle_3090.py` takes `URL=`.
 - `patch/`: our disk-backed PLE table (`ple_layer.py`, `ple_mmap.py`, `model_state.py` for the staged gather), `mtp_draft_vocab.py` (reduced draft vocabulary, not used on this lane yet), `compilation.py` (piecewise mode, unused here), and `upstream-overlays/` (unmodified upstream vLLM PR files, see credits) plus the `_e5m2` variants of two of them for Ampere.
 - `tools/count100_3090.sh`: Tony's speed test, three count-to-100 runs, median.
 - `results/`: the count-to-100 logs for every working boot; `tuned-lane-2026-10-01.md` for the tuned lane's memory, prefill and suite numbers.
@@ -167,4 +222,5 @@ The count test is the MTP draft's best case (long runs of predictable tokens). P
 - 2026-09-06 8:45 to 9:15 PM ET: pool ladder from three research passes (`research/`): 1 MP image-profiling cap (boot 15, +52%), explicit KV budget (boot 16, lost pool, dropped), bf16 mamba state (boot 17, +9%, needle and image pass).
 - 2026-09-06 9:15 PM ET: boot 19, vision on at the full 262,144, pool 279,462, needle correct at 199,594 and 244,245 prompt tokens, becomes the default recipe. Six-agent load at gmu 0.95 recorded in `results/sixagent_gmu095_boot19_2026-09-06.md`.
 - 2026-10-01: tuned lane (boot 19 + `--skip-mm-profiling` + `KV_BYTES=2400000000`) becomes the daily driver: pool 303,079 at 262K, ~155K-token prefill validated, tool suite 91.3, agency 67/100. EXL3 tried and parked.
+- 2026-10-17: the nightly image was pruned; `container/Containerfile` rebuilds vLLM 8a728663 from its per-commit wheel (tuned lane pool reproduced exactly, 303,079). Prefix-cache lane added (`launch-qwen38fn-w4a16-prefix.sh`): pool 299,482, count 188.8, warm repeat 63x faster TTFT, needle at 199,594 correct. Ledger R1-R12.
 - Still untested: the TP2 x PP2 layout, the 40-prompt harness on this box, the 296-expert pruned checkpoint (ranxianglei), FP8 side layers (Saren's hybrid), requantizing the 1.19 GiB hyperconnection layers.
