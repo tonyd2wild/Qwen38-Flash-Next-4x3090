@@ -4,7 +4,7 @@ Plan: [`PLAN.md`](../PLAN.md) · Rules: [`AGENTS.md`](../AGENTS.md) · Numbers: 
 
 **GPU owner right now:** nobody. T2 stopped its last server (R18) at 22:02; GPUs at 15-92 MiB. Host server down at 21:32. Last checked: 2026-10-17 22:02 by Opus 5.5 (T2).
 
-**Next task:** re-ranked by T2 (see `02-time-accounting.md` and the notes file): **T5** (PLE gather off the host, the largest measured lever: Fable 5.1 design / xhigh, then Opus 5.5), then T11 (tokenization ~0.3 s per 128K turn, Triton cache not persisted: Sonnet 5.5 / high), T4, and T14 (temperature-0 nondeterminism) before the first candidate that changes numerics. The user picks. On every candidate boot, run `quality_gate.py --compare` first, then `scoreboard.py`.
+**Next task:** **T5** (P4: PLE gather off the host), chosen by the user on 2026-10-17 after the T2 re-rank. Fable 5.1 / xhigh for the design stage (Design section first, re-read against the kill test), then Opus 5.5 / high for implementation and the boot. Read `02-time-accounting.md` first: its "Open questions" lists the design fork (pinned table + UVA gather vs resident unpinned mapping + C-speed gather) and the measured numbers (`results/ple-gather-bench-T2-*.json`). After T5: T11, T4, then T14 before the first candidate that changes numerics. On every candidate boot, run `quality_gate.py --compare` first, then `scoreboard.py`.
 
 ## Task board
 
@@ -33,7 +33,7 @@ Status values: `todo`, `in progress (model, since)`, `done`, `killed`. Update th
 ## Decisions and asks for the user (append here; batch them)
 
 - 2026-10-17: P13 (PCIe P2P on the GeForce cards) is out of bounds without approval. Read-only diagnostics will be collected during T2 and presented; no host change until the user decides.
-- 2026-10-17 (T2): the host side caps the all-reduce. Four cards move ~29 GB/s in total through host memory; a host DRAM copy runs at 21-28 GB/s with 4 of 8 memory channels populated (EDAC: channels 0, 3, 5, 6). NCCL is at 82% of that floor, so no software change gives prefill comm more than ~20%. Questions for the user, no change from here: are the DIMMs running at rated speed, would populating all 8 channels be possible, and P13 (P2P is `CNS` for every pair; NVLink links inactive).
+- 2026-10-17 (T2): the host side caps the all-reduce. Four cards move ~29 GB/s in total through host memory; a host DRAM copy runs at 21-28 GB/s with 4 of 8 memory channels populated (EDAC: channels 0, 3, 5, 6). NCCL is at 82% of that floor, so no software change gives prefill comm more than ~20%. **User, 2026-10-17: the box has 4 x 32 GiB DIMMs and that will not change.** Treat ~29 GB/s through the host as fixed: prefill comm can only shrink by moving fewer bytes (P8 TP2 x PP2). P13 (P2P is `CNS` for every pair; NVLink links inactive) is still open if it ever becomes relevant.
 - Hand-over will need one host sitting: `run-host-fast.sh` (baseline prefix lane, then the fast lane; about 1.5 hours; one log back).
 
 ## Ledger pointer

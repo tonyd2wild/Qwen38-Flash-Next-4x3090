@@ -85,7 +85,7 @@ Server TTFT minus server prefill time is 10 ms at 1K, 63 ms at 16K, 143-189 ms a
 | 7 | P1 NCCL tuning (T3), reduced | big messages: none (killed by the microbench); 120-160 KB: Simple is 35% faster but 20 KB is 70% slower, so it needs a per-size choice (tuner plugin) and a 6-stream boot | low-medium | hours | down from 1 |
 | 8 | P10 QSA kernel | ~95 ms per deep step (10%), more at depth | medium | days | unparked candidate |
 | 9 | P7 compile, P11 draft KV group, P6 chunk 4096 | P7: kernel count; P11 ~1.5%; P6: align mode already rounds the 2,048 budget down to 1,664 tokens per step (2 x 832), a larger budget mostly amortises the ~45 ms per-step tail | low | - | P6 down |
-| - | P13 PCIe P2P, host memory channels | the comm floor itself | - | host / hardware | needs the user |
+| - | P13 PCIe P2P (host memory channels: closed, the user keeps 4 x 32 GiB) | the comm floor itself | - | host | needs the user |
 
 ## Boot ledger (R13 onward; R1-R12 are in the lane README)
 
@@ -102,7 +102,7 @@ Server TTFT minus server prefill time is 10 ms at 1K, 63 ms at 16K, 143-189 ms a
 
 - **No lane on this box is bit-reproducible at temperature 0, and the spread is larger than floating-point reordering** (T1, T2). With `prompt_logprobs`, the same 33-token prompt on an idle server gives 6 different runs out of 6 on the prefix lane (R15), with MTP off (R17) and on the tuned lane without prefix caching (R18); runs differ from prompt position 0 (the prediction from one token), with spreads up to 0.39-0.69 nat, and repeated values recur (a discrete set of outcomes). Ruled out by microbenchmarks (`tools/det_probe.py`, `det_probe_topk.py`): cuBLAS bf16 GEMMs at shifted addresses (with or without `CUBLAS_WORKSPACE_CONFIG`), the NCCL bf16 all-reduce, Marlin atomics (off at this commit), and the QSA top-k for short contexts. Ruled out by boots: speculative decoding, prefix caching. Left: Marlin MoE with expert parallel, the staged PLE path, the QSA overlays (split-k merge reading unwritten partials would fit), HC and GDN kernels, async scheduling. A stale-memory read would be a correctness bug, not noise; proposed as its own task (T14). Separately, `persistent_topk` at depth returns its indices in a different order every run and changed the selected set once in 20 runs (1,664 queries at 64K).
 - NCCL copy-engine SHM (`NCCL_SHM_USE_CUDA_MEMCPY=1`) hangs at 1.3 MB on this box; a bug or a missing prerequisite? Only matters if T3 wants that path.
-- Why the host DRAM copy rate is 21-28 GB/s with 4 channels populated (DIMM speed? BIOS?); it caps the all-reduce. A question for the user, no change from here.
+- Host DRAM copy at 21-28 GB/s with 4 of 8 channels populated caps the all-reduce. **Closed 2026-10-17: the user confirmed 4 x 32 GiB DIMMs and no hardware change.** Every plan treats ~29 GB/s through the host (all four cards) as a fixed ceiling.
 - Does `cudaHostRegister` on a file-backed shared mapping work here, and does it count against the sandbox memlock (T5).
 - Why the previous step's Mamba page is not freed in align mode at this commit (T4).
 - P13: PCIe P2P on the GeForce cards is a host change; diagnostics to be presented, user decides.

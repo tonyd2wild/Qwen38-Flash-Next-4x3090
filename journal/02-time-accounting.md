@@ -139,7 +139,7 @@ Left: Marlin MoE under expert parallel, the staged PLE path, the QSA overlays (a
 - **The source of the temperature-0 nondeterminism.**
   - Proposed as T14: Opus 5.5 / xhigh, before any candidate that changes numerics.
   - Next tests, one boot each with `repeat_probe.py`: `--no-async-scheduling`; `PLE_MODE=mmap`; no expert parallel (if it fits); and an offline test of the QSA split-k merge with poisoned scratch buffers.
-- **Why does the host copy at only 21-28 GB/s?** With 4 channels of DDR4 the DRAM peak is ~100 GB/s. It could be DIMM speed or BIOS settings. Answering needs the user (host). It caps the all-reduce and any host-staged design.
+- ~~Why does the host copy at only 21-28 GB/s?~~ **Closed after the entry was written:** the user confirmed the box has 4 x 32 GiB DIMMs (4 of 8 channels), and that will not change. Every later plan treats ~29 GB/s through the host as a fixed ceiling.
 - **Can P8's pipeline overlap a single request's chunks well enough** for the ~2x prefill estimate? And what does it cost decode, with two stages in series and the memory time doubled? That is T10's feasibility question.
 - **P4 design choice (T5).**
   - A pinned table with a UVA gather removes the host sync but needs 51 GB pinned (the host allows it; the sandbox's 15.7 GiB memlock does not).
@@ -148,4 +148,4 @@ Left: Marlin MoE under expert parallel, the staged PLE path, the QSA overlays (a
 
 ## Next step
 
-Recommended order after the re-rank: T5 (P4: PLE gather, Fable 5.1 design / xhigh, then Opus implementation), T11 (P9: tokenization and the Triton cache, Sonnet 5.5 / high), T4 (P3, Opus 5.5 / xhigh), then T14 (nondeterminism, Opus 5.5 / xhigh) before the first numerics-changing candidate. T3 shrinks to a short per-size protocol test; T10 is promoted (its condition is met), T6 keeps only its decode path. The user decides the order. The server was **stopped** (R18 at 22:02); GPUs free.
+**The user chose T5 next** (2026-10-17). Recommended order after the re-rank: T5 (P4: PLE gather, Fable 5.1 design / xhigh, then Opus implementation), T11 (P9: tokenization and the Triton cache, Sonnet 5.5 / high), T4 (P3, Opus 5.5 / xhigh), then T14 (nondeterminism, Opus 5.5 / xhigh) before the first numerics-changing candidate. T3 shrinks to a short per-size protocol test; T10 is promoted (its condition is met), T6 keeps only its decode path. The user decides the order. The server was **stopped** (R18 at 22:02); GPUs free.
