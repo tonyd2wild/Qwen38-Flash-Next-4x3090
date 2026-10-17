@@ -56,7 +56,8 @@ esac
 # (inside the model mount). vLLM 8a728663 accepts a separate draft dir for method "mtp" (compressed-tensors, Marlin g32 on sm86).
 # Capture sizes must be multiples of MTP+1. Do not pass use_local_argmax_reduction (our Qwen4ExpMTP has no get_top_tokens).
 DRAFT_DIR="${DRAFT_DIR:-/models/qwen38fn/runtime/mtp-int4-g32}"
-SPEC=(); if [ "$MTP" != "0" ]; then SPEC=(--speculative-config "{\"method\":\"mtp\",\"num_speculative_tokens\":$MTP,\"model\":\"$DRAFT_DIR\"}"); fi
+# SPEC_EXTRA: more speculative-config keys as a JSON fragment, e.g. '"disable_eagle_block_drop":true'.
+SPEC=(); if [ "$MTP" != "0" ]; then SPEC=(--speculative-config "{\"method\":\"mtp\",\"num_speculative_tokens\":$MTP,\"model\":\"$DRAFT_DIR\"${SPEC_EXTRA:+,$SPEC_EXTRA}}"); fi
 # Prefix caching for Qwen4Exp at this commit works only in mamba align mode ("all" raises); align needs chunked
 # prefill, which CHUNK (--max-num-batched-tokens) already turns on.
 case "$PREFIX_CACHE" in
@@ -66,8 +67,9 @@ case "$PREFIX_CACHE" in
   *) echo "PREFIX_CACHE must be 0|1" >&2; exit 2 ;;
 esac
 docker rm -f "$NAME" 2>/dev/null || true
+# --ipc host shares the host /dev/shm, so no --shm-size: Docker ignores it with --ipc host and podman rejects the pair.
 docker run $GPU_ARGS -d --name "$NAME" --restart no \
-  --network host --ipc host --shm-size 32g --ulimit memlock=-1:-1 \
+  --network host --ipc host --ulimit memlock=-1:-1 \
   -v "$MODEL_HOST:/models/qwen38fn:ro" -v "$CACHE_HOST:/root/.cache" \
   -e HF_HUB_OFFLINE=1 -e TRANSFORMERS_OFFLINE=1 -e VLLM_ENGINE_READY_TIMEOUT_S=3600 \
   -e PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True -e TORCH_CUDA_ARCH_LIST=8.6 \
