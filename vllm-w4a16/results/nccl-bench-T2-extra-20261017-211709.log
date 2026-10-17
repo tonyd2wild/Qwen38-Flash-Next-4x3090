@@ -1,0 +1,1203 @@
+===== buff16 {'NCCL_P2P_LEVEL': 'NVL', 'NCCL_CUMEM_ENABLE': '0', 'NCCL_BUFFSIZE': '16777216', 'NCCL_DEBUG': 'INFO', 'NCCL_DEBUG_SUBSYS': 'INIT,ENV,GRAPH,TUNING'}
+claude-box:136:136 [0] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+claude-box:136:136 [0] NCCL INFO cudaDriverVersion 13020
+claude-box:136:136 [0] NCCL INFO NCCL version 2.29.7+cuda13.2
+claude-box:136:136 [0] NCCL INFO NCCL git version stable b81d6a5a3
+claude-box:136:136 [0] NCCL INFO Comm config Blocking set to 1
+claude-box:136:136 [0] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+claude-box:136:136 [0] NCCL INFO NET/IB : No device found.
+claude-box:136:136 [0] NCCL INFO NET/IB : Using [RO]; OOB tap0:10.0.2.100<0>
+claude-box:136:136 [0] NCCL INFO Failed to initialize NET plugin IB
+claude-box:136:136 [0] NCCL INFO NET/Socket : Using [0]tap0:10.0.2.100<0>
+claude-box:136:136 [0] NCCL INFO Initialized NET plugin Socket
+claude-box:136:136 [0] NCCL INFO Assigned NET plugin Socket to comm
+claude-box:136:136 [0] NCCL INFO GIN/Plugin: Could not find: libnccl-gin.so
+claude-box:136:136 [0] NCCL INFO Failed to initialize any GIN plugin
+claude-box:136:136 [0] NCCL INFO Using network Socket
+claude-box:136:136 [0] NCCL INFO [Rank 0] ncclCommInitRankConfig comm 0x2dd6dd40 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 1000 commId 0xd9ed660c9a5663a0 - Init START
+claude-box:136:136 [0] NCCL INFO RAS client listening socket at ::1<28028>
+claude-box:136:136 [0] NCCL INFO NCCL_CUMEM_ENABLE set by environment to 0.
+claude-box:136:136 [0] NCCL INFO NCCL_P2P_LEVEL set by environment to NVL
+claude-box:136:136 [0] NCCL INFO Topology detection : could not read /sys/devices/system/node/node-1/cpumap, ignoring
+claude-box:136:136 [0] NCCL INFO TOPO/NET : Importing network plugins to topology
+claude-box:136:136 [0] NCCL INFO ncclTopoPopulateNics : Filled tap0 in topo with pciPath=(null) net=1 gin=(null) keep=1 coll=(null)
+claude-box:136:136 [0] NCCL INFO === System : maxBw 24.0 totalBw 24.0 ===
+claude-box:136:136 [0] NCCL INFO CPU/0-ffffffffffffff (1/2/-1)
+claude-box:136:136 [0] NCCL INFO + PCI[5000.0] - NIC/0-0
+claude-box:136:136 [0] NCCL INFO                 + NET[1.2] - NET/0-0 (0/0/0/1.250000)
+claude-box:136:136 [0] NCCL INFO + PCI[24.0] - GPU/0-1000 (0)
+claude-box:136:136 [0] NCCL INFO + PCI[24.0] - GPU/0-46000 (1)
+claude-box:136:136 [0] NCCL INFO + PCI[24.0] - GPU/0-81000 (2)
+claude-box:136:136 [0] NCCL INFO + PCI[24.0] - GPU/0-82000 (3)
+claude-box:136:136 [0] NCCL INFO ==========================================
+claude-box:136:136 [0] NCCL INFO GPU/0-1000 :GPU/0-1000 (0/5000.0/LOC) GPU/0-46000 (2/24.0/PHB) GPU/0-81000 (2/24.0/PHB) GPU/0-82000 (2/24.0/PHB) CPU/0-ffffffffffffff (1/24.0/PHB) NET/0-0 (3/1.2/PHB) 
+claude-box:136:136 [0] NCCL INFO GPU/0-46000 :GPU/0-1000 (2/24.0/PHB) GPU/0-46000 (0/5000.0/LOC) GPU/0-81000 (2/24.0/PHB) GPU/0-82000 (2/24.0/PHB) CPU/0-ffffffffffffff (1/24.0/PHB) NET/0-0 (3/1.2/PHB) 
+claude-box:136:136 [0] NCCL INFO GPU/0-81000 :GPU/0-1000 (2/24.0/PHB) GPU/0-46000 (2/24.0/PHB) GPU/0-81000 (0/5000.0/LOC) GPU/0-82000 (2/24.0/PHB) CPU/0-ffffffffffffff (1/24.0/PHB) NET/0-0 (3/1.2/PHB) 
+claude-box:136:136 [0] NCCL INFO GPU/0-82000 :GPU/0-1000 (2/24.0/PHB) GPU/0-46000 (2/24.0/PHB) GPU/0-81000 (2/24.0/PHB) GPU/0-82000 (0/5000.0/LOC) CPU/0-ffffffffffffff (1/24.0/PHB) NET/0-0 (3/1.2/PHB) 
+claude-box:136:136 [0] NCCL INFO NET/0-0 :GPU/0-1000 (3/1.2/PHB) GPU/0-46000 (3/1.2/PHB) GPU/0-81000 (3/1.2/PHB) GPU/0-82000 (3/1.2/PHB) CPU/0-ffffffffffffff (2/1.2/PHB) NET/0-0 (0/5000.0/LOC) 
+claude-box:136:136 [0] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 0 is empty, ignoring. (GPU affinity =  ; CPU affinity = 0-63).
+claude-box:136:136 [0] NCCL INFO NVLS multicast support is not available on dev 0 (NVLS_NCHANNELS 0)
+claude-box:136:136 [0] NCCL INFO Pattern 4, crossNic 0, nChannels 2, bw 12.000000/12.000000, type PHB/PIX, sameChannels 1
+claude-box:136:136 [0] NCCL INFO  0 : GPU/0-1000 GPU/0-46000 GPU/0-81000 GPU/0-82000
+claude-box:136:136 [0] NCCL INFO  1 : GPU/0-1000 GPU/0-46000 GPU/0-81000 GPU/0-82000
+claude-box:136:136 [0] NCCL INFO Pattern 1, crossNic 0, nChannels 2, bw 12.000000/12.000000, type PHB/PIX, sameChannels 1
+claude-box:136:136 [0] NCCL INFO  0 : GPU/0-1000 GPU/0-46000 GPU/0-81000 GPU/0-82000
+claude-box:136:136 [0] NCCL INFO  1 : GPU/0-1000 GPU/0-46000 GPU/0-81000 GPU/0-82000
+claude-box:136:136 [0] NCCL INFO comm 0x2dd6dd40 rank 0 nRanks 4 nNodes 1 localRanks 4 localRank 0 MNNVL 0
+claude-box:136:136 [0] NCCL INFO Tree 0 : -1 -> 0 -> 1/-1/-1
+claude-box:136:136 [0] NCCL INFO Tree 2 : -1 -> 0 -> 1/-1/-1
+claude-box:136:136 [0] NCCL INFO Tree 1 : -1 -> 0 -> 1/-1/-1
+claude-box:136:136 [0] NCCL INFO Tree 3 : -1 -> 0 -> 1/-1/-1
+claude-box:136:136 [0] NCCL INFO Channel 00/04 : 0 1 2 3
+claude-box:136:136 [0] NCCL INFO Channel 01/04 : 0 1 2 3
+claude-box:136:136 [0] NCCL INFO Channel 02/04 : 0 1 2 3
+claude-box:136:136 [0] NCCL INFO Channel 03/04 : 0 1 2 3
+claude-box:136:136 [0] NCCL INFO Ring 00 : 3 -> 0 -> 1
+claude-box:136:136 [0] NCCL INFO Ring 01 : 3 -> 0 -> 1
+claude-box:136:136 [0] NCCL INFO Ring 02 : 3 -> 0 -> 1
+claude-box:136:136 [0] NCCL INFO Ring 03 : 3 -> 0 -> 1
+claude-box:136:136 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] 1/-1/-1->0->-1 [3] 1/-1/-1->0->-1
+claude-box:136:136 [0] NCCL INFO NCCL_BUFFSIZE set by environment to 16777216.
+claude-box:136:136 [0] NCCL INFO P2P Chunksize set to 131072
+claude-box:136:136 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+claude-box:136:136 [0] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+claude-box:136:136 [0] NCCL INFO ncclP2pSchedule: group size used is 4
+claude-box:137:174 [0] NCCL INFO [Proxy Service] Device 1 CPU core 47
+claude-box:138:173 [0] NCCL INFO [Proxy Service] Device 2 CPU core 15
+claude-box:136:177 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 38
+claude-box:137:179 [0] NCCL INFO [Proxy Service UDS] Device 1 CPU core 16
+claude-box:139:175 [0] NCCL INFO [Proxy Service] Device 3 CPU core 12
+claude-box:136:176 [0] NCCL INFO [Proxy Service] Device 0 CPU core 15
+claude-box:138:178 [0] NCCL INFO [Proxy Service UDS] Device 2 CPU core 38
+claude-box:139:180 [0] NCCL INFO [Proxy Service UDS] Device 3 CPU core 16
+claude-box:136:136 [0] NCCL INFO Channel 00 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:136:136 [0] NCCL INFO Channel 01 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:136:136 [0] NCCL INFO Channel 02 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:136:136 [0] NCCL INFO Channel 03 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:136:136 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+claude-box:136:136 [0] NCCL INFO Connected all trees
+claude-box:137:181 [0] NCCL INFO [Proxy Progress] Device 1 CPU core 57
+claude-box:136:182 [0] NCCL INFO [Proxy Progress] Device 0 CPU core 18
+claude-box:139:183 [0] NCCL INFO [Proxy Progress] Device 3 CPU core 44
+claude-box:138:184 [0] NCCL INFO [Proxy Progress] Device 2 CPU core 31
+claude-box:136:136 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+claude-box:136:136 [0] NCCL INFO   Algorithm   |                            Tree                  |                            Ring                  |                   CollNetDirect                  |
+claude-box:136:136 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |
+claude-box:136:136 [0] NCCL INFO  Max NThreads |            512 |            640 |            512 |            512 |            640 |            512 |              0 |              0 |            640 |
+claude-box:136:136 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/  12.0 |    16.5/   0.0 |    14.1/  24.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:136:136 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/  12.0 |    16.5/   0.0 |    14.1/  24.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:136:136 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     9.6/  16.0 |    21.5/   0.0 |    25.5/  32.0 |     2.4/   0.0 |     2.4/   0.0 |    40.8/   0.0 |
+claude-box:136:136 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     9.6/  16.0 |    21.5/   0.0 |    25.5/  32.0 |     2.4/   0.0 |     2.4/   0.0 |    40.8/   0.0 |
+claude-box:136:136 [0] NCCL INFO     AllReduce |    12.8/   2.9 |    25.4/   0.0 |    32.4/  11.0 |    12.6/   8.0 |    29.0/   0.0 |    42.6/  16.0 |     2.4/   0.0 |     2.4/   0.0 |    40.8/   0.0 |
+claude-box:136:136 [0] NCCL INFO   Algorithm   |                    CollNetChain                  |                            NVLS                  |                        NVLSTree                  |
+claude-box:136:136 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |
+claude-box:136:136 [0] NCCL INFO  Max NThreads |              0 |              0 |            640 |              0 |              0 |            640 |              0 |              0 |            640 |
+claude-box:136:136 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:136:136 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:136:136 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:136:136 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:136:136 [0] NCCL INFO     AllReduce |     0.0/   0.0 |     0.0/   0.0 |    46.8/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:136:136 [0] NCCL INFO   Algorithm   |                             PAT                  |
+claude-box:136:136 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |
+claude-box:136:136 [0] NCCL INFO  Max NThreads |              0 |              0 |              0 |
+claude-box:136:136 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:136:136 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:136:136 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:136:136 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:136:136 [0] NCCL INFO     AllReduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:136:136 [0] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+claude-box:136:136 [0] NCCL INFO 4 coll channels, 4 collnet channels, 0 nvls channels, 4 p2p channels, 2 p2p channels per peer
+claude-box:136:136 [0] NCCL INFO Symmetric memory is not supported. cuMemEnable 0, globalGinSupport 0, globalNicFused 0 cuMemGdrSupport 0
+claude-box:136:136 [0] NCCL INFO CC Off, workFifoBytes 1048576
+claude-box:136:136 [0] NCCL INFO ncclCommInitRankConfig comm 0x2dd6dd40 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 1000 commId 0xd9ed660c9a5663a0 - Init COMPLETE
+claude-box:136:136 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 0 nranks 4 total 0.64 (kernels 0.19, alloc 0.06, bootstrap 0.03, allgathers 0.00, topo 0.03, graphs 0.00, connections 0.34, rest 0.00)
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:136:136 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+===== nthr512 {'NCCL_P2P_LEVEL': 'NVL', 'NCCL_CUMEM_ENABLE': '0', 'NCCL_NTHREADS': '512', 'NCCL_DEBUG': 'INFO', 'NCCL_DEBUG_SUBSYS': 'INIT,ENV,GRAPH,TUNING'}
+claude-box:135:135 [0] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+claude-box:135:135 [0] NCCL INFO cudaDriverVersion 13020
+claude-box:135:135 [0] NCCL INFO NCCL version 2.29.7+cuda13.2
+claude-box:135:135 [0] NCCL INFO NCCL git version stable b81d6a5a3
+claude-box:135:135 [0] NCCL INFO Comm config Blocking set to 1
+claude-box:135:135 [0] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+claude-box:135:135 [0] NCCL INFO NET/IB : No device found.
+claude-box:135:135 [0] NCCL INFO NET/IB : Using [RO]; OOB tap0:10.0.2.100<0>
+claude-box:135:135 [0] NCCL INFO Failed to initialize NET plugin IB
+claude-box:135:135 [0] NCCL INFO NET/Socket : Using [0]tap0:10.0.2.100<0>
+claude-box:135:135 [0] NCCL INFO Initialized NET plugin Socket
+claude-box:135:135 [0] NCCL INFO Assigned NET plugin Socket to comm
+claude-box:135:135 [0] NCCL INFO GIN/Plugin: Could not find: libnccl-gin.so
+claude-box:135:135 [0] NCCL INFO Failed to initialize any GIN plugin
+claude-box:135:135 [0] NCCL INFO Using network Socket
+claude-box:135:135 [0] NCCL INFO [Rank 0] ncclCommInitRankConfig comm 0xa502100 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 1000 commId 0xd3af187fda343c52 - Init START
+claude-box:135:135 [0] NCCL INFO RAS client listening socket at ::1<28028>
+claude-box:135:135 [0] NCCL INFO NCCL_CUMEM_ENABLE set by environment to 0.
+claude-box:135:135 [0] NCCL INFO NCCL_P2P_LEVEL set by environment to NVL
+claude-box:135:135 [0] NCCL INFO Topology detection : could not read /sys/devices/system/node/node-1/cpumap, ignoring
+claude-box:135:135 [0] NCCL INFO TOPO/NET : Importing network plugins to topology
+claude-box:135:135 [0] NCCL INFO ncclTopoPopulateNics : Filled tap0 in topo with pciPath=(null) net=1 gin=(null) keep=1 coll=(null)
+claude-box:135:135 [0] NCCL INFO === System : maxBw 24.0 totalBw 24.0 ===
+claude-box:135:135 [0] NCCL INFO CPU/0-ffffffffffffff (1/2/-1)
+claude-box:135:135 [0] NCCL INFO + PCI[5000.0] - NIC/0-0
+claude-box:135:135 [0] NCCL INFO                 + NET[1.2] - NET/0-0 (0/0/0/1.250000)
+claude-box:135:135 [0] NCCL INFO + PCI[24.0] - GPU/0-1000 (0)
+claude-box:135:135 [0] NCCL INFO + PCI[24.0] - GPU/0-46000 (1)
+claude-box:135:135 [0] NCCL INFO + PCI[24.0] - GPU/0-81000 (2)
+claude-box:135:135 [0] NCCL INFO + PCI[24.0] - GPU/0-82000 (3)
+claude-box:135:135 [0] NCCL INFO ==========================================
+claude-box:135:135 [0] NCCL INFO GPU/0-1000 :GPU/0-1000 (0/5000.0/LOC) GPU/0-46000 (2/24.0/PHB) GPU/0-81000 (2/24.0/PHB) GPU/0-82000 (2/24.0/PHB) CPU/0-ffffffffffffff (1/24.0/PHB) NET/0-0 (3/1.2/PHB) 
+claude-box:135:135 [0] NCCL INFO GPU/0-46000 :GPU/0-1000 (2/24.0/PHB) GPU/0-46000 (0/5000.0/LOC) GPU/0-81000 (2/24.0/PHB) GPU/0-82000 (2/24.0/PHB) CPU/0-ffffffffffffff (1/24.0/PHB) NET/0-0 (3/1.2/PHB) 
+claude-box:135:135 [0] NCCL INFO GPU/0-81000 :GPU/0-1000 (2/24.0/PHB) GPU/0-46000 (2/24.0/PHB) GPU/0-81000 (0/5000.0/LOC) GPU/0-82000 (2/24.0/PHB) CPU/0-ffffffffffffff (1/24.0/PHB) NET/0-0 (3/1.2/PHB) 
+claude-box:135:135 [0] NCCL INFO GPU/0-82000 :GPU/0-1000 (2/24.0/PHB) GPU/0-46000 (2/24.0/PHB) GPU/0-81000 (2/24.0/PHB) GPU/0-82000 (0/5000.0/LOC) CPU/0-ffffffffffffff (1/24.0/PHB) NET/0-0 (3/1.2/PHB) 
+claude-box:138:138 [3] NCCL INFO NET/0-0 :GPU/0-1000 (3/1.2/PHB) GPU/0-46000 (3/1.2/PHB) GPU/0-81000 (3/1.2/PHB) GPU/0-82000 (3/claude-box:135:135 [0] NCCL INFO NET/0-0 :GPU/0-1000 (3/1.2/PHB) GPU/0-46000 (3/1.2/PHB) GPU/0-81000 (3/1.2/PHB) GPU/0-82000 (3/1.2/PHB) CPU/0-ffffffffffffff (2/1.2/PHB) NET/0-0 (0/5000.0/LOC) 
+claude-box:135:135 [0] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 0 is empty, ignoring. (GPU affinity =  ; CPU affinity = 0-63).
+claude-box:135:135 [0] NCCL INFO NVLS multicast support is not available on dev 0 (NVLS_NCHANNELS 0)
+claude-box:135:135 [0] NCCL INFO Pattern 4, crossNic 0, nChannels 2, bw 12.000000/12.000000, type PHB/PIX, sameChannels 1
+claude-box:135:135 [0] NCCL INFO  0 : GPU/0-1000 GPU/0-46000 GPU/0-81000 GPU/0-82000
+claude-box:135:135 [0] NCCL INFO  1 : GPU/0-1000 GPU/0-46000 GPU/0-81000 GPU/0-82000
+claude-box:135:135 [0] NCCL INFO Pattern 1, crossNic 0, nChannels 2, bw 12.000000/12.000000, type PHB/PIX, sameChannels 1
+claude-box:135:135 [0] NCCL INFO  0 : GPU/0-1000 GPU/0-46000 GPU/0-81000 GPU/0-82000
+claude-box:135:135 [0] NCCL INFO  1 : GPU/0-1000 GPU/0-46000 GPU/0-81000 GPU/0-82000
+claude-box:135:135 [0] NCCL INFO comm 0xa502100 rank 0 nRanks 4 nNodes 1 localRanks 4 localRank 0 MNNVL 0
+claude-box:135:135 [0] NCCL INFO Tree 0 : -1 -> 0 -> 1/-1/-1
+claude-box:135:135 [0] NCCL INFO Tree 2 : -1 -> 0 -> 1/-1/-1
+claude-box:135:135 [0] NCCL INFO Tree 1 : -1 -> 0 -> 1/-1/-1
+claude-box:135:135 [0] NCCL INFO Tree 3 : -1 -> 0 -> 1/-1/-1
+claude-box:135:135 [0] NCCL INFO Channel 00/04 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 01/04 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 02/04 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 03/04 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Ring 00 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 01 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 02 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 03 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] 1/-1/-1->0->-1 [3] 1/-1/-1->0->-1
+claude-box:135:135 [0] NCCL INFO P2P Chunksize set to 131072
+claude-box:135:135 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+claude-box:135:135 [0] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+claude-box:135:135 [0] NCCL INFO ncclP2pSchedule: group size used is 4
+claude-box:135:172 [0] NCCL INFO [Proxy Service] Device 0 CPU core 48
+claude-box:138:175 [0] NCCL INFO [Proxy Service] Device 3 CPU core 42
+claude-box:135:176 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 30
+claude-box:138:179 [0] NCCL INFO [Proxy Service UDS] Device 3 CPU core 21
+claude-box:136:178 [0] NCCL INFO [Proxy Service UDS] Device 1 CPU core 30
+claude-box:137:174 [0] NCCL INFO [Proxy Service] Device 2 CPU core 48
+claude-box:136:173 [0] NCCL INFO [Proxy Service] Device 1 CPU core 48
+claude-box:137:177 [0] NCCL INFO [Proxy Service UDS] Device 2 CPU core 30
+claude-box:135:135 [0] NCCL INFO Channel 00 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 01 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 02 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 03 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+claude-box:135:135 [0] NCCL INFO Connected all trees
+claude-box:138:180 [0] NCCL INFO [Proxy Progress] Device 3 CPU core 19
+claude-box:135:181 [0] NCCL INFO [Proxy Progress] Device 0 CPU core 41
+claude-box:135:135 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+claude-box:135:135 [0] NCCL INFO NCCL_NTHREADS set by environment to 512.
+claude-box:137:182 [0] NCCL INFO [Proxy Progress] Device 2 CPU core 21
+claude-box:135:135 [0] NCCL INFO   Algorithm   |                            Tree                  |                            Ring                  |                   CollNetDirect                  |
+claude-box:135:135 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |
+claude-box:135:135 [0] NCCL INFO  Max NThreads |            512 |            640 |            512 |            512 |            640 |            512 |              0 |              0 |            640 |
+claude-box:135:135 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/  12.0 |    16.5/   0.0 |    14.1/  24.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/  12.0 |    16.5/   0.0 |    14.1/  24.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     9.6/  16.0 |    21.5/   0.0 |    25.5/  32.0 |     2.4/   0.0 |     2.4/   0.0 |    40.8/   0.0 |
+claude-box:135:135 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     9.6/  16.0 |    21.5/   0.0 |    25.5/  32.0 |     2.4/   0.0 |     2.4/   0.0 |    40.8/   0.0 |
+claude-box:135:135 [0] NCCL INFO     AllReduce |    12.8/   2.9 |    25.4/   0.0 |    32.4/  11.0 |    12.6/   8.0 |    29.0/   0.0 |    42.6/  16.0 |     2.4/   0.0 |     2.4/   0.0 |    40.8/   0.0 |
+claude-box:135:135 [0] NCCL INFO   Algorithm   |                    CollNetChain                  |                            NVLS                  |                        NVLSTree                  |
+claude-box:135:135 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |
+claude-box:135:135 [0] NCCL INFO  Max NThreads |              0 |              0 |            640 |              0 |              0 |            640 |              0 |              0 |            640 |
+claude-box:135:135 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO     AllReduce |     0.0/   0.0 |     0.0/   0.0 |    46.8/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO   Algorithm   |                             PAT                  |
+claude-box:135:135 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |
+claude-box:135:135 [0] NCCL INFO  Max NThreads |              0 |              0 |              0 |
+claude-box:135:135 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO     AllReduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+claude-box:135:135 [0] NCCL INFO 4 coll channels, 4 collnet channels, 0 nvls channels, 4 p2p channels, 2 p2p channels per peer
+claude-box:135:135 [0] NCCL INFO Symmetric memory is not supported. cuMemEnable 0, globalGinSupport 0, globalNicFused 0 cuMemGdrSupport 0
+claude-box:135:135 [0] NCCL INFO CC Off, workFifoBytes 1048576
+claude-box:136:183 [0] NCCL INFO [Proxy Progress] Device 1 CPU core 28
+claude-box:135:135 [0] NCCL INFO ncclCommInitRankConfig comm 0xa502100 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 1000 commId 0xdclaude-box:137:137 [2] NCCL INFO ncclCommInitRankConfig comm 0x16a04b70 rank 2 nranks 4 cudaDev 2 nvmlDev 2 busId 81000 commId 03af187fda343c52 - Init COMPLETE
+claude-box:137:137 [2] NCCL INFO Init timings - ncclCommInitRankConfig: rank 2 nranks 4 total 0.49 (kernels 0.22, alloc 0.05, boclaude-box:135:135 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 0 nranks 4 total 0.49 (kernels 0.20, alloc 0.05, bootstrap 0.00, allgathers 0.00, topo 0.03, graphs 0.00, connections 0.19, rest 0.00)
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+===== ch16 {'NCCL_P2P_LEVEL': 'NVL', 'NCCL_CUMEM_ENABLE': '0', 'NCCL_MIN_NCHANNELS': '16', 'NCCL_DEBUG': 'INFO', 'NCCL_DEBUG_SUBSYS': 'INIT,ENV,GRAPH,TUNING'}
+claude-box:135:135 [0] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+claude-box:135:135 [0] NCCL INFO cudaDriverVersion 13020
+claude-box:135:135 [0] NCCL INFO NCCL version 2.29.7+cuda13.2
+claude-box:135:135 [0] NCCL INFO NCCL git version stable b81d6a5a3
+claude-box:135:135 [0] NCCL INFO Comm config Blocking set to 1
+claude-box:135:135 [0] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+claude-box:135:135 [0] NCCL INFO NET/IB : No device found.
+claude-box:135:135 [0] NCCL INFO NET/IB : Using [RO]; OOB tap0:10.0.2.100<0>
+claude-box:135:135 [0] NCCL INFO Failed to initialize NET plugin IB
+claude-box:135:135 [0] NCCL INFO NET/Socket : Using [0]tap0:10.0.2.100<0>
+claude-box:135:135 [0] NCCL INFO Initialized NET plugin Socket
+claude-box:135:135 [0] NCCL INFO Assigned NET plugin Socket to comm
+claude-box:135:135 [0] NCCL INFO GIN/Plugin: Could not find: libnccl-gin.so
+claude-box:135:135 [0] NCCL INFO Failed to initialize any GIN plugin
+claude-box:135:135 [0] NCCL INFO Using network Socket
+claude-box:135:135 [0] NCCL INFO [Rank 0] ncclCommInitRankConfig comm 0x3540add0 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 1000 commId 0x8134d84d5d68f63a - Init START
+claude-box:135:135 [0] NCCL INFO RAS client listening socket at ::1<28028>
+claude-box:135:135 [0] NCCL INFO NCCL_CUMEM_ENABLE set by environment to 0.
+claude-box:135:135 [0] NCCL INFO NCCL_P2P_LEVEL set by environment to NVL
+claude-box:135:135 [0] NCCL INFO Topology detection : could not read /sys/devices/system/node/node-1/cpumap, ignoring
+claude-box:135:135 [0] NCCL INFO TOPO/NET : Importing network plugins to topology
+claude-box:135:135 [0] NCCL INFO ncclTopoPopulateNics : Filled tap0 in topo with pciPath=(null) net=1 gin=(null) keep=1 coll=(null)
+claude-box:135:135 [0] NCCL INFO === System : maxBw 24.0 totalBw 24.0 ===
+claude-box:135:135 [0] NCCL INFO CPU/0-ffffffffffffff (1/2/-1)
+claude-box:135:135 [0] NCCL INFO + PCI[5000.0] - NIC/0-0
+claude-box:135:135 [0] NCCL INFO                 + NET[1.2] - NET/0-0 (0/0/0/1.250000)
+claude-box:135:135 [0] NCCL INFO + PCI[24.0] - GPU/0-1000 (0)
+claude-box:135:135 [0] NCCL INFO + PCI[24.0] - GPU/0-46000 (1)
+claude-box:135:135 [0] NCCL INFO + PCI[24.0] - GPU/0-81000 (2)
+claude-box:135:135 [0] NCCL INFO + PCI[24.0] - GPU/0-82000 (3)
+claude-box:135:135 [0] NCCL INFO ==========================================
+claude-box:135:135 [0] NCCL INFO GPU/0-1000 :GPU/0-1000 (0/5000.0/LOC) GPU/0-46000 (2/24.0/PHB) GPU/0-81000 (2/24.0/PHB) GPU/0-82000 (2/24.0/PHB) CPU/0-ffffffffffffff (1/24.0/PHB) NET/0-0 (3/1.2/PHB) 
+claude-box:135:135 [0] NCCL INFO GPU/0-46000 :GPU/0-1000 (2/24.0/PHB) GPU/0-46000 (0/5000.0/LOC) GPU/0-81000 (2/24.0/PHB) GPU/0-82000 (2/24.0/PHB) CPU/0-ffffffffffffff (1/24.0/PHB) NET/0-0 (3/1.2/PHB) 
+claude-box:135:135 [0] NCCL INFO GPU/0-81000 :GPU/0-1000 (2/24.0/PHB) GPU/0-46000 (2/24.0/PHB) GPU/0-81000 (0/5000.0/LOC) GPU/0-82000 (2/24.0/PHB) CPU/0-ffffffffffffff (1/24.0/PHB) NET/0-0 (3/1.2/PHB) 
+claude-box:135:135 [0] NCCL INFO GPU/0-82000 :GPU/0-1000 (2/24.0/PHB) GPU/0-46000 (2/24.0/PHB) GPU/0-81000 (2/24.0/PHB) GPU/0-82000 (0/5000.0/LOC) CPU/0-ffffffffffffff (1/24.0/PHB) NET/0-0 (3/1.2/PHB) 
+claude-box:135:135 [0] NCCL INFO NET/0-0 :GPU/0-1000 (3/1.2/PHB) GPU/0-46000 (3/1.2/PHB) GPU/0-81000 (3/1.2/PHB) GPU/0-82000 (3/1.2/PHB) CPU/0-ffffffffffffff (2/1.2/PHB) NET/0-0 (0/5000.0/LOC) 
+claude-box:135:135 [0] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 0 is empty, ignoring. (GPU affinity =  ; CPU affinity = 0-63).
+claude-box:135:135 [0] NCCL INFO NVLS multicast support is not available on dev 0 (NVLS_NCHANNELS 0)
+claude-box:135:135 [0] NCCL INFO Pattern 4, crossNic 0, nChannels 2, bw 12.000000/12.000000, type PHB/PIX, sameChannels 1
+claude-box:135:135 [0] NCCL INFO  0 : GPU/0-1000 GPU/0-46000 GPU/0-81000 GPU/0-82000
+claude-box:135:135 [0] NCCL INFO  1 : GPU/0-1000 GPU/0-46000 GPU/0-81000 GPU/0-82000
+claude-box:135:135 [0] NCCL INFO Pattern 1, crossNic 0, nChannels 2, bw 12.000000/12.000000, type PHB/PIX, sameChannels 1
+claude-box:135:135 [0] NCCL INFO  0 : GPU/0-1000 GPU/0-46000 GPU/0-81000 GPU/0-82000
+claude-box:135:135 [0] NCCL INFO  1 : GPU/0-1000 GPU/0-46000 GPU/0-81000 GPU/0-82000
+claude-box:135:135 [0] NCCL INFO comm 0x3540add0 rank 0 nRanks 4 nNodes 1 localRanks 4 localRank 0 MNNVL 0
+claude-box:135:135 [0] NCCL INFO Tree 0 : -1 -> 0 -> 1/-1/-1
+claude-box:135:135 [0] NCCL INFO Tree 2 : -1 -> 0 -> 1/-1/-1
+claude-box:135:135 [0] NCCL INFO Tree 1 : -1 -> 0 -> 1/-1/-1
+claude-box:135:135 [0] NCCL INFO Tree 3 : -1 -> 0 -> 1/-1/-1
+claude-box:135:135 [0] NCCL INFO NCCL_MIN_NCHANNELS set by environment to 16.
+claude-box:135:135 [0] NCCL INFO Channel 00/16 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 01/16 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 02/16 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 03/16 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 04/16 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 05/16 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 06/16 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 07/16 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 08/16 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 09/16 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 10/16 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 11/16 : 0 1 2 3
+ [5] 3/-1/-1->2->1 [6] 3/-1/-1->2->1 [7] 3/-1/-1->2->1 [8] 3/-1/-1->2->1 [9] 3/-1/-1->2->1 [10] 3/-1/-1->2->1 [11] 3/-1/-1->2->1claude-box:135:135 [0] NCCL INFO Channel 12/16 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Channel 13/16 : 0 1 2 3
+claude-box:138:138 [3] NCCL INFO Trees [0] -1/-1/-1->3->2 [1] -1/-1/-1->3->2 [2] -1/-1/-1->3->2 [3] -1/-1/-1->3->2 [4] -1/-1/-1-claude-box:135:135 [0] NCCL INFO Channel 14/16 : 0 1 2 3
+ [5] 2/-1/-1->1->0 [6] 2/-1/-1->1->0 [7] 2/-1/-1->1->0 [8] 2/-1/-1->1->0 [9] 2/-1/-1->1->0 [10] 2/-1/-1->1->0 [11] 2/-1/-1->1->0claude-box:135:135 [0] NCCL INFO Channel 15/16 : 0 1 2 3
+claude-box:135:135 [0] NCCL INFO Ring 00 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 01 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 02 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 03 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 04 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 05 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 06 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 07 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 08 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 09 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 10 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 11 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 12 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 13 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 14 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Ring 15 : 3 -> 0 -> 1
+claude-box:135:135 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] 1/-1/-1->0->-1 [3] 1/-1/-1->0->-1 [4] 1/-1/-1->0->-1 [5] 1/-1/-1->0->-1 [6] 1/-1/-1->0->-1 [7] 1/-1/-1->0->-1 [8] 1/-1/-1->0->-1 [9] 1/-1/-1->0->-1 [10] 1/-1/-1->0->-1 [11] 1/-1/-1->0->-1 [12] 1/-1/-1->0->-1 [13] 1/-1/-1->0->-1 [14] 1/-1/-1->0->-1 [15] 1/-1/-1->0->-1
+claude-box:135:135 [0] NCCL INFO P2P Chunksize set to 131072
+claude-box:135:135 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+claude-box:135:135 [0] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+claude-box:135:135 [0] NCCL INFO ncclP2pSchedule: group size used is 4
+claude-box:135:172 [0] NCCL INFO [Proxy Service] Device 0 CPU core 2
+claude-box:135:176 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 13
+claude-box:137:179 [0] NCCL INFO [Proxy Service UDS] Device 2 CPU core 54
+claude-box:138:173 [0] NCCL INFO [Proxy Service] Device 3 CPU core 2
+claude-box:136:177 [0] NCCL INFO [Proxy Service UDS] Device 1 CPU core 13
+claude-box:136:174 [0] NCCL INFO [Proxy Service] Device 1 CPU core 2
+claude-box:138:178 [0] NCCL INFO [Proxy Service UDS] Device 3 CPU core 13
+claude-box:137:175 [0] NCCL INFO [Proxy Service] Device 2 CPU core 25
+claude-box:135:135 [0] NCCL INFO Channel 00 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 01 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 02 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 03 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 04 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 05 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 06 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 07 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 08 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 09 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 10 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 11 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 12 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 13 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 14 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Channel 15 : 0[0] -> 1[1] via SHM/direct/direct
+claude-box:135:135 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+claude-box:135:135 [0] NCCL INFO Connected all trees
+claude-box:137:180 [0] NCCL INFO [Proxy Progress] Device 2 CPU core 0
+claude-box:135:181 [0] NCCL INFO [Proxy Progress] Device 0 CPU core 31
+claude-box:135:135 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+claude-box:135:135 [0] NCCL INFO   Algorithm   |                            Tree                  |                            Ring                  |                   CollNetDirect                  |
+claude-box:135:135 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |
+claude-box:135:135 [0] NCCL INFO  Max NThreads |            512 |            640 |            512 |            512 |            640 |            512 |              0 |              0 |            640 |
+claude-box:135:135 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/  12.0 |    16.5/   0.0 |    14.1/  24.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/  12.0 |    16.5/   0.0 |    14.1/  24.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     9.6/  16.0 |    21.5/   0.0 |    25.5/  32.0 |     2.4/   0.0 |     2.4/   0.0 |    40.8/   0.0 |
+claude-box:135:135 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     9.6/  16.0 |    21.5/   0.0 |    25.5/  32.0 |     2.4/   0.0 |     2.4/   0.0 |    40.8/   0.0 |
+claude-box:135:135 [0] NCCL INFO     AllReduce |    12.8/   2.9 |    25.4/   0.0 |    32.4/  11.0 |    12.6/   8.0 |    29.0/   0.0 |    42.6/  16.0 |     2.4/   0.0 |     2.4/   0.0 |    40.8/   0.0 |
+claude-box:135:135 [0] NCCL INFO   Algorithm   |                    CollNetChain                  |                            NVLS                  |                        NVLSTree                  |
+claude-box:135:135 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |
+claude-box:135:135 [0] NCCL INFO  Max NThreads |              0 |              0 |            640 |              0 |              0 |            640 |              0 |              0 |            640 |
+claude-box:135:135 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO     AllReduce |     0.0/   0.0 |     0.0/   0.0 |    46.8/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO   Algorithm   |                             PAT                  |
+claude-box:135:135 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |
+claude-box:135:135 [0] NCCL INFO  Max NThreads |              0 |              0 |              0 |
+claude-box:135:135 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO     AllReduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+claude-box:135:135 [0] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+claude-box:135:135 [0] NCCL INFO 16 coll channels, 16 collnet channels, 0 nvls channels, 16 p2p channels, 2 p2p channels per peer
+claude-box:135:135 [0] NCCL INFO Symmetric memory is not supported. cuMemEnable 0, globalGinSupport 0, globalNicFused 0 cuMemGdrSupport 0
+claude-box:136:182 [0] NCCL INFO [Proxy Progress] Device 1 CPU core 22
+claude-box:135:135 [0] NCCL INFO CC Off, workFifoBytes 1048576
+claude-box:138:183 [0] NCCL INFO [Proxy Progress] Device 3 CPU core 15
+claude-box:135:135 [0] NCCL INFO ncclCommInitRankConfig comm 0x3540add0 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 1000 commId 0x8134d84d5d68f63a - Init COMPLETE
+claude-box:137:137 [2] NCCL INFO Init timings - ncclCommInitRankConfig: rank 2 nranks 4 total 0.89 (kernels 0.20, alloc 0.06, boclaude-box:135:135 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 0 nranks 4 total 0.93 (kernels 0.19, alloc 0.08, bootstrap 0.00, allgathers 0.00, topo 0.03, graphs 0.00, connections 0.57, rest 0.03)
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+claude-box:135:135 [0] NCCL INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}

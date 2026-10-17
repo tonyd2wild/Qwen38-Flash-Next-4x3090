@@ -85,6 +85,8 @@ Rules of thumb: effort `max` only where a design decision is irreversible for da
 
 ## Phase 3: Portfolio (ranked by expected gain x odds / effort)
 
+Re-ranked after T2 on measured floors: see "Portfolio re-ranked after T2" in `vllm-w4a16/results/perf-2026-10-notes.md` and `journal/02-time-accounting.md`. The table below is the original ranking; two of its premises did not hold on this box: bf16 GEMMs peak at 75.8 TFLOPS, not 35.6, and the all-reduce is bound by the host side at ~29 GB/s for all four cards, not by the NCCL protocol.
+
 | # | Idea | Mechanism | Ceiling on this box | Effort | Risk | Cheapest kill test |
 |---|---|---|---|---|---|---|
 | P1 | **NCCL protocol and transport tuning** | NCCL chose RING_LL for 8.5 MB messages over host shared memory. Try `NCCL_PROTO=Simple`, `NCCL_ALGO=Ring` or `Tree`, `NCCL_SHM_USE_CUDA_MEMCPY=1`, `NCCL_BUFFSIZE=16777216`, `NCCL_NTHREADS`, `NCCL_MIN_NCHANNELS` / `NCCL_MAX_NCHANNELS`, `NCCL_P2P_DISABLE=1` against `NCCL_P2P_LEVEL=NVL` | all-reduce 4.4 -> ~1 ms, so the prefill step 0.95 -> ~0.55 s (1.7-2x); decode a few percent | hours (microbench, then 1-2 boots) | low; the summation order may change, so run the quality gate | `nccl_bench.py`: no setting gets 8.5 MB under ~1.5 ms |

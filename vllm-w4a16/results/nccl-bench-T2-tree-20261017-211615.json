@@ -1,0 +1,140 @@
+{
+ "label": "T2-tree",
+ "started": "2026-10-17 21:16:15",
+ "image": "qwen38fn-vllm:8a728663",
+ "settings": {
+  "tree": {
+   "world": 4,
+   "allreduce": [
+    {
+     "bytes": 20480,
+     "eager_us": 58.47583770751953,
+     "eager_min_us": 56.91936016082764,
+     "graph_us": 57.49248027801514,
+     "graph_min_us": 57.00047969818115,
+     "algbw_GBs": 0.3502301258587431,
+     "busbw_GBs": 0.5253451887881146
+    },
+    {
+     "bytes": 122880,
+     "eager_us": 112.50687599182129,
+     "eager_min_us": 111.74912452697754,
+     "graph_us": 124.86656188964844,
+     "graph_min_us": 123.80160331726074,
+     "algbw_GBs": 1.0921999114874792,
+     "busbw_GBs": 1.6382998672312188
+    },
+    {
+     "bytes": 163840,
+     "eager_us": 162.9030418395996,
+     "eager_min_us": 160.76799392700195,
+     "graph_us": 179.81439590454102,
+     "graph_min_us": 176.10687255859375,
+     "algbw_GBs": 1.005751630846298,
+     "busbw_GBs": 1.508627446269447
+    },
+    {
+     "bytes": 1310720,
+     "eager_us": 1687.2845458984375,
+     "eager_min_us": 1685.1353454589844,
+     "graph_us": 1696.890869140625,
+     "graph_min_us": 1693.8752746582031,
+     "algbw_GBs": 0.7768221448991426,
+     "busbw_GBs": 1.1652332173487139
+    },
+    {
+     "bytes": 4259840,
+     "eager_us": 2707.276725769043,
+     "eager_min_us": 2686.3616943359375,
+     "graph_us": 2704.409599304199,
+     "graph_min_us": 2664.780807495117,
+     "algbw_GBs": 1.5734778641034295,
+     "busbw_GBs": 2.3602167961551443
+    },
+    {
+     "bytes": 8519680,
+     "eager_us": 5170.585632324219,
+     "eager_min_us": 5155.680084228516,
+     "graph_us": 5172.019195556641,
+     "graph_min_us": 5148.108673095703,
+     "algbw_GBs": 1.6477205109492281,
+     "busbw_GBs": 2.471580766423842
+    },
+    {
+     "bytes": 10485760,
+     "eager_us": 6347.8271484375,
+     "eager_min_us": 6343.0145263671875,
+     "graph_us": 6371.430587768555,
+     "graph_min_us": 6337.433624267578,
+     "algbw_GBs": 1.6518660251454769,
+     "busbw_GBs": 2.4777990377182153
+    },
+    {
+     "bytes": 20971520,
+     "eager_us": 12691.91665649414,
+     "eager_min_us": 12683.21304321289,
+     "graph_us": 12667.699432373047,
+     "graph_min_us": 12632.524871826172,
+     "algbw_GBs": 1.652352482890706,
+     "busbw_GBs": 2.478528724336059
+    },
+    {
+     "bytes": 41943040,
+     "eager_us": 25027.423095703125,
+     "eager_min_us": 24982.620239257812,
+     "graph_us": 24997.325134277344,
+     "graph_min_us": 24950.98876953125,
+     "algbw_GBs": 1.6758832836929607,
+     "busbw_GBs": 2.513824925539441
+    }
+   ],
+   "allgather": [
+    {
+     "bytes": 20480,
+     "eager_error": "DistBackendError('NCCL error in: /__w/pytorch/pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:3866, invalid usage (run with NCCL_DEBUG=WARN for details), NCCL version 2.29.7\\nncclInvalidUsage",
+     "graph_error": "DistBackendError('NCCL error in: /__w/pytorch/pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:3866, invalid usage (run with NCCL_DEBUG=WARN for details), NCCL version 2.29.7\\nncclInvalidUsage"
+    },
+    {
+     "bytes": 993280,
+     "eager_error": "DistBackendError('NCCL error in: /__w/pytorch/pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:3866, invalid usage (run with NCCL_DEBUG=WARN for details), NCCL version 2.29.7\\nncclInvalidUsage",
+     "graph_error": "DistBackendError('NCCL error in: /__w/pytorch/pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:3866, invalid usage (run with NCCL_DEBUG=WARN for details), NCCL version 2.29.7\\nncclInvalidUsage"
+    },
+    {
+     "bytes": 8519680,
+     "eager_error": "DistBackendError('NCCL error in: /__w/pytorch/pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:3866, invalid usage (run with NCCL_DEBUG=WARN for details), NCCL version 2.29.7\\nncclInvalidUsage",
+     "graph_error": "DistBackendError('NCCL error in: /__w/pytorch/pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:3866, invalid usage (run with NCCL_DEBUG=WARN for details), NCCL version 2.29.7\\nncclInvalidUsage"
+    }
+   ],
+   "nccl_version": "2.29.7",
+   "fp32_sum_exact": true,
+   "env": {
+    "NCCL_ALGO": "Tree"
+   },
+   "wall_s": 35.16848587989807,
+   "transport": [
+    "SHM/direct/direct"
+   ],
+   "tuning_lines": [
+    "INFO   Algorithm   |                             PAT                  |",
+    "INFO   Algorithm   |                            Tree                  |                            Ring                 ",
+    "INFO   Algorithm   |                    CollNetChain                  |                            NVLS                 ",
+    "INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple",
+    "INFO AllReduce: 10485760 Bytes -> Algo TREE proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 122880 Bytes -> Algo TREE proto SIMPLE channel{Lo..Hi}={0..2}",
+    "INFO AllReduce: 1310720 Bytes -> Algo TREE proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 163840 Bytes -> Algo TREE proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 20480 Bytes -> Algo TREE proto LL channel{Lo..Hi}={0..2}",
+    "INFO AllReduce: 20971520 Bytes -> Algo TREE proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 4 Bytes -> Algo TREE proto LL channel{Lo..Hi}={0..0}",
+    "INFO AllReduce: 4096 Bytes -> Algo TREE proto LL channel{Lo..Hi}={0..0}",
+    "INFO AllReduce: 41943040 Bytes -> Algo TREE proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 4259840 Bytes -> Algo TREE proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 8519680 Bytes -> Algo TREE proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO Enabled NCCL Func/Proto/Algo Matrix:",
+    "WARN Error : no algorithm/protocol available for function All",
+    "WARN Error : no algorithm/protocol available for function AllGather with datatype ncclInt8. NCCL_ALGO was set to Tree.",
+    "WARN Error : no algorithm/protocol available for function Allclaude-box:137:137 [1] NCCL INFO group.cc:546 -> 5"
+   ]
+  }
+ }
+}

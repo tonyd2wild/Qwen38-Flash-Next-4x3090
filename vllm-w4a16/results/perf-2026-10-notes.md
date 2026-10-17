@@ -31,13 +31,61 @@ Notes on the R13 column (detail in `journal/01-baseline.md`): measured with `vll
 
 Quality gate: `vllm-w4a16/tools/quality_gate.py --compare` against `results/quality-baseline-2026-10-17.json`, run first after every candidate boot. Thresholds come from the R14 noise passes: SUSPECT at a first divergence above a 2.0 nat baseline margin or a prefix drift above 1.0 nat; REVIEW if the run's p99 \|dlogprob\| exceeds 0.25 nat (noise: 0.119-0.124).
 
-## Time accounting (preliminary, from the R8/R9 traces; T2 redoes it by category from the JSON and adds the floors)
+## Time accounting and floors (T2)
 
-Per prefill step at depth (prof-pc1, 1664 tokens, caching on): span 948 ms = NCCL all-reduce 475 ms (107 ops, 3.4-4.4 ms each for 8.5 MB, ~2.5 GB/s, protocol `RING_LL`) + GPU compute ~280 ms (`aten::mm` 96, QSA 96, top-k 21, Marlin MoE 43, HC glue 25, GDN ~17, MoE glue ~8, all-gather 15) + host-bound idle ~190 ms. Shallow steps (prof-pc1-shallow): 1,165 ms with ~390 ms idle. Caching off (prof-pc0, 2048 tokens): 1,148 ms with 620 ms NCCL. Per token at depth: NCCL 0.29 ms, compute 0.17 ms, idle 0.11-0.23 ms.
+Detail and reasoning in `journal/02-time-accounting.md`. Traces: `.cache/ple/prof-*` (gitignored); summaries in `results/trace-breakdown-T2.txt` (`tools/trace_breakdown.py`, rank 0; a step is accounted from its start to the next step's start, so the MTP draft and the sampler are included).
 
-Decode (count-to-100, MTP3): target graph replay 15.1-15.5 ms per 4-token step; observed ~21 ms per step. Floors and the split of the graph are T2's job.
+Measured ceilings of this box (no server running): bf16 GEMM 75.8 TFLOPS at 8192^3 and 43-73 at the lane's per-rank prefill shapes; HBM copy 844 GB/s (`results/floor-bench-T2-20261017-212430.json`). Pinned copies, one card alone: H2D 25.5, D2H 22.8, both at once 13.7 GB/s each way. All four cards at once: **31.2 H2D, 28.9 D2H, 14.4 GB/s per direction in total when both directions run** (`results/floor-bench-T2-pcie-20261017-212620.json`). Host DRAM copy 21-28 GB/s at 1 to 32 processes; EDAC shows 4 of 8 memory channels populated (32 GB dual-rank RDIMMs in channels 0, 3, 5, 6). Every link trains at Gen4 x16. So the host side, not the links, caps everything that crosses host memory. (PLAN's 35.6 TFLOPS is the TF32 rate; bf16 with fp32 accumulate is 71 nominal.)
 
-Floors to fill in (T2): GEMM vs 35.6 TFLOPS per card (bf16, fp32 accumulate); bandwidth-bound kernels vs 936 GB/s; all-reduce vs the PCIe 4.0 host path (20-25 GB/s per direction, a 4-ring moves 1.5 x S per rank each way); per-collective latency from `nccl_bench.py`; host overhead from the CPU side of the trace.
+NCCL 2.29.7 on this box (`tools/nccl_bench.py`, `results/nccl-bench-T2-*.json`): transport SHM for every pair; all-reduce 20 KB 39 us in a CUDA graph (54 eager), 120 / 160 KB 135-180 us, 8.5 MB 4.33 ms, 10.5 MB 5.38 ms (busbw 2.9 GB/s). No env setting moves the big messages: `NCCL_PROTO=Simple` 4.36 ms (but 95-110 us at 120-160 KB, -35%; 66 us at 20 KB, +70%), LL128 8.9 ms, Tree 5.17 ms, `MIN_NCHANNELS` 8 / 16 4.6-4.8 ms, `NTHREADS=512` 4.33, `BUFFSIZE=16M` 4.37, `P2P_DISABLE=1` 4.39. `NCCL_SHM_USE_CUDA_MEMCPY=1` (copy-engine SHM) hangs at the 1.3 MB message with `NCCL_CUMEM_ENABLE` 0 or 1.
+
+**The all-reduce floor.** Without GPU P2P a 4-rank all-reduce of S bytes moves 6S out of the GPUs and 6S back in through host memory, whatever the algorithm (ring or reduce-scatter + all-gather). For 8.5 MB that is 102 MB; at the measured 28.8 GB/s for all four cards both ways it is 3.55 ms. NCCL takes 4.33 ms: **82% of the host-path floor**. Prefill comm can only shrink by moving fewer bytes through the host (P8 TP2xPP2: a 2-rank all-reduce moves 4S, a third), by a faster host path (P13 P2P, or the memory configuration: both need the user), or not at all.
+
+### Prefill, per deep 1,664-token chunk (R8 `prof-pc1`, 15 steps; period 994 ms = 1,674 tok/s at the step level)
+
+| Component | Measured (ms/step) | Floor | Floor (ms/step) | Gap (ms) | Lever |
+|---|---:|---|---:|---:|---|
+| NCCL all-reduce, 106 x 8.5 MB | 471 | 102 MB per call through the host at 28.8 GB/s | 376 | 95 | P2 (at most this gap); P8 (traffic / 3); P13 / memory (user) |
+| NCCL all-gather, 10 calls (draft) | 14 | same path | ~11 | 3 | - |
+| **PLE host gather (GPU idle between the ids' D2H and the rows' H2D)** | **199** (shallow steps **413**, cache off 233 per 1,978) | GPU gather by UVA from pinned host RAM, 4 GPUs at once: 0.43-0.82 ms; or a C-speed gather from a resident mapping: 1.7 ms + 0.4 ms H2D | 1-2 | **~197 (shallow ~411)** | **P4** |
+| Dense GEMMs (`gemm`) | 96 | 4.58 TFLOP per card (of which the replicated HC mixes 2.13) at the measured shape rates (~55 TFLOPS), at peak 60 ms | 60-83 | 13-36 | - (P12: sharding HC adds collectives) |
+| QSA sparse attention + top-k | 95 + 21 | gather of 2,048 selected fp8 K/V rows per query per layer, ~20 GB per step without reuse at 844 GB/s; 0.3 TFLOP | ~20 | ~95 | P10 (parked; now the third-largest gap, and it grows with depth) |
+| Marlin W4A16 MoE | 43 | 1.96 TFLOP at 75.8 (weights 14.6 GiB at 844 GB/s: 19 ms, overlapped) | 26 | 17 | - |
+| HC glue (`hc_combine_norm`, `gate_mix`, `silu`) | 25 | bandwidth over the 10,240-wide state (rough) | ~10 | ~15 | - |
+| GDN, MoE glue, elementwise, copies | 23 | (measured; small) | 23 | 0 | - |
+| Other idle | 5 | | 0 | 5 | - |
+| **Sum** | **994** | | **~540** | **~455** | step-level ceiling ~3,100 tok/s |
+
+### Decode
+
+| Component (ms per step) | 1 stream, 4 tok/step (R16 code prompt, 59 steps, profiled; R8 unprofiled period 22.4) | 6 streams, 16 tok/step (R16, 43 steps, profiled) | Floor |
+|---|---:|---:|---|
+| Period | 23.0 | 41.7 | memory: target 4.28 GB per card per step (5.1 ms at 844 GB/s) + draft ~1.3 GB (1.5 ms) = 6.6 ms at 1 stream; 9.0 GB (10.6 ms) + draft at 24 tokens |
+| NCCL all-reduce, 106 calls | 5.7 (unprofiled 4.3 = 106 x 40 us) | 16.0 (106 x 150 us) | 12 x message through the host: 20 KB -> 8 us + latency; 120-160 KB -> 50-66 us |
+| NCCL all-gather, 10 calls (draft logits) | 2.1 | 4.4 | ~0.5 / ~1 |
+| PLE stall | 1.3 | 4.6 | 0.015 (UVA gather of 64 / 384 rows) |
+| GEMMs (target + draft) | 8.7 (2.2 in the draft) | 9.6 | dense weights 3.10 GB per card = 3.7 ms |
+| Marlin MoE + glue | 2.9 | 4.7 | MoE weights 1.18 GB = 1.4 ms (1 stream) |
+| Kernels per step | 2,392 | 2,411 | each costs ~2-4 us in a graph even when tiny: P7 |
+
+### Turn overhead outside prefill (R13 scoreboard, R15 `tools/turn_overhead.py`)
+
+Server TTFT minus server prefill time is 10 ms at 1K, 63 ms at 16K, 143-189 ms at 64K and **340-378 ms at 128K, cold and warm alike**; client minus server TTFT adds 5 / 15 / 50 / 80 ms. R15, the same warm 128K prompt three ways: chat 0.69-0.72 s client TTFT (server-prefill gap 311-343 ms), completions with text 0.68 (299-306), **completions with token ids 0.42 s (23 ms)**. The gap is server-side tokenization of the whole prompt on every turn. Warm 128K TTFT = 0.30 s prefill (a 236-token tail step) + 0.34 s tokenization + 0.08 s client side. Also: the Triton cache lives at `/root/.triton/cache` inside the container (93 MB), outside the mounted `/root/.cache`, so every boot JIT-compiles again; first-time shapes cost 0.4-1.8 s per kernel (R16 traces; the JIT monitor warns once per kernel name only).
+
+### Portfolio re-ranked after T2
+
+| Rank | Item | Measured ceiling | Odds | Effort | Change from PLAN |
+|---|---|---|---|---|---|
+| 1 | **P4 PLE gather off the host (T5)** | prefill deep -197 ms of 994 (1.25x), shallow -411 of 1,209 (1.5x); decode -1.3 ms of 22.4 (6%), -4.6 of 41.7 at 6 streams (11%) | high: bytes identical, 250-1000x faster in the bench | 1-2 days | up from 4; the resident unpinned variant (1.7 ms) needs no memlock, so the sandbox can validate it |
+| 2 | **P9 turn overheads (T11)** | warm 128K 0.72 -> ~0.42 s; incremental 128K + 4K 3.73 -> ~3.4 s; first-shape JIT spikes after every boot (TRITON_CACHE_DIR, one flag) | high | hours | up from 9 |
+| 3 | P3 Mamba page leak (T4) | 128K / 155K cold 777-849 -> ~1,395 tok/s at the same per-step cost; 0 preemptions | medium-high | 0.5-1 day | unchanged |
+| 4 | P8 TP2 x PP2 (T10) | comm bytes / 3: prefill ~2x on top of P4 if chunks pipeline; decode likely a few ms slower per step (two stages in series) | medium | 2-3 days | up from 8; its condition (comm > 25% of the step after P1/P2) is met by measurement, since P1 is dead and P2 can take at most 95 of 471 ms |
+| 5 | P2 host-staged all-reduce (T6), decode sizes | 1 stream: 106 x (40 - ~15 us) = ~2.6 ms of 22.4 (12%); 6 streams: 106 x (150 - ~70 us) = ~8 ms of 41.7 (20%); prefill at most 95 ms (10%) | medium | 2-4 days | down from 2; prefill half nearly moot |
+| 6 | P5 speculation breadth (T7a / T7b) | code acceptance 0.93 / 0.85 / 0.70 per position: depth 4-6 pays on code | medium | 1 boot each / days | unchanged |
+| 7 | P1 NCCL tuning (T3), reduced | big messages: none (killed by the microbench); 120-160 KB: Simple is 35% faster but 20 KB is 70% slower, so it needs a per-size choice (tuner plugin) and a 6-stream boot | low-medium | hours | down from 1 |
+| 8 | P10 QSA kernel | ~95 ms per deep step (10%), more at depth | medium | days | unparked candidate |
+| 9 | P7 compile, P11 draft KV group, P6 chunk 4096 | P7: kernel count; P11 ~1.5%; P6: align mode already rounds the 2,048 budget down to 1,664 tokens per step (2 x 832), a larger budget mostly amortises the ~45 ms per-step tail | low | - | P6 down |
+| - | P13 PCIe P2P, host memory channels | the comm floor itself | - | host / hardware | needs the user |
 
 ## Boot ledger (R13 onward; R1-R12 are in the lane README)
 
@@ -45,12 +93,16 @@ Floors to fill in (T2): GEMM vs 35.6 TFLOPS per card (bf16, fp32 accumulate); ba
 |---|---|---|
 | R13 | (T1) prefix lane, sandbox: `scoreboard.py` / `quality_gate.py` smoke tests, then the full scoreboard (`results/scoreboard-R13-20261017-192716.{json,log}`, 17 min) | ready ~4 min, overlays 7/7, MARLIN, pool 299,482; count 186.0, 64K cold 1,396 tok/s, 128K cold 777 (2 preemptions), needle at 199,406 correct; 10 preemptions over the run, all in the >100K cold prompts; same-boot temperature-0 repeats are not bit-identical (see open questions) |
 | R14 | (T1) prefix lane, fresh boot: `quality_gate.py --record` (`results/quality-baseline-2026-10-17.json`), two same-boot `--compare` noise passes, `scoreboard.py --sections decode,ttft` | gate PASS: tool calls parse, needles 29,958 / 99,726 / 199,393 correct, 155K 849 tok/s with 2 preemptions, pool 299,482; same-boot repeats diverge on 6-9 of 20 prompts at near-ties (p99 \|dlogprob\| 0.12), thresholds calibrated on this; count 190.6 (R13 186.0), 64K cold 1,403 |
+| R15 | (T2) prefix lane, sandbox, `DOCKER_EXTRA=-e VLLM_TORCH_PROFILER_DIR=...` (ignored: this build does not know the variable, so no profile); `tools/turn_overhead.py --depth 128000 --reps 2 --probe 10` (`results/turn-overhead-R15-20261017-213810.json`) | pool 299,482; 128K cold 135.0 s server prefill (946 tok/s; preemptions not recorded by that run); warm 128K: chat 0.69-0.72 s, completions with token ids 0.42 s (tokenization ~0.3 s); probe: 10 of 10 distinct top-1 logprobs (-0.0185 to -0.0323) |
+| R16 | (T2) prefix lane flags through the base launcher plus `--profiler-config '{"profiler":"torch","torch_profiler_dir":"/root/.cache/prof-t2","torch_profiler_with_stack":false}'`; profiles of a code decode (192 tokens) and 6 concurrent streams (128 tokens) | args identical to R15 apart from the profiler; pool 299,482; code decode 140.7 tok/s under the profiler (163 unprofiled); traces in `.cache/ple/prof-t2`; runtime Triton JIT spikes of 0.4-1.8 s seen in the traces |
+| R17 | (T2) prefix lane flags with `MTP=0` (one change), `tools/repeat_probe.py`, `turn_overhead.py --probe 10` | pool 337,597; still not repeatable: 6 of 6 distinct runs, spread up to 0.52 nat, from prompt position 0; probe 10 of 10 distinct. Speculative decoding is not the cause |
+| R18 | (T2) tuned lane (`launch-qwen38fn-w4a16-tuned.sh`, no prefix caching), same probes | pool 303,079; still not repeatable: 6 of 6 distinct, spread up to 0.39 nat, from position 0. Prefix caching / align mode is not the cause |
 
 ## Open questions
 
-- **The prefix lane is not bit-reproducible at temperature 0** (T1). The same 29-token prompt with `max_tokens=1` gives top-1 logprobs -0.58 to -0.71 across four sends on one boot, and 6-9 of the gate's 20 prompts diverge on a same-boot repeat, at margins of 0-0.5 nat (once 1.25). Source unknown: reduction atomics, MoE router near-ties, or the PLE path. Probe in T2 (`PLE_MODE=none`, `--no-async-scheduling`, MTP=0; ten repeats each). The lossless claim rests on this noise floor.
-- How much of the 190-390 ms per-step host-bound idle is the PLE gather (T2 `ple_gather_bench.py`).
-- NCCL LL latency at decode sizes on the SHM path (T2); decides P2's decode path.
+- **No lane on this box is bit-reproducible at temperature 0, and the spread is larger than floating-point reordering** (T1, T2). With `prompt_logprobs`, the same 33-token prompt on an idle server gives 6 different runs out of 6 on the prefix lane (R15), with MTP off (R17) and on the tuned lane without prefix caching (R18); runs differ from prompt position 0 (the prediction from one token), with spreads up to 0.39-0.69 nat, and repeated values recur (a discrete set of outcomes). Ruled out by microbenchmarks (`tools/det_probe.py`, `det_probe_topk.py`): cuBLAS bf16 GEMMs at shifted addresses (with or without `CUBLAS_WORKSPACE_CONFIG`), the NCCL bf16 all-reduce, Marlin atomics (off at this commit), and the QSA top-k for short contexts. Ruled out by boots: speculative decoding, prefix caching. Left: Marlin MoE with expert parallel, the staged PLE path, the QSA overlays (split-k merge reading unwritten partials would fit), HC and GDN kernels, async scheduling. A stale-memory read would be a correctness bug, not noise; proposed as its own task (T14). Separately, `persistent_topk` at depth returns its indices in a different order every run and changed the selected set once in 20 runs (1,664 queries at 64K).
+- NCCL copy-engine SHM (`NCCL_SHM_USE_CUDA_MEMCPY=1`) hangs at 1.3 MB on this box; a bug or a missing prerequisite? Only matters if T3 wants that path.
+- Why the host DRAM copy rate is 21-28 GB/s with 4 channels populated (DIMM speed? BIOS?); it caps the all-reduce. A question for the user, no change from here.
 - Does `cudaHostRegister` on a file-backed shared mapping work here, and does it count against the sandbox memlock (T5).
 - Why the previous step's Mamba page is not freed in align mode at this commit (T4).
 - P13: PCIe P2P on the GeForce cards is a host change; diagnostics to be presented, user decides.
