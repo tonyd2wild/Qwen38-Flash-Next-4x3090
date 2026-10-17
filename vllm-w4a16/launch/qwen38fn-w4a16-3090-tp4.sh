@@ -66,7 +66,9 @@ case "$PREFIX_CACHE" in
      PC_ARGS=(--enable-prefix-caching --mamba-cache-mode align) ;;
   *) echo "PREFIX_CACHE must be 0|1" >&2; exit 2 ;;
 esac
-docker rm -f "$NAME" 2>/dev/null || true
+docker stop -t 60 "$NAME" >/dev/null 2>&1 || true; docker rm -f "$NAME" >/dev/null 2>&1 || true
+# A removed container can leave its server running (seen once under rootless podman); never test the wrong server.
+if curl -s -m 3 -o /dev/null "http://localhost:$PORT/v1/models"; then echo "port $PORT still answers after removing $NAME; stop that server first" >&2; exit 5; fi
 # --ipc host shares the host /dev/shm, so no --shm-size: Docker ignores it with --ipc host and podman rejects the pair.
 docker run $GPU_ARGS -d --name "$NAME" --restart no \
   --network host --ipc host --ulimit memlock=-1:-1 \
