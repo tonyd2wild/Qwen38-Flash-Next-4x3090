@@ -53,8 +53,8 @@ You are working on the vLLM lane that serves Qwen3.8-Flash-Next on this 4x RTX 3
 
 | Task | Model | Effort | Planning stage |
 |---|---|---|---|
-| T1 baseline tools and run, T7a spec flags, T8 chunk, T11 fixed overheads, T13 scripts | Sonnet 5.5 | high (medium for sweeps) | no |
-| T2 floors and re-rank, T3 NCCL tuning, T4 Mamba leak, T7b hybrid proposer, T9 compile, T12 draft KV group, T13 README | Opus 5.5 | high (xhigh for T4, T9; medium for T3, T12) | T4 short, T7b yes |
+| T1 baseline tools and run, T7a spec flags, T8 chunk, T13 scripts | Sonnet 5.5 | high (medium for sweeps) | no |
+| T2 floors and re-rank, T3 NCCL tuning, T4 Mamba leak, T7b hybrid proposer, T9 compile, T11 fixed overheads, T12 draft KV group, T13 README | Opus 5.5 | high (xhigh for T4, T9; medium for T3, T12) | T4 short, T7b yes, T11 short (tokenization) |
 | T5 hostpin design, T6 all-reduce design and prototype, T10 TP2xPP2 feasibility | Fable 5.1 | xhigh (max for the T6 design) | yes |
 
 Escalate one model up when a task's first boot does not explain what you see; never escalate for journal writing.

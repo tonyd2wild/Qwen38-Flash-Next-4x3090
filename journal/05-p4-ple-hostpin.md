@@ -268,4 +268,4 @@ The random rows over the full 51 GB table cost no more than T2's 1-4 GiB slice: 
 
 ## Next step
 
-**T11** (P9 fixed overheads: tokenization ~0.3 s per 128K turn, `TRITON_CACHE_DIR`, and possibly the hostpin boot time), then T4 (P3; 128K/155K cold are now preemption-bound), then T14, then T10. T13's fast lane takes `PLE_MODE=hostpin` (wrapper `launch-qwen38fn-w4a16-hostpin.sh`). The server was **stopped** at 23:15; GPUs free (15-92 MiB).
+**T11** on Opus 5.5 / high (moved from Sonnet after this task, user agreed; P9 fixed overheads: tokenization ~0.3 s per 128K turn, `TRITON_CACHE_DIR`, and the hostpin boot time), then T4 (P3; 128K/155K cold are now preemption-bound), then T14, then T10. T13's fast lane takes `PLE_MODE=hostpin` (wrapper `launch-qwen38fn-w4a16-hostpin.sh`). The server was **stopped** at 23:15; GPUs free (15-92 MiB).
