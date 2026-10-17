@@ -13,6 +13,10 @@
 #   resident the fraction of sampled table pages in the page cache (mincore), which bounds the cold case
 #   take     the unpinned alternative: numpy gather (C speed, one call) from a read-only mapping of one shard after
 #            touching it, i.e. a resident table without pinning (--modes take runs only this)
+#   filepin  the T5 implementation (patch/ple_hostpin.py, imported as the lane imports it): rank 0 copies the whole
+#            table into one shared memfd, every process maps it and registers it with cudaHostRegister, then the UVA
+#            gather over all 320M rows; setup time, GPU memory the mapping costs, MemAvailable, bytes against
+#            gather_cpu, eager and CUDA-graph replay timings; 1 process, then --procs at once sharing one buffer
 # Usage (driver; needs the image and free GPUs):
 #   GPU_ARGS="--device nvidia.com/gpu=all" python3 vllm-w4a16/tools/ple_gather_bench.py --label T2
 # Writes results/ple-gather-bench-<label>-<time>.json. Worker mode runs inside the container (--worker).
@@ -23,9 +27,10 @@ RESULTS = os.path.join(os.path.dirname(HERE), "results")
 SIZES = [64, 384, 1664 * 16, 2048 * 16]
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--worker", choices=["staged", "hostpin", "resident", "take"])
+ap.add_argument("--worker", choices=["staged", "hostpin", "resident", "take", "filepin"])
 ap.add_argument("--modes", default="resident,staged,hostpin,take")
 ap.add_argument("--rank", type=int, default=0)
+ap.add_argument("--nprocs", type=int, default=1, help="workers in this container (filepin barrier)")
 ap.add_argument("--out")
 ap.add_argument("--label", default="run")
 ap.add_argument("--procs", type=int, default=4, help="concurrent staged gathers (the TP ranks)")
@@ -154,16 +159,87 @@ def w_take():
     json.dump(res, open(a.out, "w"))
 
 
+def meminfo():
+    m = {}
+    for line in open("/proc/meminfo"):
+        k, v = line.split(":"); m[k] = int(v.split()[0]) * 1024
+    return m
+
+
+def w_filepin():
+    import torch
+    torch.cuda.set_device(a.rank)
+    sys.path.insert(0, "/patch")
+    from ple_hostpin import PLEHostPinTable
+    t = table(); m0 = meminfo()
+    res = {"rank": a.rank, "rows_total": t.rows_total, "memavail_before": m0["MemAvailable"], "cached_before": m0["Cached"]}
+    share = "/out/filepin-share.json"
+
+    def exchange(payload):  # what the lane does with a broadcast over the TP group, done with a file here
+        if payload is not None:
+            json.dump(payload, open(share + ".tmp", "w")); os.rename(share + ".tmp", share); return payload
+        t0 = time.time()
+        while not os.path.exists(share):
+            if time.time() - t0 > 1800: raise TimeoutError("no leader")
+            time.sleep(0.1)
+        return json.load(open(share))
+    try:
+        hp = PLEHostPinTable(t, leader=a.rank == 0, exchange=exchange if a.nprocs > 1 else None)
+    except Exception as e:
+        res["error"] = f"{type(e).__name__}: {e}"; json.dump(res, open(a.out, "w")); return
+    m1 = meminfo()
+    res.update(setup_s=hp.setup_s, fill_s=hp.fill_s, register_s=hp.register_s, vram_cost_mib=hp.vram_cost / 2**20,
+               pinned_gib=hp.nbytes / 2**30, register_retries=hp.register_retries, memavail_after=m1["MemAvailable"], cached_after=m1["Cached"],
+               describe=hp.describe(), sizes={})
+    # barrier: every worker in the container has its mapping before anyone times the gather
+    open(f"/out/filepin-ready{a.rank}", "w").close(); t0 = time.time()
+    while sum(os.path.exists(f"/out/filepin-ready{r}") for r in range(a.nprocs)) < a.nprocs and time.time() - t0 < 900:
+        time.sleep(0.05)
+    rng = random.Random(11 + a.rank)
+    probe = torch.tensor([rng.randrange(t.rows_total) for _ in range(4096)] + [0, t.rows_total - 1], dtype=torch.int64)
+    ref = t.gather_cpu(probe).clone()
+    got = torch.empty((probe.numel(), t.row_bytes), dtype=torch.uint8, device="cuda")
+    hp.gather(probe.cuda(), got); torch.cuda.synchronize()
+    res["bytes_equal"] = bool(torch.equal(ref, got.cpu()))
+    out = torch.empty((max(SIZES), t.row_bytes), dtype=torch.uint8, device="cuda")
+    for n in SIZES:
+        idss = [torch.tensor([rng.randrange(t.rows_total) for _ in range(n)], dtype=torch.int64, device="cuda")
+                for _ in range(a.reps + 1)]
+        e0, e1 = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+        times = []
+        for k, ids in enumerate(idss):  # fresh random ids each rep: no GPU cache reuse between reps
+            torch.cuda.synchronize(); e0.record(); hp.gather(ids, out[:n]); e1.record(); torch.cuda.synchronize()
+            if k: times.append(e0.elapsed_time(e1))
+        # the same gather captured in a CUDA graph and replayed (the decode path)
+        gids = idss[0].clone(); g = torch.cuda.CUDAGraph(); s = torch.cuda.Stream()
+        with torch.cuda.stream(s):
+            hp.gather(gids, out[:n]); torch.cuda.synchronize()
+            with torch.cuda.graph(g): hp.gather(gids, out[:n])
+        gt = []
+        for ids in idss[1:]:
+            gids.copy_(ids); torch.cuda.synchronize(); e0.record(); g.replay(); e1.record(); torch.cuda.synchronize()
+            gt.append(e0.elapsed_time(e1))
+        if n <= probe.numel():
+            gids.copy_(probe[:n].cuda()); g.replay(); torch.cuda.synchronize(); res.setdefault("graph_bytes_equal", True)
+            res["graph_bytes_equal"] &= bool(torch.equal(ref[:n], out[:n].cpu()))
+        res["sizes"][n] = {"gather_ms": statistics.median(times), "graph_ms": statistics.median(gt),
+                           "GBs": n * t.row_bytes / statistics.median(times) / 1e6, "all": [round(x, 3) for x in times]}
+    json.dump(res, open(a.out, "w"))
+
+
 def driver():
     gpu_args = shlex.split(os.environ.get("GPU_ARGS", "--gpus all"))
     stamp = time.strftime("%Y%m%d-%H%M%S")
     tmp = os.path.abspath(os.path.join(os.path.dirname(HERE), "..", ".cache", "ple", "ple-bench")); os.makedirs(tmp, exist_ok=True)
     def run(mode, ranks, pin_gib=a.pin_gib):
+        for f in [f"filepin-ready{r}" for r in ranks] + ["filepin-share.json"]:
+            try: os.remove(os.path.join(tmp, f))
+            except FileNotFoundError: pass
         cmd = ["docker", "run", "--rm"] + gpu_args + ["--ipc", "host", "--ulimit", "memlock=-1:-1",
                "-v", f"{a.model}:{MODEL_IN}:ro", "-v", f"{os.path.join(os.path.dirname(HERE), 'patch')}:/patch:ro",
                "-v", f"{HERE}:/tools:ro", "-v", f"{tmp}:/out", "--entrypoint", "bash", a.image, "-c",
                " & ".join(f"python3 /tools/ple_gather_bench.py --worker {mode} --rank {r} --out /out/{mode}{r}.json "
-                          f"--reps {a.reps} --threads {a.threads} --pin-gib {pin_gib}"
+                          f"--reps {a.reps} --threads {a.threads} --pin-gib {pin_gib} --nprocs {len(ranks)}"
                           for r in ranks) + " & wait"]
         t0 = time.time(); p = subprocess.run(cmd, capture_output=True, text=True)
         outs = []
@@ -195,6 +271,20 @@ def driver():
         print("  " + (o.get("error", "")[-400:] if "error" in o else
               f"shard {o['shard_gb']:.2f} GB touched in {o['touch_s']:.1f} s; " +
               "  ".join(f"{n}: {v['take_ms']:.3f} ms" for n, v in o["sizes"].items())))
+    if "filepin" in modes:
+        for k, ranks in (("filepin_1", [0]), (f"filepin_{a.procs}", list(range(a.procs)))):
+            m0 = meminfo(); print(f"== filepin (patch/ple_hostpin.py), {len(ranks)} process(es); MemAvailable "
+                                  f"{m0['MemAvailable'] / 2**30:.1f} GiB, Cached {m0['Cached'] / 2**30:.1f} GiB", flush=True)
+            R[k] = run("filepin", ranks); m1 = meminfo()
+            R[k + "_host_mem"] = {"before": m0, "after": m1}
+            for o in R[k]:
+                if "error" in o: print(f"  {k} rank {o['rank']}: ERROR {o['error'][-600:]}"); continue
+                print(f"  {k} rank {o['rank']}: {o['describe']}; bytes equal {o['bytes_equal']} (graph "
+                      f"{o.get('graph_bytes_equal')}); MemAvailable {o['memavail_before'] / 2**30:.1f} -> "
+                      f"{o['memavail_after'] / 2**30:.1f} GiB\n    " + "  ".join(
+                          f"{n}: {v['gather_ms']:.3f} ms ({v['GBs']:.1f} GB/s), graph {v['graph_ms']:.3f}"
+                          for n, v in o["sizes"].items()))
+            print(f"  host after: MemAvailable {m1['MemAvailable'] / 2**30:.1f} GiB, Cached {m1['Cached'] / 2**30:.1f} GiB")
     for k in ("staged_1", f"staged_{a.procs}"):
         for o in R.get(k, []):
             if "error" in o: print(k, "rank", o.get("rank"), "ERROR", o["error"][-400:]); continue
@@ -216,4 +306,5 @@ if a.worker == "staged": w_staged()
 elif a.worker == "hostpin": w_hostpin()
 elif a.worker == "resident": w_resident()
 elif a.worker == "take": w_take()
+elif a.worker == "filepin": w_filepin()
 else: driver()

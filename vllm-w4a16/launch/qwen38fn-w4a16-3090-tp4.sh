@@ -2,7 +2,8 @@
 # Qwen3.8-Flash-Next on the 4x RTX 3090 box (x86, Ampere), vLLM TP4, albucino/Qwen3.8-Flash-Next-W4A16-FP8PLE
 # (Intel AutoRound W4A16 experts in GPTQ layout + RadixArk FP8 n-gram table) with OUR disk-table patch so the 47.7 GB
 # table never has to be resident (the box has 31 GB of RAM). Kai / 2Wild, 2026-09-06. Experimental.
-# Knobs: NCCL_MODE (nvl|nop2p), KV_BYTES, LM_ONLY (0|1), PLE_MODE (staged|mmap|none), GRAPHS (nocompile|eager|piecewise|default), MTP (0|N; N needs a draft the checkpoint
+# Knobs: NCCL_MODE (nvl|nop2p), KV_BYTES, LM_ONLY (0|1), PLE_MODE (staged|mmap|hostpin|none; hostpin copies the table into one pinned, shared host buffer
+# and gathers rows on the GPU, needs memlock for 51.2 GB), GRAPHS (nocompile|eager|piecewise|default), MTP (0|N; N needs a draft the checkpoint
 # does not carry in-tree, see albucino's runtime/mtp-int4-g32), SEQS, CHUNK, GMU, MAXLEN, KV_DTYPE, TP, MODULE (vLLM subpackage
 # that implements this checkpoint; nvidia = the ModelOpt-era layout our overlays target), OVERLAYS, EXTRA, DOCKER_EXTRA,
 # PREFIX_CACHE (0|1; 1 = --enable-prefix-caching --mamba-cache-mode align), GPU_ARGS (default --gpus all).
@@ -26,8 +27,11 @@ PLE_ENV=(); case "$PLE_MODE" in
   staged)  PLE_ENV=(-e QWEN4EXP_PLE_MMAP=1 -e QWEN4EXP_PLE_STAGED=1 -e QWEN4EXP_PLE_MMAP_THREADS="${PLE_WORKERS:-32}"
            -v "$PATCH_DIR/ple_layer.py:$MP/ple_layer.py:ro" -v "$PATCH_DIR/ple_mmap.py:$MP/ops/ple_mmap.py:ro"
            -v "$PATCH_DIR/model_state.py:$MP/model_state.py:ro") ;;
+  hostpin) PLE_ENV=(-e QWEN4EXP_PLE_MMAP=1 -e QWEN4EXP_PLE_HOSTPIN=1
+           -v "$PATCH_DIR/ple_layer.py:$MP/ple_layer.py:ro" -v "$PATCH_DIR/ple_mmap.py:$MP/ops/ple_mmap.py:ro"
+           -v "$PATCH_DIR/ple_hostpin.py:$MP/ops/ple_hostpin.py:ro") ;;
   none)    ;;
-  *) echo "PLE_MODE must be staged|mmap|none" >&2; exit 2 ;;
+  *) echo "PLE_MODE must be staged|mmap|hostpin|none" >&2; exit 2 ;;
 esac
 OVERLAY_MOUNT=(); if [ "$OVERLAYS" = "1" ]; then
   QSA_SFX=""; if [ "$KV_DTYPE" = "fp8_e5m2" ]; then QSA_SFX="_e5m2"; fi   # Ampere: e5m2 variant of the QSA overlay (no fp8e4nv in Triton)

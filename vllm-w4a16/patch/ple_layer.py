@@ -76,6 +76,13 @@ def _ple_staged_enabled() -> bool:
     return _os.environ.get("QWEN4EXP_PLE_STAGED", "0") == "1"
 
 
+def _ple_hostpin_enabled() -> bool:
+    # Hostpin mode (T5, ops/ple_hostpin.py): the table copied once into a shared memfd that every rank pins
+    # (cudaHostRegister; one copy in host RAM for all ranks) and the rows gathered on the GPU through UVA inside the
+    # forward. No host sync, so the gather stays inside the decode CUDA graph; no staging needed.
+    return _os.environ.get("QWEN4EXP_PLE_HOSTPIN", "0") == "1"
+
+
 def _ple_mmap_threads() -> int | None:
     v = _os.environ.get("QWEN4EXP_PLE_MMAP_THREADS")
     return int(v) if v else None
@@ -593,6 +600,10 @@ class Qwen4ExpNGramEmbedding(nn.Module):
         )
 
     def _ple_mmap_gather_into(self, ngram_ids: torch.Tensor, out: torch.Tensor) -> None:
+        hostpin = getattr(self, "_ple_hostpin", None)
+        if hostpin is not None:
+            hostpin.gather(ngram_ids, out)
+            return
         resident = getattr(self, "_ple_resident", None)
         if resident is not None:
             # Rows owned by this rank come from the resident slice; rows owned by
@@ -716,6 +727,17 @@ class Qwen4ExpNGramEmbedding(nn.Module):
             self._ple_mmap_table()  # eager construction: fds + thread pool, outside any tracing
             if _ple_resident_enabled():
                 self._ple_load_resident_slice()
+            elif _ple_hostpin_enabled() and getattr(self, "_ple_hostpin", None) is None:
+                from .ops.ple_hostpin import PLEHostPinTable
+
+                # TP rank 0 fills one shared buffer; the others map it once rank 0 broadcasts its (pid, fd).
+                tp = get_tp_group()
+                self._ple_hostpin = PLEHostPinTable(
+                    self._ple_mmap_table(),
+                    leader=tp.rank_in_group == 0,
+                    exchange=(lambda payload: tp.broadcast_object(payload, src=0)) if tp.world_size > 1 else None,
+                )
+                logger.info("PLE hostpin: %s", self._ple_hostpin.describe())
         return loaded
 
 

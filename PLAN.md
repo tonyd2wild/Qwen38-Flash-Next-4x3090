@@ -135,7 +135,7 @@ Microbenchmarks first, with no server running: `nccl_bench.py`, `ple_gather_benc
 
 1. Run `run-host-fast.sh` on the host at hand-over (baseline plus fast lane, about 1.5 hours, one log back).
 2. Decide on P13 (PCIe P2P): read-only diagnostics will be presented; no host change without approval.
-3. If the sandbox cannot pin the full 51 GB table (memlock 15.7 GiB), P4 is validated here at reduced size and at full size only in the host run; the journal and notes will say so.
+3. ~~If the sandbox cannot pin the full 51 GB table (memlock 15.7 GiB), P4 is validated here at reduced size and at full size only in the host run.~~ Moot after T5: the memlock limit does not apply to `cudaHostRegister`, and R19 ran the full table in the sandbox. The host run must leave ~48 GiB of RAM free for it.
 
 ## Risks and open questions (tracked in the notes file and the journal)
 
