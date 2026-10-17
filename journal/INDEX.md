@@ -2,9 +2,9 @@
 
 Plan: [`PLAN.md`](../PLAN.md) · Rules: [`AGENTS.md`](../AGENTS.md) · Numbers: [`vllm-w4a16/results/perf-2026-10-notes.md`](../vllm-w4a16/results/perf-2026-10-notes.md) · Entry template: [`TEMPLATE.md`](TEMPLATE.md)
 
-**GPU owner right now:** nobody. No server is running in the sandbox; the host server was down at 17:58 on 2026-10-17. Last checked: 2026-10-17 18:10 by Fable 5.1 (T0).
+**GPU owner right now:** nobody. The T1 server (R14) was stopped at 20:28; GPUs at 15-92 MiB. Host server down at 19:17. Last checked: 2026-10-17 20:28 by Opus 5.5 (T1).
 
-**Next task:** T1 (baseline) with Sonnet 5.5 at effort high. Start from `01-baseline.md` (copy the template).
+**Next task:** T2 (time accounting): Opus 5.5 / high for the floors and the re-rank, Sonnet 5.5 for the scripts. Read `01-baseline.md` first, and add its nondeterminism probe to T2. On every candidate boot, run `quality_gate.py --compare` first, then `scoreboard.py`.
 
 ## Task board
 
@@ -13,7 +13,7 @@ Status values: `todo`, `in progress (model, since)`, `done`, `killed`. Update th
 | # | Task | Portfolio | Depends on | Model / effort | Entry | Status | One-line result |
 |---|---|---|---|---|---|---|---|
 | T0 | Scaffolding: branch, PLAN.md, AGENTS.md, CLAUDE.md, journal, notes file | - | - | Fable 5.1 / max (board says Sonnet; done by the planner) | [00-scaffolding.md](00-scaffolding.md) | done | Scaffolding committed; exploration findings and code pointers recorded in the entry |
-| T1 | Baseline: `scoreboard.py`, `quality_gate.py`, boot the prefix lane, record "before" + frozen quality baseline | - | T0 | Sonnet 5.5 / high | 01-baseline.md | todo | |
+| T1 | Baseline: `scoreboard.py`, `quality_gate.py`, boot the prefix lane, record "before" + frozen quality baseline | - | T0 | Sonnet 5.5 / high (run by Opus 5.5 / high, user's choice) | [01-baseline.md](01-baseline.md) | done (Opus 5.5, 19:17-20:32) | Tools in `vllm-w4a16/tools/`; before column R13 (count 186.0, 64K cold 1,396 tok/s, 128K 777 with 2 preemptions); baseline `quality-baseline-2026-10-17.json` (R14). The lane is not bit-reproducible at temperature 0, so the gate thresholds are calibrated on measured noise |
 | T2 | Time accounting: `trace_breakdown.py`, `nccl_bench.py`, `ple_gather_bench.py`, incremental-turn breakdown, floor table, portfolio re-rank | - | T1 | Opus 5.5 / high (Sonnet for scripts) | 02-time-accounting.md | todo | |
 | T3 | NCCL protocol and transport tuning | P1 | T2 | Opus 5.5 / medium | 03-p1-nccl-tuning.md | todo | |
 | T4 | Align-mode Mamba page leak: instrument, diagnose, fix, 155K validation | P3 | T1 | Opus 5.5 / xhigh (escalate to Fable if the first boot does not explain it) | 04-p3-mamba-leak.md | todo | |

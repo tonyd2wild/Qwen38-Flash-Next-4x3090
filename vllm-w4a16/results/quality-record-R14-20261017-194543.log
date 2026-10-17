@@ -1,0 +1,37 @@
+waiting for http://localhost:8090 ...
+quality gate record 2026-10-17 19:49:43  http://localhost:8090  label R14  vllm 0.28.1rc1.dev388+g8a728663c
+warm-up: short prompt, count to 100, one ~8K prompt
+  boot facts: {'pool_tokens': 299482, 'max_num_seqs': 6, 'max_model_len': 262144, 'tool_call_parser': 'qwen3_xml', 'reasoning_parser': 'qwen3', 'thinking_off_default': True}
+
+== Frozen prompts (20), temperature 0, non-streamed, top-5 logprobs
+  id                  pt   ct   hits  status     first div  margin   drift  checks
+  code_func           59  307      0  recorded                              expected=ok
+  code_bugfix        129  246      0  recorded                              expected=ok
+  code_refactor      152   94      0  recorded                              expected=ok
+  code_sql            68  153      0  recorded                              expected=ok
+  code_bash           56  309      0  recorded                              expected=ok
+  prose_explain       29  255      0  recorded                              
+  prose_summary      180  123      0  recorded                              
+  prose_email         32   97      0  recorded                              expected=ok
+  prose_compare       32  160      0  recorded                              expected=ok
+  tool_read         1304   27      0  recorded                              tool_parse=ok tool_expected=ok
+  tool_tests        1302   43    832  recorded                              tool_parse=ok tool_expected=ok
+  tool_search       1309   38    832  recorded                              tool_parse=ok tool_expected=ok
+  tool_diff         1302   29    832  recorded                              tool_parse=ok tool_expected=ok
+  tool_write        1317   93    832  recorded                              tool_parse=ok tool_expected=ok
+  long_qa_8k        8012    5      0  recorded                              expected=ok
+  long_list_16k    16003   10      0  recorded                              expected=ok
+  long_qa_30k      29970   23      0  recorded                              expected=ok
+  vision_halves      113    7      0  recorded                              expected=ok
+  think_off           28    4      0  recorded                              expected=ok no_reasoning_by_default=ok
+  think_on            68   47      0  recorded                              expected=ok reasoning_split=ok
+
+== Long-context checks
+  needle  30000: 29,958 tok, TTFT 21.7 s, hits 0, preemptions 0, min free 0.81 / 0.81 / 0.68 / 0.81 GiB: CORRECT
+  needle 100000: 99,726 tok, TTFT 72.0 s, hits 0, preemptions 0, min free 0.81 / 0.81 / 0.68 / 0.81 GiB: CORRECT
+  needle 200000: 199,393 tok, TTFT 266.4 s, hits 0, preemptions 4, min free 0.81 / 0.81 / 0.68 / 0.81 GiB: CORRECT
+  155K cold: 154,545 tok, TTFT 182.1 s (849 tok/s), preemptions 2, min free 0.81 / 0.81 / 0.68 / 0.81 GiB
+
+VERDICT PASS  (recorded 20; thresholds margin 1.0 nat, drift 0.5 nat)
+json: vllm-w4a16/results/quality-baseline-2026-10-17.json
+log: /workspace/vllm-w4a16/results/quality-record-R14-20261017-194543.log
