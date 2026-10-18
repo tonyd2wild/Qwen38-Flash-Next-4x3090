@@ -1,0 +1,22 @@
+{
+ "label": "R23",
+ "time": "2026-10-18 01:58:22",
+ "n": 2,
+ "tokens": 100000,
+ "wall_s": 90.66381688101683,
+ "prompt_tokens": 199312,
+ "preemptions": 0,
+ "aggregate_prefill_tps": 2204.3235751581137,
+ "requests": [
+  {
+   "pt": 99606,
+   "ttft": 45.12487578392029,
+   "finish": "length"
+  },
+  {
+   "pt": 99706,
+   "ttft": 90.41866731643677,
+   "finish": "length"
+  }
+ ]
+}

@@ -1,0 +1,140 @@
+{
+ "label": "R23",
+ "started": "2026-10-18 01:52:00",
+ "quick": false,
+ "sections": [
+  "cold155k",
+  "needle200k"
+ ],
+ "server": {
+  "url": "http://localhost:8090",
+  "models": [
+   {
+    "id": "qwen3.8-flash-next",
+    "object": "model",
+    "created": 1792288320,
+    "owned_by": "vllm",
+    "root": "/models/qwen38fn",
+    "parent": null,
+    "max_model_len": 262144,
+    "permission": [
+     {
+      "id": "modelperm-a1934eb47ad67b73",
+      "object": "model_permission",
+      "created": 1792288320,
+      "allow_create_engine": false,
+      "allow_sampling": true,
+      "allow_logprobs": true,
+      "allow_search_indices": false,
+      "allow_view": true,
+      "allow_fine_tuning": false,
+      "organization": "*",
+      "group": null,
+      "is_blocking": false
+     }
+    ]
+   }
+  ],
+  "version": "0.28.1rc1.dev388+g8a728663c"
+ },
+ "needle200k": {
+  "result": {
+   "pt": 199407,
+   "ct": 9,
+   "wall": 168.29937934875488,
+   "finish": "stop",
+   "tool_calls": [],
+   "ttft": 168.2948453426361,
+   "dec": 2661.3604060913704,
+   "d": {
+    "prefix_cache_queries": 199407.0,
+    "prefix_cache_hits": 0.0,
+    "num_preemptions": 4.0,
+    "spec_decode_num_drafts": 3.0,
+    "spec_decode_num_draft_tokens": 9.0,
+    "spec_decode_num_accepted_tokens": 8.0,
+    "time_to_first_token_seconds_sum": 168.18058705329895,
+    "request_queue_time_seconds_sum": 3.1459989259019494e-05,
+    "request_prefill_time_seconds_sum": 168.05807561799884,
+    "request_decode_time_seconds_sum": 0.07044963201042265,
+    "request_inference_time_seconds_sum": 168.12852525000926,
+    "e2e_request_latency_seconds_sum": 168.27691650390625,
+    "accepted_pos0": 3.0,
+    "accepted_pos1": 3.0,
+    "accepted_pos2": 2.0
+   },
+   "hits": 0,
+   "head": "4471-ROSEWOOD"
+  },
+  "prefill_tps": 1184.8669493948064,
+  "correct": true,
+  "preemptions": 4,
+  "min_free_gib": [
+   0.6630859375,
+   0.6630859375,
+   0.6064453125,
+   0.6630859375
+  ]
+ },
+ "cold155k": {
+  "result": {
+   "pt": 154527,
+   "ct": 30,
+   "wall": 116.55755090713501,
+   "finish": "stop",
+   "tool_calls": [],
+   "ttft": 116.39424538612366,
+   "dec": 205.24925922176098,
+   "d": {
+    "prefix_cache_queries": 154527.0,
+    "prefix_cache_hits": 0.0,
+    "num_preemptions": 2.0,
+    "spec_decode_num_drafts": 12.0,
+    "spec_decode_num_draft_tokens": 36.0,
+    "spec_decode_num_accepted_tokens": 20.0,
+    "time_to_first_token_seconds_sum": 116.29960751533508,
+    "request_queue_time_seconds_sum": 3.653898602351546e-05,
+    "request_prefill_time_seconds_sum": 116.20392333701602,
+    "request_decode_time_seconds_sum": 0.2469870479835663,
+    "request_inference_time_seconds_sum": 116.45091038499959,
+    "e2e_request_latency_seconds_sum": 116.54592776298523,
+    "accepted_pos0": 10.0,
+    "accepted_pos1": 6.0,
+    "accepted_pos2": 4.0
+   },
+   "hits": 0,
+   "head": "The provided text is a nonsensical, incoherent string of repetitive words that l"
+  },
+  "prefill_tps": 1327.617181479854,
+  "correct": null,
+  "preemptions": 2,
+  "min_free_gib": [
+   0.6630859375,
+   0.6630859375,
+   0.607421875,
+   0.6630859375
+  ]
+ },
+ "totals": {
+  "prefix_cache_queries": 353934.0,
+  "prefix_cache_hits": 0.0,
+  "num_preemptions": 6.0,
+  "spec_decode_num_drafts": 15.0,
+  "spec_decode_num_draft_tokens": 45.0,
+  "spec_decode_num_accepted_tokens": 28.0,
+  "time_to_first_token_seconds_sum": 284.48019456863403,
+  "request_queue_time_seconds_sum": 6.799897528253496e-05,
+  "request_prefill_time_seconds_sum": 284.26199895501486,
+  "request_decode_time_seconds_sum": 0.31743667999398895,
+  "request_inference_time_seconds_sum": 284.57943563500885,
+  "e2e_request_latency_seconds_sum": 284.8228442668915,
+  "accepted_pos0": 13.0,
+  "accepted_pos1": 9.0,
+  "accepted_pos2": 6.0
+ },
+ "summary": {
+  "needle200k": "correct / 168 s / 1,185",
+  "cold155k": "1,328, 2, 0.61 (per card 0.66, 0.66, 0.61, 0.66)"
+ },
+ "finished": "2026-10-18 01:56:51"
+}

@@ -1,0 +1,61 @@
+{
+ "fix": true,
+ "blocks": 385,
+ "runs": [
+  {
+   "prompt": 99726,
+   "preemptions": 0,
+   "prefill_tokens": 99726,
+   "peak_mamba": 6,
+   "peak_used": 145,
+   "first_preempt_at": null,
+   "readmit_hits": [],
+   "free_after": 384,
+   "pool_ok": true
+  },
+  {
+   "prompt": 128000,
+   "preemptions": 0,
+   "prefill_tokens": 128000,
+   "peak_mamba": 6,
+   "peak_used": 179,
+   "first_preempt_at": null,
+   "readmit_hits": [],
+   "free_after": 384,
+   "pool_ok": true
+  },
+  {
+   "prompt": 154495,
+   "preemptions": 0,
+   "prefill_tokens": 154495,
+   "peak_mamba": 6,
+   "peak_used": 211,
+   "first_preempt_at": null,
+   "readmit_hits": [],
+   "free_after": 384,
+   "pool_ok": true
+  },
+  {
+   "prompt": 199404,
+   "preemptions": 0,
+   "prefill_tokens": 199404,
+   "peak_mamba": 6,
+   "peak_used": 265,
+   "first_preempt_at": null,
+   "readmit_hits": [],
+   "free_after": 384,
+   "pool_ok": true
+  },
+  {
+   "prompt": 262000,
+   "preemptions": 0,
+   "prefill_tokens": 262000,
+   "peak_mamba": 6,
+   "peak_used": 340,
+   "first_preempt_at": null,
+   "readmit_hits": [],
+   "free_after": 384,
+   "pool_ok": true
+  }
+ ]
+}

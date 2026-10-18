@@ -1,0 +1,66 @@
+scoreboard 2026-10-18 02:12:45  http://localhost:8090  model qwen3.8-flash-next  label R24  vllm 0.28.1rc1.dev388+g8a728663c  sections decode,ttft,incremental,needle200k,cold155k,concurrency
+warm-up: short prompt, count to 100, one ~8K prompt
+
+== Decode, single stream (count median of 5, prose 1 run, code median of 3)
+  count run 1: 391 tokens, TTFT 155 ms, decode 206.7 tok/s
+  count run 2: 391 tokens, TTFT 155 ms, decode 206.3 tok/s
+  count run 3: 391 tokens, TTFT 156 ms, decode 206.5 tok/s
+  count run 4: 391 tokens, TTFT 154 ms, decode 206.2 tok/s
+  count run 5: 391 tokens, TTFT 155 ms, decode 207.3 tok/s
+  COUNT median 206.5 tok/s, TTFT median 155 ms, acceptance mean length 4.0 per position [1.0, 1.0, 1.0]
+  prose run 1: 512 tokens, TTFT 157 ms, decode 151.9 tok/s
+  PROSE median 151.9 tok/s, TTFT median 157 ms, acceptance mean length 2.893 per position [0.831, 0.621, 0.441]
+  code run 1: 512 tokens, TTFT 161 ms, decode 181.2 tok/s
+  code run 2: 512 tokens, TTFT 157 ms, decode 183.4 tok/s
+  code run 3: 512 tokens, TTFT 155 ms, decode 183.8 tok/s
+  CODE median 183.4 tok/s, TTFT median 157 ms, acceptance mean length 3.489 per position [0.923, 0.845, 0.72]
+
+== TTFT by prompt size (cold = fresh prefix, warm = same prompt again)
+    target   prompt   cold TTFT      prefill   warm TTFT  warm hits  decode@ctx  preempt
+      1000    1,028       0.50s    2,065 t/s       0.16s        832   133.4 t/s        0
+     16000   16,016       7.36s    2,176 t/s       0.18s     15,808   119.4 t/s        0
+     64000   63,784      29.52s    2,160 t/s       0.37s     63,232   150.7 t/s        0
+    128000  127,638      59.38s    2,149 t/s       0.37s    127,296   136.6 t/s        0
+
+== Incremental turns (cached conversation + N new tokens; each N appends to the same cached base)
+    cached    new   prompt      TTFT     hits  srv queue srv prefill srv TTFT  base TTFT
+     16000   1000   17,037     0.63s   15,808     0.000s      0.592s   0.610s      7.33s
+     16000   4000   20,026     2.05s   15,808     0.000s      2.021s   2.036s      7.33s
+     64000   4000   67,871     2.28s   63,232     0.000s      2.214s   2.239s     29.42s
+     64000  16000   79,832     7.89s   63,232     0.000s      7.791s   7.822s     29.42s
+    128000   4000  131,648     2.28s  127,296     0.000s      2.174s   2.199s     59.33s
+    128000  16000  143,608     7.99s  127,296     0.000s      7.861s   7.898s     59.33s
+
+== Needle ~200K
+  needle: 199,407 prompt tokens, TTFT 94.0 s (2,121 tok/s prefill), preemptions 0, min free per card 0.66 / 0.66 / 0.60 / 0.66 GiB, CORRECT
+
+== ~155K cold prefill
+  155K cold: 154,561 prompt tokens, TTFT 72.5 s (2,132 tok/s prefill), preemptions 0, min free per card 0.66 / 0.66 / 0.60 / 0.66 GiB
+
+== Concurrency (N streams x 2 rounds, agent system prompt + 8 tools, tool_choice none, max 512, temperature 0)
+  2 streams: 4 requests, 2048 tokens in 10.9 s = 188.3 tok/s aggregate; per-stream decode median 105.6 (min 98.4); TTFT p50 0.67 s p99 0.95 s
+  4 streams: 8 requests, 4096 tokens in 16.3 s = 251.4 tok/s aggregate; per-stream decode median 71.7 (min 58.6); TTFT p50 1.06 s p99 1.87 s
+  6 streams: 12 requests, 6144 tokens in 18.9 s = 324.9 tok/s aggregate; per-stream decode median 59.7 (min 51.1); TTFT p50 0.34 s p99 1.57 s
+
+== Scoreboard rows (R24), notes-file order
+| Decode, count to 100, median of 5 (tok/s) | 206.5 (accept 4.0) |
+| Decode, prose 512 tokens (tok/s) | 151.9 (accept 2.893) |
+| Decode, code prompt (tok/s) | 183.4 (accept 3.489) |
+| Cold TTFT 1K / prefill tok/s | 0.50 s / 2,065 |
+| Cold TTFT 16K / prefill tok/s | 7.36 s / 2,176 |
+| Cold TTFT 64K / prefill tok/s | 29.52 s / 2,160 |
+| Cold TTFT 128K / prefill tok/s | 59.38 s / 2,149 |
+| Warm TTFT 1K / 16K / 64K / 128K (s) | 0.16 / 0.18 / 0.37 / 0.37 |
+| Decode at 64K / 128K context (tok/s) | 150.7 / 136.6 |
+| Incremental TTFT, 16K cached + 1K / 4K new (s) | 0.63 / 2.05 |
+| Incremental TTFT, 64K cached + 4K / 16K new (s) | 2.28 / 7.89 |
+| Incremental TTFT, 128K cached + 4K / 16K new (s) | 2.28 / 7.99 |
+| Needle ~200K: correct / TTFT / prefill tok/s | correct / 94 s / 2,121 |
+| 155K cold prefill tok/s, preemptions, min free GiB per card | 2,132, 0, 0.60 (per card 0.66, 0.66, 0.60, 0.66) |
+| Concurrency 2 / 4 / 6: aggregate tok/s | 188.3 / 251.4 / 324.9 |
+| Concurrency 2 / 4 / 6: per-stream decode median (tok/s) | 105.6 / 71.7 / 59.7 |
+| Concurrency 2 / 4 / 6: TTFT p50-p99 (s) | 0.67-0.95 / 1.06-1.87 / 0.34-1.57 |
+
+  preemptions during run: 0; whole-run acceptance {'drafts': 6483, 'mean_len': 2.652, 'per_pos': [0.739, 0.536, 0.377]}
+json: /workspace/vllm-w4a16/results/scoreboard-R24-20261018-021245.json
+log: /workspace/vllm-w4a16/results/scoreboard-R24-20261018-021245.log

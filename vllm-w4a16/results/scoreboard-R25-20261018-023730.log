@@ -1,0 +1,29 @@
+scoreboard 2026-10-18 02:37:30  http://localhost:8090  model qwen3.8-flash-next  label R25  vllm 0.28.1rc1.dev388+g8a728663c  sections decode,cold155k
+warm-up: short prompt, count to 100, one ~8K prompt
+
+== Decode, single stream (count median of 5, prose 1 run, code median of 3)
+  count run 1: 391 tokens, TTFT 162 ms, decode 208.6 tok/s
+  count run 2: 391 tokens, TTFT 159 ms, decode 207.8 tok/s
+  count run 3: 391 tokens, TTFT 157 ms, decode 208.0 tok/s
+  count run 4: 391 tokens, TTFT 162 ms, decode 207.9 tok/s
+  count run 5: 391 tokens, TTFT 163 ms, decode 208.1 tok/s
+  COUNT median 208.0 tok/s, TTFT median 162 ms, acceptance mean length 4.0 per position [1.0, 1.0, 1.0]
+  prose run 1: 512 tokens, TTFT 159 ms, decode 140.6 tok/s
+  PROSE median 140.6 tok/s, TTFT median 159 ms, acceptance mean length 2.677 per position [0.776, 0.536, 0.365]
+  code run 1: 512 tokens, TTFT 160 ms, decode 183.6 tok/s
+  code run 2: 512 tokens, TTFT 175 ms, decode 178.7 tok/s
+  code run 3: 512 tokens, TTFT 163 ms, decode 178.9 tok/s
+  CODE median 178.9 tok/s, TTFT median 163 ms, acceptance mean length 3.425 per position [0.902, 0.822, 0.702]
+
+== ~155K cold prefill
+  155K cold: 154,348 prompt tokens, TTFT 72.7 s (2,122 tok/s prefill), preemptions 0, min free per card 0.66 / 0.66 / 0.61 / 0.66 GiB
+
+== Scoreboard rows (R25), notes-file order
+| Decode, count to 100, median of 5 (tok/s) | 208.0 (accept 4.0) |
+| Decode, prose 512 tokens (tok/s) | 140.6 (accept 2.677) |
+| Decode, code prompt (tok/s) | 178.9 (accept 3.425) |
+| 155K cold prefill tok/s, preemptions, min free GiB per card | 2,122, 0, 0.61 (per card 0.66, 0.66, 0.61, 0.66) |
+
+  preemptions during run: 0; whole-run acceptance {'drafts': 1144, 'mean_len': 3.533, 'per_pos': [0.92, 0.845, 0.767]}
+json: /workspace/vllm-w4a16/results/scoreboard-R25-20261018-023730.json
+log: /workspace/vllm-w4a16/results/scoreboard-R25-20261018-023730.log

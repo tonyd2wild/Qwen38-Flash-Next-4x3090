@@ -8,7 +8,9 @@
 # that implements this checkpoint; nvidia = the ModelOpt-era layout our overlays target), OVERLAYS, EXTRA, DOCKER_EXTRA,
 # PREFIX_CACHE (0|1; 1 = --enable-prefix-caching --mamba-cache-mode align), GPU_ARGS (default --gpus all),
 # TRITON_CACHE (0|1; 1 = keep Triton's kernel cache in the mounted cache dir across boots), TOKSPLIT (0|1; 1 = exact
-# split tokenization with a piece cache for long prompts, TOKSPLIT_THREADS rayon threads, default 8; journal/14).
+# split tokenization with a piece cache for long prompts, TOKSPLIT_THREADS rayon threads, default 8; journal/14),
+# MAMBA_FIX (0|1; 1 = free every align-mode Mamba state block once no in-flight step reads it; journal/04), MAMBA_TRACE
+# (0|1; 1 = MAMBATRACE log lines from the KV manager for prompts of >= 32K tokens; journal/04).
 set -euo pipefail
 # The upstream nightly-8a728663 tag was pruned; build this image from ../container/Containerfile (same commit, same paths).
 IMAGE="${IMAGE:-qwen38fn-vllm:8a728663}"
@@ -21,6 +23,7 @@ PLE_MODE="${PLE_MODE:-staged}"; GRAPHS="${GRAPHS:-nocompile}"; CAPTURE_SIZES="${
 MTP="${MTP:-0}"; SEQS="${SEQS:-4}"; CHUNK="${CHUNK-4096}"; GMU="${GMU:-0.92}"; MAXLEN="${MAXLEN:-262144}"
 KV_DTYPE="${KV_DTYPE:-fp8_e4m3}"; TP="${TP:-4}"; PORT="${PORT:-8090}"; MODULE="${MODULE:-nvidia}"; OVERLAYS="${OVERLAYS:-1}"
 PREFIX_CACHE="${PREFIX_CACHE:-0}"; GPU_ARGS="${GPU_ARGS:---gpus all}"; TRITON_CACHE="${TRITON_CACHE:-0}"; TOKSPLIT="${TOKSPLIT:-0}"
+MAMBA_FIX="${MAMBA_FIX:-0}"; MAMBA_TRACE="${MAMBA_TRACE:-0}"
 VP=/usr/local/lib/python3.12/dist-packages/vllm; MP="$VP/models/qwen4_exp/$MODULE"
 test -f "$MODEL_HOST/config.json" || { echo "MODEL MISSING at $MODEL_HOST" >&2; exit 3; }
 PLE_ENV=(); case "$PLE_MODE" in
@@ -47,6 +50,13 @@ case "$TOKSPLIT" in
   1) TOK_ENV=(-e QWEN4EXP_TOKSPLIT=1 -e RAYON_NUM_THREADS="${TOKSPLIT_THREADS:-8}"
               -v "$PATCH_DIR/renderers_base.py:$VP/renderers/base.py:ro" -v "$PATCH_DIR/tok_split.py:$VP/renderers/tok_split.py:ro") ;;
   *) echo "TOKSPLIT must be 0|1" >&2; exit 2 ;;
+esac
+# MAMBA_FIX / MAMBA_TRACE: the KV-manager overlay (patch/single_type_kv_cache_manager.py); with both 0 nothing is mounted.
+case "$MAMBA_FIX$MAMBA_TRACE" in
+  00) KVM_ENV=() ;;
+  01|10|11) KVM_ENV=(-e QWEN4EXP_MAMBA_FIX="$MAMBA_FIX" -e QWEN4EXP_MAMBA_TRACE="$MAMBA_TRACE"
+                     -v "$PATCH_DIR/single_type_kv_cache_manager.py:$VP/v1/core/single_type_kv_cache_manager.py:ro") ;;
+  *) echo "MAMBA_FIX and MAMBA_TRACE must be 0|1" >&2; exit 2 ;;
 esac
 OVERLAY_MOUNT=(); if [ "$OVERLAYS" = "1" ]; then
   QSA_SFX=""; if [ "$KV_DTYPE" = "fp8_e5m2" ]; then QSA_SFX="_e5m2"; fi   # Ampere: e5m2 variant of the QSA overlay (no fp8e4nv in Triton)
@@ -95,7 +105,7 @@ docker run $GPU_ARGS -d --name "$NAME" --restart no \
   -e HF_HUB_OFFLINE=1 -e TRANSFORMERS_OFFLINE=1 -e VLLM_ENGINE_READY_TIMEOUT_S=3600 \
   -e PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True -e TORCH_CUDA_ARCH_LIST=8.6 \
   "${NCCL_ENV[@]}" -e NCCL_CUMEM_ENABLE=0 -e VLLM_USE_DEEP_GEMM=0 -e VLLM_USE_V2_MODEL_RUNNER=1 -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  "${PLE_ENV[@]}" "${GRAPH_MOUNT[@]}" "${OVERLAY_MOUNT[@]}" "${TRITON_ENV[@]}" "${TOK_ENV[@]}" ${DOCKER_EXTRA:-} \
+  "${PLE_ENV[@]}" "${GRAPH_MOUNT[@]}" "${OVERLAY_MOUNT[@]}" "${TRITON_ENV[@]}" "${TOK_ENV[@]}" "${KVM_ENV[@]}" ${DOCKER_EXTRA:-} \
   "$IMAGE" \
     /models/qwen38fn --served-model-name qwen3.8-flash-next \
     --host 0.0.0.0 --port "$PORT" \
@@ -105,10 +115,10 @@ docker run $GPU_ARGS -d --name "$NAME" --restart no \
     --reasoning-parser qwen3 --enable-auto-tool-choice --tool-call-parser qwen3_xml \
     --default-chat-template-kwargs "{\"enable_thinking\": false}" \
     "${SPEC[@]}" "${GRAPH_ARGS[@]}" "${KV_ARGS[@]}" "${LMO_ARGS[@]}" ${EXTRA:-}
-echo "launched $NAME image=$IMAGE module=$MODULE ple=$PLE_MODE graphs=$GRAPHS kv=$KV_DTYPE tp=$TP gmu=$GMU maxlen=$MAXLEN seqs=$SEQS mtp=$MTP prefix_cache=$PREFIX_CACHE triton_cache=$TRITON_CACHE toksplit=$TOKSPLIT"
+echo "launched $NAME image=$IMAGE module=$MODULE ple=$PLE_MODE graphs=$GRAPHS kv=$KV_DTYPE tp=$TP gmu=$GMU maxlen=$MAXLEN seqs=$SEQS mtp=$MTP prefix_cache=$PREFIX_CACHE triton_cache=$TRITON_CACHE toksplit=$TOKSPLIT mamba_fix=$MAMBA_FIX mamba_trace=$MAMBA_TRACE"
 sleep 3; docker ps --format "{{.Names}} {{.Status}}" | grep "$NAME" || { echo "$NAME exited"; docker logs "$NAME" 2>&1 | tail -5; exit 1; }
 # Each overlay must be the file Python actually imports: compare the mounted source with the module file in the container.
-OVL=(); for m in "${PLE_ENV[@]}" "${OVERLAY_MOUNT[@]}" "${GRAPH_MOUNT[@]}" "${TOK_ENV[@]}"; do case "$m" in /*:*:ro) OVL+=("$m") ;; esac; done
+OVL=(); for m in "${PLE_ENV[@]}" "${OVERLAY_MOUNT[@]}" "${GRAPH_MOUNT[@]}" "${TOK_ENV[@]}" "${KVM_ENV[@]}"; do case "$m" in /*:*:ro) OVL+=("$m") ;; esac; done
 for m in "${OVL[@]}"; do src="${m%%:*}"; dst="${m#*:}"; dst="${dst%:ro}"
   mod="${dst#$VP/}"; mod="vllm.${mod%.py}"; mod="${mod//\//.}"
   got=$(docker exec "$NAME" python3 -c "import hashlib,importlib.util as u; f=u.find_spec('$mod').origin; print(f, hashlib.sha256(open(f,'rb').read()).hexdigest())")

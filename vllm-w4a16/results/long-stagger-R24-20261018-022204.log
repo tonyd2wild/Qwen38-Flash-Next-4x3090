@@ -1,0 +1,5 @@
+  request 0: 99,695 prompt tokens, TTFT 46.3 s, 1500 tokens at 55.4 tok/s, wall 73.3 s, finish length
+  request 1: 39,887 prompt tokens, TTFT 18.4 s, 30 tokens at 122.8 tok/s, wall 18.6 s, finish length
+later requests started 46.4 s in
+2 x ~100,000 cold: 139,582 prompt tokens, last first token after 46.3 s (3,018 tok/s aggregate prefill), wall 73.3 s, preemptions 0
+wrote /workspace/vllm-w4a16/results/long-stagger-R24-20261018-022204.json
