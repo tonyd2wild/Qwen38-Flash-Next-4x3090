@@ -1,0 +1,91 @@
+{
+ "label": "R20",
+ "depth": 128000,
+ "runs": [
+  {
+   "kind": "cold",
+   "pt": 127610,
+   "hits": 0,
+   "client_ttft": 104.84692549705505,
+   "server_ttft": 104.76496529579163,
+   "queue": 3.645100514404476e-05,
+   "prefill": 104.45093319800799,
+   "client_minus_server": 0.08196020126342773,
+   "server_minus_prefill": 0.31403209778363816,
+   "preemptions": 2
+  },
+  {
+   "kind": "chat",
+   "pt": 127610,
+   "hits": 127296,
+   "client_ttft": 0.6535921096801758,
+   "server_ttft": 0.5692565441131592,
+   "queue": 3.571002162061632e-05,
+   "prefill": 0.25465307099511847,
+   "client_minus_server": 0.0843355655670166,
+   "server_minus_prefill": 0.3146034731180407,
+   "preemptions": 0
+  },
+  {
+   "kind": "text",
+   "pt": 127610,
+   "hits": 127296,
+   "client_ttft": 0.6262331008911133,
+   "server_ttft": 0.563737154006958,
+   "queue": 3.659998765215278e-05,
+   "prefill": 0.25613508801325224,
+   "client_minus_server": 0.06249594688415527,
+   "server_minus_prefill": 0.30760206599370576,
+   "preemptions": 0
+  },
+  {
+   "kind": "ids",
+   "pt": 127610,
+   "hits": 127296,
+   "client_ttft": 0.38278651237487793,
+   "server_ttft": 0.2712719440460205,
+   "queue": 3.527000080794096e-05,
+   "prefill": 0.24918725198949687,
+   "client_minus_server": 0.11151456832885742,
+   "server_minus_prefill": 0.022084692056523636,
+   "preemptions": 0
+  },
+  {
+   "kind": "chat",
+   "pt": 127610,
+   "hits": 127296,
+   "client_ttft": 0.6423184871673584,
+   "server_ttft": 0.5609238147735596,
+   "queue": 3.4891010727733374e-05,
+   "prefill": 0.2511921639961656,
+   "client_minus_server": 0.08139467239379883,
+   "server_minus_prefill": 0.30973165077739395,
+   "preemptions": 0
+  },
+  {
+   "kind": "text",
+   "pt": 127610,
+   "hits": 127296,
+   "client_ttft": 0.6431903839111328,
+   "server_ttft": 0.5670523643493652,
+   "queue": 3.396999090909958e-05,
+   "prefill": 0.2500088929955382,
+   "client_minus_server": 0.07613801956176758,
+   "server_minus_prefill": 0.31704347135382704,
+   "preemptions": 0
+  },
+  {
+   "kind": "ids",
+   "pt": 127610,
+   "hits": 127296,
+   "client_ttft": 0.3779158592224121,
+   "server_ttft": 0.26905012130737305,
+   "queue": 2.283998765051365e-05,
+   "prefill": 0.2494018659926951,
+   "client_minus_server": 0.10886573791503906,
+   "server_minus_prefill": 0.019648255314677954,
+   "preemptions": 0
+  }
+ ],
+ "probe": []
+}

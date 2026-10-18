@@ -1,0 +1,46 @@
+{
+ "rayon_threads": "4",
+ "init_s": 1.2533830309985206,
+ "exact": {
+  "chat": 24,
+  "chat-fine": 24,
+  "filler": 6,
+  "filler-lines": 6
+ },
+ "speed": [
+  {
+   "tokens": 15971,
+   "chars": 81238,
+   "pieces": 21,
+   "full_ms": 39.51208098442294,
+   "split_cold_ms": 8.997897995868698,
+   "next_turn_full_ms": 45.98219500621781,
+   "next_turn_cached_ms": 2.5090849958360195
+  },
+  {
+   "tokens": 63810,
+   "chars": 324691,
+   "pieces": 81,
+   "full_ms": 174.6539929881692,
+   "split_cold_ms": 31.53700300026685,
+   "next_turn_full_ms": 180.87770798592828,
+   "next_turn_cached_ms": 3.062369010876864
+  },
+  {
+   "tokens": 127599,
+   "chars": 649299,
+   "pieces": 160,
+   "full_ms": 339.00946797803044,
+   "split_cold_ms": 54.35805401066318,
+   "next_turn_full_ms": 340.098320011748,
+   "next_turn_cached_ms": 4.87674298346974
+  }
+ ],
+ "cuts": {
+  "chat": 572,
+  "chat-fine": 10206,
+  "filler": 518,
+  "filler-lines": 4102
+ },
+ "fails": []
+}

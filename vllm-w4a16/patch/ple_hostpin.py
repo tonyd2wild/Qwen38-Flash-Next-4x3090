@@ -8,6 +8,10 @@
 # Why a memfd and not the files' own page-cache pages: the 3090 reports cudaDevAttrHostRegisterReadOnlySupported = 0,
 # a read-only file mapping cannot be registered without that flag (error 801/1), and a writable private mapping would
 # be copied page by page on pinning (one copy per rank).
+# 2026-10-17 (T11, journal/14-p9-fixed-overheads.md): boot time. The leader drops the table files' page cache as it
+# copies (POSIX_FADV_DONTNEED per 64 MiB read: the bytes now live in the memfd, and the 69 GB of target weights loaded
+# next must stay cached across boots), registers before it hands the buffer out, the followers register starting at
+# different chunks, and every rank waits at a barrier after registering, so no rank loads weights while another pins.
 """Pinned, shared PLE table in host RAM with a UVA row gather."""
 
 from __future__ import annotations
@@ -59,6 +63,9 @@ def _fill(table, mm: mmap.mmap, threads: int) -> None:
             if r <= 0:
                 raise IOError(f"PLE hostpin: short read at {src + got} ({got} of {n} bytes)")
             got += r
+        # The bytes now live in the memfd: drop the file pages at once, so the 51 GB read never evicts the target
+        # weights the next phase of the boot reads from the page cache (T11).
+        os.posix_fadvise(fd, src, n, os.POSIX_FADV_DONTNEED)
 
     with ThreadPoolExecutor(max_workers=threads, thread_name_prefix="ple-hostpin-fill") as pool:
         list(pool.map(copy, jobs))
@@ -70,11 +77,12 @@ class PLEHostPinTable:
 
     exchange(payload) is called once by every rank with the leader's (pid, fd) on the leader and None elsewhere, and
     must return the leader's payload on every rank (a broadcast; the leader fills the buffer before calling it).
-    Without exchange the caller is a lone leader (a microbenchmark).
+    barrier() is then called once by every rank after its registration. Without exchange the caller is a lone leader
+    (a microbenchmark).
     """
 
     def __init__(self, table, *, leader: bool = True, exchange: Callable[[object], object] | None = None,
-                 threads: int = 8) -> None:
+                 barrier: Callable[[], None] | None = None, rank: int = 0, world: int = 1, threads: int = 8) -> None:
         self.rows_total = int(table.rows_total)
         self.row_bytes = int(table.row_bytes)
         self.dtype = table.dtype
@@ -82,10 +90,13 @@ class PLEHostPinTable:
         self.device = torch.device("cuda", torch.cuda.current_device())
         if self.row_bytes % 8:
             raise ValueError(f"PLE hostpin: row of {self.row_bytes} bytes is not a whole number of int64 words")
+        self._rank, self._world = rank, max(world, 1)
         rt = _cudart()
         free0 = torch.cuda.mem_get_info(self.device)[0]
         t0 = time.perf_counter()
         self.fill_s = 0.0
+        self.register_s = 0.0
+        self.register_retries = 0
         if leader:
             libc = ctypes.CDLL("libc.so.6", use_errno=True)
             libc.memfd_create.argtypes = [ctypes.c_char_p, ctypes.c_uint]
@@ -96,7 +107,12 @@ class PLEHostPinTable:
             self._mm = mmap.mmap(fd, self.nbytes, flags=mmap.MAP_SHARED, prot=mmap.PROT_READ | mmap.PROT_WRITE)
             _fill(table, self._mm, threads)
             self.fill_s = time.perf_counter() - t0
+            for tfd in {fd for fd, _ in table.shard_base}:
+                os.posix_fadvise(tfd, 0, 0, os.POSIX_FADV_DONTNEED)
             self._fd = fd  # kept open: the followers open it through /proc/<pid>/fd
+            # The leader registers before it hands out the buffer, so no two ranks pin the same pages at once
+            # (four concurrent registrations hit 12-28 transient failures each in the T11 bench).
+            self._addr = self._register(rt)
             payload = (os.getpid(), fd, self.nbytes)
         else:
             payload = None
@@ -108,13 +124,33 @@ class PLEHostPinTable:
                 raise ValueError(f"PLE hostpin: leader's buffer is {nbytes} bytes, expected {self.nbytes}")
             self._fd = os.open(f"/proc/{pid}/fd/{lfd}", os.O_RDWR)
             self._mm = mmap.mmap(self._fd, self.nbytes, flags=mmap.MAP_SHARED, prot=mmap.PROT_READ | mmap.PROT_WRITE)
+        addr = self._register(rt) if not leader else self._addr
+        words = self.row_bytes // 8
+
+        class _View:  # the pinned buffer as a CUDA tensor [rows, words] of int64 (no copy)
+            __cuda_array_interface__ = {"shape": (self.rows_total, words), "typestr": "<i8",
+                                        "data": (addr, False), "version": 3, "strides": None}
+
+        self.rows = torch.as_tensor(_View(), device=self.device)
+        torch.cuda.synchronize(self.device)
+        t2 = time.perf_counter()
+        if barrier is not None:
+            barrier()
+        self.barrier_s = time.perf_counter() - t2
+        self.setup_s = time.perf_counter() - t0
+        self.vram_cost = free0 - torch.cuda.mem_get_info(self.device)[0]  # driver page tables for the mapping
+        self.leader = leader
+
+    def _register(self, rt) -> int:
+        """cudaHostRegister the whole mapping in _REGISTER_BYTES pieces; returns its address."""
         addr = ctypes.addressof(ctypes.c_char.from_buffer(self._mm))
         t1 = time.perf_counter()
-        self.register_retries = 0
-        for off in range(0, self.nbytes, _REGISTER_BYTES):
-            # Adjacent registrations map adjacent device addresses, so the view below spans them. A registration can
-            # fail transiently ("invalid argument") while four ranks pin the same pages and the page cache churns;
-            # a retry of that chunk succeeds.
+        offs = list(range(0, self.nbytes, _REGISTER_BYTES))
+        k = self._rank * len(offs) // self._world  # each rank starts at its own chunk: concurrent pins of the same
+        for off in offs[k:] + offs[:k]:            # pages in the same order run at a third of the speed (T11 bench)
+            # Every registration maps its chunk at the host address (UVA), so the view spans them; checked below. A
+            # registration can fail transiently ("invalid argument"), most often while several ranks pin the same
+            # pages; a retry of that chunk succeeds.
             n = min(_REGISTER_BYTES, self.nbytes - off)
             for attempt in range(_REGISTER_TRIES):
                 err = rt.cudaHostRegister(addr + off, n, _HOST_REGISTER_FLAGS)
@@ -128,22 +164,13 @@ class PLEHostPinTable:
                                    f"{_REGISTER_TRIES} times: {rt.cudaGetErrorString(err).decode()} (error {err}); "
                                    f"RLIMIT_MEMLOCK {resource.getrlimit(resource.RLIMIT_MEMLOCK)}")
         self.register_s = time.perf_counter() - t1
-        dptr = ctypes.c_void_p()
-        err = rt.cudaHostGetDevicePointer(ctypes.byref(dptr), addr, 0)
-        if err != 0 or dptr.value != addr:
-            # UVA on Linux x86: registered memory has the same address on the device; the view below relies on it.
-            raise RuntimeError(f"PLE hostpin: device pointer {dptr.value} != host pointer {addr} (error {err})")
-        words = self.row_bytes // 8
-
-        class _View:  # the pinned buffer as a CUDA tensor [rows, words] of int64 (no copy)
-            __cuda_array_interface__ = {"shape": (self.rows_total, words), "typestr": "<i8",
-                                        "data": (addr, False), "version": 3, "strides": None}
-
-        self.rows = torch.as_tensor(_View(), device=self.device)
-        torch.cuda.synchronize(self.device)
-        self.setup_s = time.perf_counter() - t0
-        self.vram_cost = free0 - torch.cuda.mem_get_info(self.device)[0]  # driver page tables for the mapping
-        self.leader = leader
+        for off in offs:
+            dptr = ctypes.c_void_p()
+            err = rt.cudaHostGetDevicePointer(ctypes.byref(dptr), addr + off, 0)
+            if err != 0 or dptr.value != addr + off:
+                # UVA on Linux x86: registered memory has the same address on the device; the view relies on it.
+                raise RuntimeError(f"PLE hostpin: device pointer {dptr.value} != host pointer {addr + off} (error {err})")
+        return addr
 
     def gather(self, ids: torch.Tensor, out: torch.Tensor) -> torch.Tensor:
         """Rows for int64 ids (on the GPU, any shape, flattened) into out: uint8 [n, row_bytes] on the same GPU."""
@@ -155,7 +182,8 @@ class PLEHostPinTable:
     def describe(self) -> str:
         return (f"PLEHostPinTable({'leader' if self.leader else 'follower'}, {self.nbytes / 2**30:.1f} GiB pinned "
                 f"(shared memfd), {self.rows_total:,} rows x {self.row_bytes} B, setup {self.setup_s:.1f} s (fill "
-                f"{self.fill_s:.1f}, register {self.register_s:.1f}, {self.register_retries} retries), GPU memory for the mapping "
+                f"{self.fill_s:.1f}, register {self.register_s:.1f}, {self.register_retries} retries, barrier wait "
+                f"{self.barrier_s:.1f}), GPU memory for the mapping "
                 f"{self.vram_cost / 2**20:.0f} MiB on {self.device})")
 
 

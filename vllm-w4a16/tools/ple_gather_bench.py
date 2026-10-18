@@ -17,6 +17,7 @@
 #            table into one shared memfd, every process maps it and registers it with cudaHostRegister, then the UVA
 #            gather over all 320M rows; setup time, GPU memory the mapping costs, MemAvailable, bytes against
 #            gather_cpu, eager and CUDA-graph replay timings; 1 process, then --procs at once sharing one buffer
+#            (with the lane's barrier after registration, T11), then the table's page-cache residency again
 # Usage (driver; needs the image and free GPUs):
 #   GPU_ARGS="--device nvidia.com/gpu=all" python3 vllm-w4a16/tools/ple_gather_bench.py --label T2
 # Writes results/ple-gather-bench-<label>-<time>.json. Worker mode runs inside the container (--worker).
@@ -183,12 +184,18 @@ def w_filepin():
             if time.time() - t0 > 1800: raise TimeoutError("no leader")
             time.sleep(0.1)
         return json.load(open(share))
+    def barrier():  # tp.barrier in the lane (T11): nobody leaves until every process has registered
+        open(f"/out/filepin-reg{a.rank}", "w").close(); t0 = time.time()
+        while sum(os.path.exists(f"/out/filepin-reg{r}") for r in range(a.nprocs)) < a.nprocs:
+            if time.time() - t0 > 1800: raise TimeoutError("barrier")
+            time.sleep(0.05)
     try:
-        hp = PLEHostPinTable(t, leader=a.rank == 0, exchange=exchange if a.nprocs > 1 else None)
+        hp = PLEHostPinTable(t, leader=a.rank == 0, exchange=exchange if a.nprocs > 1 else None,
+                             barrier=barrier if a.nprocs > 1 else None, rank=a.rank, world=a.nprocs)
     except Exception as e:
         res["error"] = f"{type(e).__name__}: {e}"; json.dump(res, open(a.out, "w")); return
     m1 = meminfo()
-    res.update(setup_s=hp.setup_s, fill_s=hp.fill_s, register_s=hp.register_s, vram_cost_mib=hp.vram_cost / 2**20,
+    res.update(setup_s=hp.setup_s, fill_s=hp.fill_s, register_s=hp.register_s, barrier_s=hp.barrier_s, vram_cost_mib=hp.vram_cost / 2**20,
                pinned_gib=hp.nbytes / 2**30, register_retries=hp.register_retries, memavail_after=m1["MemAvailable"], cached_after=m1["Cached"],
                describe=hp.describe(), sizes={})
     # barrier: every worker in the container has its mapping before anyone times the gather
@@ -232,7 +239,7 @@ def driver():
     stamp = time.strftime("%Y%m%d-%H%M%S")
     tmp = os.path.abspath(os.path.join(os.path.dirname(HERE), "..", ".cache", "ple", "ple-bench")); os.makedirs(tmp, exist_ok=True)
     def run(mode, ranks, pin_gib=a.pin_gib):
-        for f in [f"filepin-ready{r}" for r in ranks] + ["filepin-share.json"]:
+        for f in [f"filepin-ready{r}" for r in ranks] + [f"filepin-reg{r}" for r in ranks] + ["filepin-share.json"]:
             try: os.remove(os.path.join(tmp, f))
             except FileNotFoundError: pass
         cmd = ["docker", "run", "--rm"] + gpu_args + ["--ipc", "host", "--ulimit", "memlock=-1:-1",
@@ -285,6 +292,9 @@ def driver():
                           f"{n}: {v['gather_ms']:.3f} ms ({v['GBs']:.1f} GB/s), graph {v['graph_ms']:.3f}"
                           for n, v in o["sizes"].items()))
             print(f"  host after: MemAvailable {m1['MemAvailable'] / 2**30:.1f} GiB, Cached {m1['Cached'] / 2**30:.1f} GiB")
+        # The leader drops the table files' page cache after its fill (T11): the residency sample shows it.
+        print("== page-cache residency of the table after filepin (mincore sample)", flush=True)
+        R["resident_after_filepin"] = run("resident", [0])[0]; print("  ", R["resident_after_filepin"])
     for k in ("staged_1", f"staged_{a.procs}"):
         for o in R.get(k, []):
             if "error" in o: print(k, "rank", o.get("rank"), "ERROR", o["error"][-400:]); continue

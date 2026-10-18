@@ -730,12 +730,16 @@ class Qwen4ExpNGramEmbedding(nn.Module):
             elif _ple_hostpin_enabled() and getattr(self, "_ple_hostpin", None) is None:
                 from .ops.ple_hostpin import PLEHostPinTable
 
-                # TP rank 0 fills one shared buffer; the others map it once rank 0 broadcasts its (pid, fd).
+                # TP rank 0 fills one shared buffer; the others map it once rank 0 broadcasts its (pid, fd). All
+                # ranks then meet at a barrier, so weight loading starts only after every rank has registered.
                 tp = get_tp_group()
                 self._ple_hostpin = PLEHostPinTable(
                     self._ple_mmap_table(),
                     leader=tp.rank_in_group == 0,
                     exchange=(lambda payload: tp.broadcast_object(payload, src=0)) if tp.world_size > 1 else None,
+                    barrier=tp.barrier if tp.world_size > 1 else None,
+                    rank=tp.rank_in_group,
+                    world=tp.world_size,
                 )
                 logger.info("PLE hostpin: %s", self._ple_hostpin.describe())
         return loaded

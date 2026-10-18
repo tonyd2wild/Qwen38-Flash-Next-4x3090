@@ -9,8 +9,11 @@
 # (the base launcher passes --ulimit memlock=-1:-1). Rank 0 reads the table from the files at every boot (page
 # cache or disk) while the other ranks wait.
 # The tuned and prefix wrappers are not changed by this file; the knobs below are theirs, with PLE_MODE=hostpin.
+# T11 (journal/14-p9-fixed-overheads.md) adds TRITON_CACHE=1 (Triton kernels survive a reboot) and TOKSPLIT=1 (exact
+# split tokenization with a piece cache); both can be turned off from the environment.
 KV_BYTES="${KV_BYTES:-2400000000}" LM_ONLY=0 NCCL_MODE=nvl PLE_MODE=hostpin GRAPHS=nocompile MTP=3 TP=4 \
 GMU=0.95 SEQS=6 CHUNK=2048 MAXLEN=262144 KV_DTYPE=fp8_e5m2 CAPTURE_SIZES=4,8,12,16,20,24 \
 SPEC_EXTRA="${SPEC_EXTRA-\"disable_eagle_block_drop\":true}" PREFIX_CACHE=1 \
+TRITON_CACHE="${TRITON_CACHE:-1}" TOKSPLIT="${TOKSPLIT:-1}" \
 EXTRA="--quantization gptq_marlin --enable-expert-parallel --mm-processor-kwargs {\"max_pixels\":1048576} --mamba-ssm-cache-dtype bfloat16 --skip-mm-profiling" \
 exec bash "$(dirname "$0")/qwen38fn-w4a16-3090-tp4.sh"

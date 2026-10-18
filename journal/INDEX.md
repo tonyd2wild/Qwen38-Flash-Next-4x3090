@@ -2,14 +2,13 @@
 
 Plan: [`PLAN.md`](../PLAN.md) · Rules: [`AGENTS.md`](../AGENTS.md) · Numbers: [`vllm-w4a16/results/perf-2026-10-notes.md`](../vllm-w4a16/results/perf-2026-10-notes.md) · Entry template: [`TEMPLATE.md`](TEMPLATE.md)
 
-**GPU owner right now:** nobody. T5 stopped its server (R19) at 23:15; GPUs at 15-92 MiB. Host server down at 22:21. Last checked: 2026-10-17 23:15 by Opus 5.5 (T5).
+**GPU owner right now:** nobody. T11 stopped its server (R22) at 01:08 on 2026-10-18; GPUs at 15-92 MiB. Last checked: 2026-10-18 01:08 by Opus 5.5 (T11).
 
-**Next task:** **T11** (P9: fixed overheads for warm and incremental TTFT), **Opus 5.5 / high**. The user agreed on 2026-10-17 to move it from Sonnet: the scope grew after T5. Measure on the hostpin lane (`launch-qwen38fn-w4a16-hostpin.sh`; R19 is its baseline, `results/scoreboard-R19-20261017-230308.json`). Three parts, one change per boot:
-1. `-e TRITON_CACHE_DIR=/root/.cache/triton`. Triton's cache sits at `/root/.triton/cache`, outside the mounted cache, so every boot recompiles and the first requests pay 0.4-1.8 s JIT spikes (`02-time-accounting.md`). Make it a lane knob.
-2. Tokenization, ~0.3 s per 128K turn, server side; `tools/turn_overhead.py` measures it (R15: chat 0.72 s against token ids 0.42 s). Write a short Design section first. A prefix-token cache must return exactly the ids a full tokenization gives (seams between messages), or it is not lossless. Find where the frontend renders and tokenizes (`entrypoints/openai/` serving_chat / renderer in the image) before deciding.
-3. The hostpin boot: 8.5 min against ~4.5. Followers register in 99 s during weight loading against 20 s alone. Try building `PLEHostPinTable` after weight loading, or a TP barrier after registration (`05-p4-ple-hostpin.md` Side findings). Every rank must reach the `broadcast_object` in the same order, or the boot hangs.
+**Next task:** **T4** (P3: align-mode Mamba page leak), **Opus 5.5 / xhigh**. Escalate to Fable if the first boot does not explain it.
+- 128K and 155K cold are preemption-bound: 1,213-1,310 tok/s against 2,189 at 64K, with 2 preemptions each.
+- Measure on the hostpin lane (`launch-qwen38fn-w4a16-hostpin.sh`, which now defaults to `TRITON_CACHE=1 TOKSPLIT=1`; ready in ~5.4 min). R22 is the baseline: `results/scoreboard-R22-20261018-004644.json`.
 
-After T11: T4 (128K/155K cold are now preemption-bound: 1,184-1,278 tok/s against 2,142 at 64K), T14 before the first numerics-changing candidate, then T10. On every candidate boot, run `quality_gate.py --compare` first, then `scoreboard.py`.
+After T4: T14 (repeatability; the gate's `tool_search` token 9 swings 1.25-5.25 nat over idle repeats on one boot, a sharp probe) before the first numerics-changing candidate, then T10. On every candidate boot, run `quality_gate.py --compare` first, then `scoreboard.py`.
 
 ## Task board
 
@@ -30,7 +29,7 @@ Status values: `todo`, `in progress (model, since)`, `done`, `killed`. Update th
 | T9 | torch.compile diagnosis (timebox one boot + 2 h) | P7 | T5 | Opus 5.5 / xhigh | 11-p7-compile.md | todo | |
 | T7b | Hybrid MTP + n-gram/suffix proposer | P5 | T7a | Opus 5.5 / high | 12-p5-hybrid-proposer.md | todo | |
 | T10 | TP2 x PP2 (condition met by T2: comm is 47% of the step and at the host floor; a 2-rank all-reduce moves a third of the bytes) | P8 | T3, T6 | Fable 5.1 feasibility / xhigh, Opus 5.5 implementation / high | 13-p8-tp2pp2.md | todo | |
-| T11 | Fixed overheads for warm and incremental TTFT: tokenization (~0.3 s per 128K turn), `TRITON_CACHE_DIR`, hostpin boot time (8.5 min) | P9 | T2, T5 | Opus 5.5 / high (was Sonnet; changed after T5, user agreed) | 14-p9-fixed-overheads.md | todo | |
+| T11 | Fixed overheads for warm and incremental TTFT: tokenization (~0.3 s per 128K turn), `TRITON_CACHE_DIR`, hostpin boot time (8.5 min) | P9 | T2, T5 | Opus 5.5 / high (was Sonnet; changed after T5, user agreed) | [14-p9-fixed-overheads.md](14-p9-fixed-overheads.md) | done (Opus 5.5, 23:28-01:15) | **Kept** (R20-R22). `TOKSPLIT=1`: exact piece-wise tokenization (cuts before `<\|im_start\|>`, after `\n` before a letter, and between a letter and a space-letter; 0 mismatches over ~359K fuzzed cuts) with a piece cache; warm 128K 0.66 -> 0.38 s, 128K + 4K 2.62 -> 2.27 s. `TRITON_CACHE=1`: first-contact JIT 10.3 -> 0.2 s. Hostpin boot 8.5 -> 5.4 min (leader registers first, rotated chunks, barrier, PLE page cache dropped). Gate PASS; decode and cold unchanged |
 | T13 | Recipe: fast lane, `run-host-fast.sh`, final scoreboard and gate, README and ledger, hand-over | - | all kept items | Sonnet 5.5 scripts / high, Opus 5.5 README / high | 15-recipe.md | todo | |
 | T14 | Temperature-0 nondeterminism root cause (T2: not cuBLAS, NCCL, Marlin atomics, short-context top-k, spec decode or prefix caching; differs from prompt position 0, up to 0.4-0.7 nat) | - | T2 | Opus 5.5 / xhigh | 16-nondeterminism.md | todo | |
 | - | P10 QSA kernel tuning (parked); P13 PCIe P2P read-only diagnostics, then ask the user | P10, P13 | - | Fable 5.1 / Sonnet 5.5 | - | parked | |
