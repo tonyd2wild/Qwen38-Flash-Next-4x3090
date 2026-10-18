@@ -7,6 +7,12 @@ Plan: [`PLAN.md`](../PLAN.md) · Rules: [`AGENTS.md`](../AGENTS.md) · Numbers: 
 **Next task:** **T4** (P3: align-mode Mamba page leak), **Opus 5.5 / xhigh**. Escalate to Fable if the first boot does not explain it.
 - 128K and 155K cold are preemption-bound: 1,213-1,310 tok/s against 2,189 at 64K, with 2 preemptions each.
 - Measure on the hostpin lane (`launch-qwen38fn-w4a16-hostpin.sh`, which now defaults to `TRITON_CACHE=1 TOKSPLIT=1`; ready in ~5.4 min). R22 is the baseline: `results/scoreboard-R22-20261018-004644.json`.
+- The user confirmed **xhigh** for T4 on 2026-10-18; the board's model and effort stand. The planning stage comes first: write the hypotheses and the instrumentation list in `04-p3-mamba-leak.md` before the first boot.
+- Starting points:
+  - Code pointers for align-mode Mamba allocation: `00-scaffolding.md`, "Align-mode Mamba allocation" (`MambaManager`, `remove_skipped_blocks`, `allocate_new_blocks`) and "Pool geometry" (832-token blocks, 360 pages per card, 4 groups x (1 + 3 speculative) pages per live seat).
+  - The preemption pattern is deterministic (`01-baseline.md`): 0 at 100K and below, 2 for every cold prompt from 128K to 155K, 4 at ~200K.
+  - The kill test is measurable today: `scoreboard.py --sections cold155k` reports preemptions, and so do `quality_gate.py`'s needles.
+  - The author's fix is in another vLLM version and is a reference, not a patch to copy.
 
 After T4: T14 (repeatability; the gate's `tool_search` token 9 swings 1.25-5.25 nat over idle repeats on one boot, a sharp probe) before the first numerics-changing candidate, then T10. On every candidate boot, run `quality_gate.py --compare` first, then `scoreboard.py`.
 
