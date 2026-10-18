@@ -1,0 +1,98 @@
+{
+ "label": "T2-pcie",
+ "started": "2026-10-17 21:25:06",
+ "gemm": {
+  "gemm": [],
+  "hbm_copy_GBs": 0,
+  "device": "-"
+ },
+ "pcie_1": [
+  {
+   "rank": 0,
+   "pcie": [
+    {
+     "mode": "h2d",
+     "GBs_per_direction": 25.511627002962722
+    },
+    {
+     "mode": "d2h",
+     "GBs_per_direction": 22.810181353199393
+    },
+    {
+     "mode": "both",
+     "GBs_per_direction": 13.707163433091326
+    }
+   ]
+  }
+ ],
+ "pcie_4": [
+  {
+   "rank": 0,
+   "pcie": [
+    {
+     "mode": "h2d",
+     "GBs_per_direction": 9.206162480754179
+    },
+    {
+     "mode": "d2h",
+     "GBs_per_direction": 8.460155283795878
+    },
+    {
+     "mode": "both",
+     "GBs_per_direction": 3.994071489586709
+    }
+   ]
+  },
+  {
+   "rank": 1,
+   "pcie": [
+    {
+     "mode": "h2d",
+     "GBs_per_direction": 13.260315264570734
+    },
+    {
+     "mode": "d2h",
+     "GBs_per_direction": 12.286508172658873
+    },
+    {
+     "mode": "both",
+     "GBs_per_direction": 6.680831209889933
+    }
+   ]
+  },
+  {
+   "rank": 2,
+   "pcie": [
+    {
+     "mode": "h2d",
+     "GBs_per_direction": 4.3533339126791155
+    },
+    {
+     "mode": "d2h",
+     "GBs_per_direction": 4.092867555700948
+    },
+    {
+     "mode": "both",
+     "GBs_per_direction": 1.8557788951015832
+    }
+   ]
+  },
+  {
+   "rank": 3,
+   "pcie": [
+    {
+     "mode": "h2d",
+     "GBs_per_direction": 4.353803550928584
+    },
+    {
+     "mode": "d2h",
+     "GBs_per_direction": 4.0936491432347895
+    },
+    {
+     "mode": "both",
+     "GBs_per_direction": 1.855847356736161
+    }
+   ]
+  }
+ ]
+}

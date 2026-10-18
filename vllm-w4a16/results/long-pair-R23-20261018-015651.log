@@ -1,0 +1,4 @@
+  request 0: 99,606 prompt tokens, TTFT 45.1 s, finish length
+  request 1: 99,706 prompt tokens, TTFT 90.4 s, finish length
+2 x ~100,000 cold at once: 199,312 prompt tokens, last first token after 90.4 s (2,204 tok/s aggregate prefill), wall 90.7 s, preemptions 0
+wrote /workspace/vllm-w4a16/results/long-pair-R23-20261018-015651.json

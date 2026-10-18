@@ -1,0 +1,37 @@
+quality gate compare 2026-10-18 02:32:53  http://localhost:8090  label R25-mambafix-default  vllm 0.28.1rc1.dev388+g8a728663c
+warm-up: short prompt, count to 100, one ~8K prompt
+  boot facts: {'pool_tokens': 299482, 'max_num_seqs': 6, 'max_model_len': 262144, 'tool_call_parser': 'qwen3_xml', 'reasoning_parser': 'qwen3', 'thinking_off_default': True}
+
+== Frozen prompts (20), temperature 0, non-streamed, top-5 logprobs
+  id                  pt   ct   hits  status     first div  margin   drift  checks
+  code_func           59  313      0  FP-SIZED          38   0.125   0.053  expected=ok
+  code_bugfix        129  246      0  IDENTICAL                      0.157  expected=ok
+  code_refactor      152   94      0  IDENTICAL                      0.038  expected=ok
+  code_sql            68  156      0  FP-SIZED         105   0.375   0.072  expected=ok
+  code_bash           56  309      0  IDENTICAL                      0.112  expected=ok
+  prose_explain       29  253      0  FP-SIZED           0   0.125   0.000  
+  prose_summary      180   95      0  FP-SIZED          34   0.000   0.098  
+  prose_email         32  103      0  FP-SIZED          42   0.125   0.056  expected=ok
+  prose_compare       32  169      0  FP-SIZED          89   0.000   0.102  expected=ok
+  tool_read         1304   27      0  IDENTICAL                      0.008  tool_parse=ok tool_expected=ok
+  tool_tests        1302   43    832  IDENTICAL                      0.024  tool_parse=ok tool_expected=ok
+  tool_search       1309   38    832  SUSPECT            9   3.750   0.002  tool_parse=ok tool_expected=ok
+  tool_diff         1302   29    832  IDENTICAL                      0.002  tool_parse=ok tool_expected=ok
+  tool_write        1317   97    832  FP-SIZED           4   1.250   0.026  tool_parse=ok tool_expected=ok
+  long_qa_8k        8012    5      0  IDENTICAL                      0.000  expected=ok
+  long_list_16k    16003   10      0  IDENTICAL                      0.008  expected=ok
+  long_qa_30k      29970   23      0  IDENTICAL                      0.010  expected=ok
+  vision_halves      113    4      0  FP-SIZED           0   0.875   0.000  expected=ok
+  think_off           28    4      0  IDENTICAL                      0.000  expected=ok no_reasoning_by_default=ok
+  think_on            68   47      0  IDENTICAL                      0.121  expected=ok reasoning_split=ok
+
+== Long-context checks
+  needle  30000: 29,958 tok, TTFT 13.9 s, hits 0, preemptions 0, min free 0.66 / 0.66 / 0.60 / 0.66 GiB: CORRECT
+  needle 100000: 99,726 tok, TTFT 46.5 s, hits 0, preemptions 0, min free 0.66 / 0.66 / 0.60 / 0.66 GiB: CORRECT
+  needle 200000: 199,393 tok, TTFT 94.4 s, hits 0, preemptions 0, min free 0.66 / 0.66 / 0.61 / 0.66 GiB: CORRECT
+  155K cold: 154,584 tok, TTFT 72.8 s (2,124 tok/s), preemptions 0, min free 0.66 / 0.66 / 0.61 / 0.66 GiB
+
+VERDICT REVIEW  (FP-SIZED 8, IDENTICAL 11, SUSPECT 1; thresholds margin 2.0, drift 1.0, p99 0.25 nat); p99 |dlogprob| 0.100 over 1158 positions
+  SUSPECT (review the first divergent token): tool_search
+json: /workspace/vllm-w4a16/results/quality-compare-R25-mambafix-default-20261018-023253.json
+log: /workspace/vllm-w4a16/results/quality-compare-R25-mambafix-default-20261018-023253.log

@@ -1,0 +1,15 @@
+scoreboard 2026-10-18 02:24:24  http://localhost:8090  model qwen3.8-flash-next  label R24-concrepeat  vllm 0.28.1rc1.dev388+g8a728663c  sections concurrency
+
+== Concurrency (N streams x 2 rounds, agent system prompt + 8 tools, tool_choice none, max 512, temperature 0)
+  2 streams: 4 requests, 2048 tokens in 10.8 s = 189.5 tok/s aggregate; per-stream decode median 104.2 (min 99.8); TTFT p50 0.70 s p99 0.96 s
+  4 streams: 8 requests, 4096 tokens in 14.5 s = 283.3 tok/s aggregate; per-stream decode median 77.2 (min 71.3); TTFT p50 0.31 s p99 1.03 s
+  6 streams: 12 requests, 6144 tokens in 18.7 s = 328.7 tok/s aggregate; per-stream decode median 61.3 (min 50.0); TTFT p50 0.57 s p99 1.57 s
+
+== Scoreboard rows (R24-concrepeat), notes-file order
+| Concurrency 2 / 4 / 6: aggregate tok/s | 189.5 / 283.3 / 328.7 |
+| Concurrency 2 / 4 / 6: per-stream decode median (tok/s) | 104.2 / 77.2 / 61.3 |
+| Concurrency 2 / 4 / 6: TTFT p50-p99 (s) | 0.70-0.96 / 0.31-1.03 / 0.57-1.57 |
+
+  preemptions during run: 0; whole-run acceptance {'drafts': 4963, 'mean_len': 2.475, 'per_pos': [0.709, 0.464, 0.302]}
+json: /workspace/vllm-w4a16/results/scoreboard-R24-concrepeat-20261018-022424.json
+log: /workspace/vllm-w4a16/results/scoreboard-R24-concrepeat-20261018-022424.log

@@ -1,0 +1,433 @@
+{
+ "label": "T2-extra",
+ "started": "2026-10-17 21:17:09",
+ "image": "qwen38fn-vllm:8a728663",
+ "settings": {
+  "shmcpy_cumem": {
+   "env": {
+    "NCCL_SHM_USE_CUDA_MEMCPY": "1",
+    "NCCL_CUMEM_ENABLE": "1"
+   },
+   "error": "timeout after 240 s",
+   "completed": [
+    "{\"bytes\": 20480, \"eager_us\": 54.691200256347656, \"eager_min_us\": 52.95616149902344, \"graph_us\": 41.19552135467529, \"graph_min_us\": 41.08799934387207, \"algbw_GBs\": 0.3744660915102703, \"busbw_GBs\": 0.5616991372654054}",
+    "{\"bytes\": 122880, \"eager_us\": 182.0467185974121, \"eager_min_us\": 181.5500831604004, \"graph_us\": 193.95584106445312, \"graph_min_us\": 192.03584671020508, \"algbw_GBs\": 0.6749915678059731, \"busbw_GBs\": 1.0124873517089596}",
+    "{\"bytes\": 163840, \"eager_us\": 259.49695587158203, \"eager_min_us\": 247.60303497314453, \"graph_us\": 259.8553657531738, \"graph_min_us\": 255.55967330932617, \"algbw_GBs\": 0.6313754219185521, \"busbw_GBs\": 0.9470631328778282}"
+   ]
+  },
+  "buff16": {
+   "world": 4,
+   "allreduce": [
+    {
+     "bytes": 20480,
+     "eager_us": 68.63359928131104,
+     "eager_min_us": 48.50175857543945,
+     "graph_us": 39.792640209198,
+     "graph_min_us": 39.64927911758423,
+     "algbw_GBs": 0.29839612397505016,
+     "busbw_GBs": 0.4475941859625753
+    },
+    {
+     "bytes": 122880,
+     "eager_us": 134.05072212219238,
+     "eager_min_us": 129.2953586578369,
+     "graph_us": 145.1155185699463,
+     "graph_min_us": 141.8393611907959,
+     "algbw_GBs": 0.916667945197566,
+     "busbw_GBs": 1.375001917796349
+    },
+    {
+     "bytes": 163840,
+     "eager_us": 169.44128036499023,
+     "eager_min_us": 169.05216217041016,
+     "graph_us": 179.81952667236328,
+     "graph_min_us": 179.53792572021484,
+     "algbw_GBs": 0.9669426461313051,
+     "busbw_GBs": 1.4504139691969575
+    },
+    {
+     "bytes": 1310720,
+     "eager_us": 690.5548858642578,
+     "eager_min_us": 687.8054046630859,
+     "graph_us": 698.8339233398438,
+     "graph_min_us": 698.3270263671875,
+     "algbw_GBs": 1.8980678101489066,
+     "busbw_GBs": 2.84710171522336
+    },
+    {
+     "bytes": 4259840,
+     "eager_us": 2159.4112396240234,
+     "eager_min_us": 2154.617691040039,
+     "graph_us": 2158.9975357055664,
+     "graph_min_us": 2152.191925048828,
+     "algbw_GBs": 1.9726858515109347,
+     "busbw_GBs": 2.959028777266402
+    },
+    {
+     "bytes": 8519680,
+     "eager_us": 4366.745758056641,
+     "eager_min_us": 4353.408050537109,
+     "graph_us": 4360.931015014648,
+     "graph_min_us": 4354.17594909668,
+     "algbw_GBs": 1.951036417515538,
+     "busbw_GBs": 2.926554626273307
+    },
+    {
+     "bytes": 10485760,
+     "eager_us": 5477.324676513672,
+     "eager_min_us": 5474.4049072265625,
+     "graph_us": 5481.702423095703,
+     "graph_min_us": 5458.63037109375,
+     "algbw_GBs": 1.9143944570169624,
+     "busbw_GBs": 2.8715916855254435
+    },
+    {
+     "bytes": 20971520,
+     "eager_us": 10955.315399169922,
+     "eager_min_us": 10922.342681884766,
+     "graph_us": 10929.142761230469,
+     "graph_min_us": 10907.750701904297,
+     "algbw_GBs": 1.9142780683054548,
+     "busbw_GBs": 2.871417102458182
+    },
+    {
+     "bytes": 41943040,
+     "eager_us": 22033.30535888672,
+     "eager_min_us": 21832.806396484375,
+     "graph_us": 21925.06866455078,
+     "graph_min_us": 21844.166564941406,
+     "algbw_GBs": 1.9036199660838933,
+     "busbw_GBs": 2.85542994912584
+    }
+   ],
+   "allgather": [
+    {
+     "bytes": 20480,
+     "eager_us": 60.20319938659668,
+     "graph_us": 21.524479389190674,
+     "algbw_GBs": 0.3401812562898369,
+     "busbw_GBs": 0.2551359422173777
+    },
+    {
+     "bytes": 993280,
+     "eager_us": 288.92160415649414,
+     "graph_us": 294.41951751708984,
+     "algbw_GBs": 3.437887598955704,
+     "busbw_GBs": 2.578415699216778
+    },
+    {
+     "bytes": 8519680,
+     "eager_us": 2380.5850219726562,
+     "graph_us": 2385.5914306640625,
+     "algbw_GBs": 3.5788177785560555,
+     "busbw_GBs": 2.6841133339170415
+    }
+   ],
+   "nccl_version": "2.29.7",
+   "fp32_sum_exact": true,
+   "env": {
+    "NCCL_BUFFSIZE": "16777216"
+   },
+   "wall_s": 33.271206855773926,
+   "transport": [
+    "SHM/direct/direct"
+   ],
+   "tuning_lines": [
+    "INFO   Algorithm   |                             PAT                  |",
+    "INFO   Algorithm   |                            Tree                  |                            Ring                 ",
+    "INFO   Algorithm   |                    CollNetChain                  |                            NVLS                 ",
+    "INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple",
+    "INFO AllGather: 2129920 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllGather: 248320 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllGather: 5120 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}",
+    "INFO AllReduce: 10485760 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 122880 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 1310720 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 163840 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}",
+    "INFO AllReduce: 20971520 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 4 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}",
+    "INFO AllReduce: 4096 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}",
+    "INFO AllReduce: 41943040 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 4259840 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 8519680 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}"
+   ]
+  },
+  "nthr512": {
+   "world": 4,
+   "allreduce": [
+    {
+     "bytes": 20480,
+     "eager_us": 48.195037841796875,
+     "eager_min_us": 46.59711837768555,
+     "graph_us": 39.34720039367676,
+     "graph_min_us": 39.30624008178711,
+     "algbw_GBs": 0.4249400128541623,
+     "busbw_GBs": 0.6374100192812434
+    },
+    {
+     "bytes": 122880,
+     "eager_us": 140.42112350463867,
+     "eager_min_us": 137.95215606689453,
+     "graph_us": 150.04672050476074,
+     "graph_min_us": 149.09839630126953,
+     "algbw_GBs": 0.8750820171008017,
+     "busbw_GBs": 1.3126230256512026
+    },
+    {
+     "bytes": 163840,
+     "eager_us": 183.2601547241211,
+     "eager_min_us": 182.27712631225586,
+     "graph_us": 192.8704071044922,
+     "graph_min_us": 189.52703475952148,
+     "algbw_GBs": 0.8940295845905178,
+     "busbw_GBs": 1.3410443768857767
+    },
+    {
+     "bytes": 1310720,
+     "eager_us": 574.9708938598633,
+     "eager_min_us": 573.7318420410156,
+     "graph_us": 584.2739105224609,
+     "graph_min_us": 583.8540649414062,
+     "algbw_GBs": 2.27962843684303,
+     "busbw_GBs": 3.419442655264545
+    },
+    {
+     "bytes": 4259840,
+     "eager_us": 2124.10888671875,
+     "eager_min_us": 2113.612747192383,
+     "graph_us": 2121.442413330078,
+     "graph_min_us": 2112.0256423950195,
+     "algbw_GBs": 2.0054715775802125,
+     "busbw_GBs": 3.0082073663703186
+    },
+    {
+     "bytes": 8519680,
+     "eager_us": 4333.209609985352,
+     "eager_min_us": 4316.287994384766,
+     "graph_us": 4335.7696533203125,
+     "graph_min_us": 4316.569519042969,
+     "algbw_GBs": 1.9661361362181602,
+     "busbw_GBs": 2.9492042043272404
+    },
+    {
+     "bytes": 10485760,
+     "eager_us": 5414.451217651367,
+     "eager_min_us": 5394.841766357422,
+     "graph_us": 5417.241668701172,
+     "graph_min_us": 5394.432067871094,
+     "algbw_GBs": 1.9366247064551854,
+     "busbw_GBs": 2.904937059682778
+    },
+    {
+     "bytes": 20971520,
+     "eager_us": 10681.593322753906,
+     "eager_min_us": 10659.430694580078,
+     "graph_us": 10666.751861572266,
+     "graph_min_us": 10660.30044555664,
+     "algbw_GBs": 1.9633325634413092,
+     "busbw_GBs": 2.944998845161964
+    },
+    {
+     "bytes": 41943040,
+     "eager_us": 21390.68145751953,
+     "eager_min_us": 21329.1015625,
+     "graph_us": 21315.9423828125,
+     "graph_min_us": 21248.870849609375,
+     "algbw_GBs": 1.9608089664322328,
+     "busbw_GBs": 2.941213449648349
+    }
+   ],
+   "allgather": [
+    {
+     "bytes": 20480,
+     "eager_us": 60.10879993438721,
+     "graph_us": 21.23744010925293,
+     "algbw_GBs": 0.3407155029272801,
+     "busbw_GBs": 0.25553662719546005
+    },
+    {
+     "bytes": 993280,
+     "eager_us": 250.09151458740234,
+     "graph_us": 250.1113510131836,
+     "algbw_GBs": 3.9716661384481604,
+     "busbw_GBs": 2.9787496038361203
+    },
+    {
+     "bytes": 8519680,
+     "eager_us": 2379.5301818847656,
+     "graph_us": 2386.0733032226562,
+     "algbw_GBs": 3.5804042599921035,
+     "busbw_GBs": 2.6853031949940775
+    }
+   ],
+   "nccl_version": "2.29.7",
+   "fp32_sum_exact": true,
+   "env": {
+    "NCCL_NTHREADS": "512"
+   },
+   "wall_s": 32.51110529899597,
+   "transport": [
+    "SHM/direct/direct"
+   ],
+   "tuning_lines": [
+    "INFO   Algorithm   |                             PAT                  |",
+    "INFO   Algorithm   |                            Tree                  |                            Ring                 ",
+    "INFO   Algorithm   |                    CollNetChain                  |                            NVLS                 ",
+    "INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple",
+    "INFO AllGather: 2129920 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllGather: 248320 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllGather: 5120 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}",
+    "INFO AllReduce: 10485760 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 122880 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 1310720 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 163840 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}",
+    "INFO AllReduce: 20971520 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 4 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}",
+    "INFO AllReduce: 4096 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}",
+    "INFO AllReduce: 41943040 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 4259840 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}",
+    "INFO AllReduce: 8519680 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..3}"
+   ]
+  },
+  "ch16": {
+   "world": 4,
+   "allreduce": [
+    {
+     "bytes": 20480,
+     "eager_us": 63.02703857421875,
+     "eager_min_us": 55.98207950592041,
+     "graph_us": 38.43584060668945,
+     "graph_min_us": 38.246400356292725,
+     "algbw_GBs": 0.3249399061623904,
+     "busbw_GBs": 0.4874098592435856
+    },
+    {
+     "bytes": 122880,
+     "eager_us": 146.02239608764648,
+     "eager_min_us": 144.08191680908203,
+     "graph_us": 155.85280418395996,
+     "graph_min_us": 152.68351554870605,
+     "algbw_GBs": 0.8415147490542766,
+     "busbw_GBs": 1.262272123581415
+    },
+    {
+     "bytes": 163840,
+     "eager_us": 308.6489677429199,
+     "eager_min_us": 305.6537628173828,
+     "graph_us": 320.18863677978516,
+     "graph_min_us": 317.3222351074219,
+     "algbw_GBs": 0.5308295737974595,
+     "busbw_GBs": 0.7962443606961893
+    },
+    {
+     "bytes": 1310720,
+     "eager_us": 755.9577941894531,
+     "eager_min_us": 755.7324981689453,
+     "graph_us": 773.6831665039062,
+     "graph_min_us": 771.8246459960938,
+     "algbw_GBs": 1.7338534109637291,
+     "busbw_GBs": 2.600780116445594
+    },
+    {
+     "bytes": 4259840,
+     "eager_us": 2408.627128601074,
+     "eager_min_us": 2405.8319091796875,
+     "graph_us": 2410.419273376465,
+     "graph_min_us": 2408.780860900879,
+     "algbw_GBs": 1.7685759449508927,
+     "busbw_GBs": 2.652863917426339
+    },
+    {
+     "bytes": 8519680,
+     "eager_us": 4772.579193115234,
+     "eager_min_us": 4770.124816894531,
+     "graph_us": 4789.478302001953,
+     "graph_min_us": 4771.686553955078,
+     "algbw_GBs": 1.7851311953692062,
+     "busbw_GBs": 2.6776967930538094
+    },
+    {
+     "bytes": 10485760,
+     "eager_us": 5739.847946166992,
+     "eager_min_us": 5735.039901733398,
+     "graph_us": 5740.006256103516,
+     "graph_min_us": 5737.804794311523,
+     "algbw_GBs": 1.8268358497200743,
+     "busbw_GBs": 2.740253774580111
+    },
+    {
+     "bytes": 20971520,
+     "eager_us": 11510.169219970703,
+     "eager_min_us": 11480.985260009766,
+     "graph_us": 11491.840362548828,
+     "graph_min_us": 11469.404602050781,
+     "algbw_GBs": 1.8219992772663494,
+     "busbw_GBs": 2.732998915899524
+    },
+    {
+     "bytes": 41943040,
+     "eager_us": 22723.788452148438,
+     "eager_min_us": 22637.56103515625,
+     "graph_us": 22663.424682617188,
+     "graph_min_us": 22624.102783203125,
+     "algbw_GBs": 1.8457767325339831,
+     "busbw_GBs": 2.768665098800975
+    }
+   ],
+   "allgather": [
+    {
+     "bytes": 20480,
+     "eager_us": 66.10943794250488,
+     "graph_us": 41.93280220031738,
+     "algbw_GBs": 0.3097893528880305,
+     "busbw_GBs": 0.2323420146660229
+    },
+    {
+     "bytes": 993280,
+     "eager_us": 318.93503189086914,
+     "graph_us": 327.3011016845703,
+     "algbw_GBs": 3.114364684591542,
+     "busbw_GBs": 2.335773513443656
+    },
+    {
+     "bytes": 8519680,
+     "eager_us": 2519.8387145996094,
+     "graph_us": 2527.129669189453,
+     "algbw_GBs": 3.381041790745618,
+     "busbw_GBs": 2.5357813430592135
+    }
+   ],
+   "nccl_version": "2.29.7",
+   "fp32_sum_exact": true,
+   "env": {
+    "NCCL_MIN_NCHANNELS": "16"
+   },
+   "wall_s": 35.352511167526245,
+   "transport": [
+    "SHM/direct/direct"
+   ],
+   "tuning_lines": [
+    "INFO   Algorithm   |                             PAT                  |",
+    "INFO   Algorithm   |                            Tree                  |                            Ring                 ",
+    "INFO   Algorithm   |                    CollNetChain                  |                            NVLS                 ",
+    "INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple",
+    "INFO AllGather: 2129920 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..15}",
+    "INFO AllGather: 248320 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..15}",
+    "INFO AllGather: 5120 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}",
+    "INFO AllReduce: 10485760 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..15}",
+    "INFO AllReduce: 122880 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..5}",
+    "INFO AllReduce: 1310720 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..15}",
+    "INFO AllReduce: 163840 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..9}",
+    "INFO AllReduce: 20480 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}",
+    "INFO AllReduce: 20971520 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..15}",
+    "INFO AllReduce: 4 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}",
+    "INFO AllReduce: 4096 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}",
+    "INFO AllReduce: 41943040 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..15}",
+    "INFO AllReduce: 4259840 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..15}",
+    "INFO AllReduce: 8519680 Bytes -> Algo RING proto SIMPLE channel{Lo..Hi}={0..15}"
+   ]
+  }
+ }
+}

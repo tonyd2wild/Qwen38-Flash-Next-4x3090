@@ -1,0 +1,9 @@
+depth 128000: 127610 prompt tokens; cold request to fill the cache
+  cold  pt  127610 hits       0  client TTFT 105.082  server 105.025  prefill 104.995  client-server     57 ms  server-prefill     30 ms
+  chat  pt  127610 hits  127296  client TTFT  0.356  server  0.276  prefill  0.250  client-server     80 ms  server-prefill     26 ms
+  text  pt  127610 hits  127296  client TTFT  0.358  server  0.276  prefill  0.254  client-server     82 ms  server-prefill     23 ms
+  ids   pt  127610 hits  127296  client TTFT  0.385  server  0.275  prefill  0.253  client-server    110 ms  server-prefill     22 ms
+  chat  pt  127610 hits  127296  client TTFT  0.358  server  0.278  prefill  0.252  client-server     80 ms  server-prefill     26 ms
+  text  pt  127610 hits  127296  client TTFT  0.347  server  0.273  prefill  0.253  client-server     74 ms  server-prefill     20 ms
+  ids   pt  127610 hits  127296  client TTFT  0.370  server  0.269  prefill  0.252  client-server    101 ms  server-prefill     18 ms
+wrote /workspace/vllm-w4a16/results/turn-overhead-R22-toksplit-20261018-004448.json

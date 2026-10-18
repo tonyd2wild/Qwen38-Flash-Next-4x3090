@@ -1,0 +1,16 @@
+scoreboard 2026-10-18 01:52:00  http://localhost:8090  model qwen3.8-flash-next  label R23  vllm 0.28.1rc1.dev388+g8a728663c  sections cold155k,needle200k
+warm-up: short prompt, count to 100, one ~8K prompt
+
+== Needle ~200K
+  needle: 199,407 prompt tokens, TTFT 168.3 s (1,185 tok/s prefill), preemptions 4, min free per card 0.66 / 0.66 / 0.61 / 0.66 GiB, CORRECT
+
+== ~155K cold prefill
+  155K cold: 154,527 prompt tokens, TTFT 116.4 s (1,328 tok/s prefill), preemptions 2, min free per card 0.66 / 0.66 / 0.61 / 0.66 GiB
+
+== Scoreboard rows (R23), notes-file order
+| Needle ~200K: correct / TTFT / prefill tok/s | correct / 168 s / 1,185 |
+| 155K cold prefill tok/s, preemptions, min free GiB per card | 1,328, 2, 0.61 (per card 0.66, 0.66, 0.61, 0.66) |
+
+  preemptions during run: 6; whole-run acceptance {'drafts': 15, 'mean_len': 2.867, 'per_pos': [0.867, 0.6, 0.4]}
+json: /workspace/vllm-w4a16/results/scoreboard-R23-20261018-015200.json
+log: /workspace/vllm-w4a16/results/scoreboard-R23-20261018-015200.log

@@ -1,0 +1,22 @@
+pass 1
+  short        pt     15  TTFT   0.235 s
+  cold     33  pt     43  TTFT   0.191 s  hits 0
+  cold     65  pt     76  TTFT   0.184 s  hits 0
+  cold    200  pt    208  TTFT   0.170 s  hits 0
+  cold   1000  pt   1009  TTFT   0.555 s  hits 0
+  cold   4000  pt   3997  TTFT   1.855 s  hits 0
+  cold   8000  pt   7987  TTFT   3.695 s  hits 0
+  cold  30000  pt  29913  TTFT  13.837 s  hits 0
+  count        TTFT   0.175 s  decode  210.0 tok/s  wall   1.58 s
+pass 2
+  short        pt     15  TTFT   0.155 s
+  cold     33  pt     40  TTFT   0.157 s  hits 0
+  cold     65  pt     76  TTFT   0.155 s  hits 0
+  cold    200  pt    209  TTFT   0.156 s  hits 0
+  cold   1000  pt   1009  TTFT   0.498 s  hits 0
+  cold   4000  pt   3996  TTFT   1.849 s  hits 0
+  cold   8000  pt   7986  TTFT   3.685 s  hits 0
+  cold  30000  pt  29912  TTFT  13.878 s  hits 0
+  count        TTFT   0.161 s  decode  209.2 tok/s  wall   1.55 s
+pass 1 - pass 2 wall: 0.23 s  (short +0.09, cold33 +0.04, cold65 +0.03, cold200 +0.02, cold1000 +0.06, cold4000 +0.01, cold8000 +0.01, cold30000 -0.05, count +0.03)
+wrote /workspace/vllm-w4a16/results/first-contact-R21-20261018-002233.json

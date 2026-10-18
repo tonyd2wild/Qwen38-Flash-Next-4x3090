@@ -1,0 +1,32 @@
+{
+ "label": "R24",
+ "time": "2026-10-18 02:22:04",
+ "n": 2,
+ "tokens": 100000,
+ "wall_s": 92.69412270997418,
+ "prompt_tokens": 199437,
+ "preemptions": 0,
+ "aggregate_prefill_tps": 2156.9928503256056,
+ "stagger": false,
+ "decode": 30,
+ "tokens2": null,
+ "later_start_s": 0.0,
+ "requests": [
+  {
+   "pt": 99703,
+   "ct": 30,
+   "ttft": 47.03206825256348,
+   "dec": 2.9375921508365708,
+   "wall": 56.90605568885803,
+   "finish": "length"
+  },
+  {
+   "pt": 99734,
+   "ct": 30,
+   "ttft": 92.46066808700562,
+   "dec": 142.2333315403343,
+   "wall": 92.68667769432068,
+   "finish": "length"
+  }
+ ]
+}

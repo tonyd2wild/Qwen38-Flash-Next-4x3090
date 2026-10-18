@@ -1,0 +1,479 @@
+# trace_breakdown.py output, rank 0 (T2, 2026-10-17). R8 = prof-pc1 (deep, cache on), prof-pc1-shallow (first 24 steps of 84K), R9 = prof-pc0 (cache off); R16 = prof-t2 (code decode, then 6 streams; profiler overhead ~14% on decode)
+== .cache/ple/prof-pc1/dp0_pp0_tp0_dcp0_ep0_rank0.1792251147955052002.pt.trace.json.gz
+
+[prefill_chunk] 15 steps x 1664 tok   period 994.26 ms (1674 tok/s)   annotated 948.53   busy 789.77   idle 204.49 (host-starved 200.98, queued 0.07)   2858 kernels/step   NCCL not overlapped 485.33 ms
+  category           ms/step after ann    calls   us/tok  % busy
+  nccl_allreduce      470.95     13.98      106   283.02   59.6%
+  nccl_allgather       14.38     14.38       10     8.64    1.8%
+  moe_marlin           42.68      0.68      102    25.65    5.4%
+  moe_glue              7.12      0.19      306     4.28    0.9%
+  qsa_topk             20.74      1.64       15    12.47    2.6%
+  qsa_attn             95.03      7.38       83    57.11   12.0%
+  gdn                   8.20      0.00      324     4.93    1.0%
+  hc                   25.34      0.64      314    15.23    3.2%
+  ple                   0.37      0.02        7     0.23    0.0%
+  spec_sample           0.01      0.01        2     0.00    0.0%
+  gemm                 96.48      4.88      707    57.98   12.2%
+  norm_rope             0.39      0.03       16     0.24    0.0%
+  elementwise           7.04      1.54      850     4.23    0.9%
+  other                 0.07      0.03       16     0.04    0.0%
+  memcpy                0.92      0.09       71     0.55    0.1%
+  memset                0.07      0.01       65     0.04    0.0%
+  idle attributed to (ms/step):
+      199.21  (no cpu op: python / scheduler)
+        0.50  ChunkGatedDeltaRuleFunction
+        0.27  (launch to start)
+        0.24  vllm::qwen_gdn_attention_core_fused_norm_packed
+        0.14  vllm::qwen4_exp_grouped_gemma_rmsnorm
+        0.10  aten::mm
+        0.07  aten::copy_
+        0.07  aten::empty
+        0.07  (queued before idle: launch latency / event wait)
+        0.05  aten::unfold
+        0.04  aten::empty_strided
+        0.03  aten::slice
+  largest idle patterns (ms/step): previous GPU op -> next GPU op
+      199.22  Memcpy DtoH (Device -> Pageable)  ->  Memcpy HtoD (Pinned -> Device)
+        0.25  void at::native::elementwise_kernel<128, 4, at::  ->  _grouped_gemma_rmsnorm_kernel
+        0.21  void at::native::elementwise_kernel<128, 4, at::  ->  chunk_local_cumsum_scalar_kernel
+        0.19  Memcpy HtoD (Pinned -> Device)  ->  void at::native::elementwise_kernel<128, 4, at::
+
+[prefill_partial] 1 steps x 190 tok   period 237.47 ms (800 tok/s)   annotated 225.15   busy 99.84   idle 137.63 (host-starved 135.72, queued 0.76)   2969 kernels/step   NCCL not overlapped 47.36 ms
+  category           ms/step after ann    calls   us/tok  % busy
+  nccl_allreduce       44.23      1.85      106   232.77   44.3%
+  nccl_allgather        3.14      3.14       10    16.51    3.1%
+  moe_marlin            9.87      0.24      102    51.92    9.9%
+  moe_glue              1.56      0.07      306     8.19    1.6%
+  qsa_topk              2.91      0.26       15    15.29    2.9%
+  qsa_attn             12.50      1.05       96    65.78   12.5%
+  gdn                   1.96      0.00      324    10.34    2.0%
+  hc                    2.49      0.09      314    13.10    2.5%
+  ple                   0.06      0.01        7     0.34    0.1%
+  spec_sample           0.01      0.01        2     0.03    0.0%
+  gemm                 19.12      2.51      806   100.62   19.2%
+  norm_rope             0.07      0.01       16     0.37    0.1%
+  elementwise           2.17      0.37      850    11.40    2.2%
+  other                 0.04      0.02       15     0.20    0.0%
+  memcpy                0.14      0.02       70     0.74    0.1%
+  memset                0.06      0.01      103     0.34    0.1%
+  idle attributed to (ms/step):
+       30.67  (no cpu op: python / scheduler)
+       17.45  vllm::qwen_gdn_attention_core_fused_norm_packed
+       16.65  ChunkGatedDeltaRuleFunction
+       16.15  vllm::moe_forward_shared
+       13.82  (launch to start)
+        7.03  aten::empty
+        4.33  aten::mm
+        3.24  aten::empty_strided
+        3.21  vllm::qwen4_exp_qsa_with_output
+        2.90  vllm::all_reduce
+        1.65  _moe_C::moe_wna16_marlin_gemm
+        1.37  aten::copy_
+  largest idle patterns (ms/step): previous GPU op -> next GPU op
+       25.67  Memcpy DtoH (Device -> Pageable)  ->  Memcpy HtoD (Pinned -> Device)
+        7.87  void at::native::vectorized_elementwise_kernel<4  ->  void marlin_moe_wna16::Marlin<1125899906909960l,
+        7.22  void vllm::moe::topkGating<16, 512, 4, 16, 32, i  ->  void vllm::moe::moe_align_block_size_kernel<int>
+        5.99  void at::native::vectorized_elementwise_kernel<4  ->  void at::native::elementwise_kernel<128, 4, at::
+
+[decode] 3 steps x 4 tok   period 24.37 ms (164 tok/s)   annotated 18.75   busy 20.36   idle 4.01 (host-starved 3.34, queued 0.15)   2392 kernels/step   NCCL not overlapped 6.86 ms
+  category           ms/step after ann    calls   us/tok  % busy
+  nccl_allreduce        4.80      0.54      106  1199.11   23.6%
+  nccl_allgather        2.07      2.07       10   517.03   10.2%
+  moe_marlin            1.74      0.12      102   435.76    8.6%
+  moe_glue              1.15      0.06      306   287.25    5.6%
+  qsa_topk              0.29      0.06       15    71.63    1.4%
+  qsa_attn              0.68      0.14       96   170.00    3.3%
+  gdn                   0.11      0.00       36    26.61    0.5%
+  hc                    0.54      0.04      314   134.20    2.6%
+  gdn_decode            0.47      0.00       36   117.44    2.3%
+  ple                   0.04      0.02        8     9.60    0.2%
+  spec_sample           0.03      0.03        4     6.70    0.1%
+  gemm                  8.73      2.17      869  2182.39   42.9%
+  norm_rope             0.04      0.01       16     9.33    0.2%
+  elementwise           0.87      0.23      440   216.92    4.3%
+  other                 0.06      0.03       34    14.49    0.3%
+  memcpy                0.05      0.01       45    11.95    0.2%
+  memset                0.00      0.00        3     0.89    0.0%
+  idle attributed to (ms/step):
+        1.99  (no cpu op: python / scheduler)
+        0.38  (launch to start)
+        0.15  (queued before idle: launch latency / event wait)
+        0.10  aten::index
+        0.09  aten::slice
+        0.08  aten::copy_
+        0.05  aten::_to_copy
+        0.05  aten::empty_strided
+        0.05  aten::as_strided
+        0.04  aten::empty
+        0.04  aten::sum
+        0.04  aten::sub
+  largest idle patterns (ms/step): previous GPU op -> next GPU op
+        1.31  Memcpy DtoH (Device -> Pageable)  ->  Memcpy HtoD (Pinned -> Device)
+        0.24  Memcpy DtoD (Device -> Device)  ->  Memcpy DtoD (Device -> Device)
+        0.18  void at::native::unrolled_elementwise_kernel<at:  ->  void (anonymous namespace)::elementwise_kernel_w
+        0.18  Memcpy DtoD (Device -> Device)  ->  void at::native::vectorized_elementwise_kernel<4
+
+== .cache/ple/prof-pc1-shallow/dp0_pp0_tp0_dcp0_ep0_rank0.1792250501839150752.pt.trace.json.gz
+
+[prefill_chunk] 24 steps x 1664 tok   period 1209.19 ms (1376 tok/s)   annotated 1164.71   busy 788.14   idle 421.05 (host-starved 417.54, queued 0.11)   2858 kernels/step   NCCL not overlapped 500.78 ms
+  category           ms/step after ann    calls   us/tok  % busy
+  nccl_allreduce      486.51     14.12      106   292.37   61.7%
+  nccl_allgather       14.28     14.28       10     8.58    1.8%
+  moe_marlin           43.53      0.71      102    26.16    5.5%
+  moe_glue              7.11      0.19      306     4.27    0.9%
+  qsa_topk             11.67      1.00       15     7.01    1.5%
+  qsa_attn             86.44      6.72       83    51.95   11.0%
+  gdn                   8.19      0.00      324     4.92    1.0%
+  hc                   25.34      0.64      314    15.23    3.2%
+  ple                   0.37      0.01        7     0.22    0.0%
+  spec_sample           0.01      0.01        2     0.00    0.0%
+  gemm                 96.29      4.88      707    57.87   12.2%
+  norm_rope             0.39      0.03       16     0.24    0.0%
+  elementwise           7.04      1.54      850     4.23    0.9%
+  other                 0.07      0.03       16     0.04    0.0%
+  memcpy                0.87      0.09       71     0.52    0.1%
+  memset                0.07      0.01       65     0.04    0.0%
+  idle attributed to (ms/step):
+      413.00  (no cpu op: python / scheduler)
+        1.02  ChunkGatedDeltaRuleFunction
+        0.99  vllm::qwen_gdn_attention_core_fused_norm_packed
+        0.58  (launch to start)
+        0.27  aten::mm
+        0.22  aten::empty
+        0.21  vllm::qwen4_exp_grouped_gemma_rmsnorm
+        0.16  cudaMemcpyAsync
+        0.13  aten::copy_
+        0.12  aten::empty_strided
+        0.11  (queued before idle: launch latency / event wait)
+        0.09  aten::slice
+  largest idle patterns (ms/step): previous GPU op -> next GPU op
+      412.90  Memcpy DtoH (Device -> Pageable)  ->  Memcpy HtoD (Pinned -> Device)
+        0.42  void at::native::elementwise_kernel<128, 4, at::  ->  _grouped_gemma_rmsnorm_kernel
+        0.38  void at::native::elementwise_kernel<128, 4, at::  ->  chunk_local_cumsum_scalar_kernel
+        0.37  void at::native::elementwise_kernel<128, 4, at::  ->  _causal_conv1d_fwd_kernel
+
+[prefill_partial] 1 steps x 579 tok   period 450.48 ms (1285 tok/s)   annotated 431.00   busy 298.14   idle 152.34 (host-starved 149.20, queued 0.13)   2857 kernels/step   NCCL not overlapped 180.40 ms
+  category           ms/step after ann    calls   us/tok  % busy
+  nccl_allreduce      174.39      5.45      106   301.19   58.5%
+  nccl_allgather        6.01      6.01       10    10.38    2.0%
+  moe_marlin           17.23      0.38      102    29.76    5.8%
+  moe_glue              2.85      0.10      306     4.92    1.0%
+  qsa_topk              4.62      0.40       15     7.98    1.5%
+  qsa_attn             31.93      2.53       83    55.15   10.7%
+  gdn                   3.50      0.00      324     6.04    1.2%
+  hc                    8.78      0.24      314    15.16    2.9%
+  ple                   0.15      0.02        7     0.26    0.1%
+  spec_sample           0.01      0.01        2     0.01    0.0%
+  gemm                 44.79      3.33      707    77.35   15.0%
+  norm_rope             0.15      0.02       16     0.26    0.1%
+  elementwise           3.35      0.69      850     5.79    1.1%
+  other                 0.04      0.03       15     0.07    0.0%
+  memcpy                0.37      0.04       70     0.63    0.1%
+  memset                0.02      0.01       16     0.04    0.0%
+  idle attributed to (ms/step):
+      144.03  (no cpu op: python / scheduler)
+        1.15  vllm::qwen_gdn_attention_core_fused_norm_packed
+        1.09  ChunkGatedDeltaRuleFunction
+        0.55  (launch to start)
+        0.39  aten::mm
+        0.26  aten::empty
+        0.18  vllm::qwen4_exp_grouped_gemma_rmsnorm
+        0.16  aten::transpose
+        0.15  aten::copy_
+        0.14  aten::empty_strided
+        0.13  (queued before idle: launch latency / event wait)
+        0.09  vllm::qwen4_exp_hc_silu
+  largest idle patterns (ms/step): previous GPU op -> next GPU op
+      143.74  Memcpy DtoH (Device -> Pageable)  ->  Memcpy HtoD (Pinned -> Device)
+        0.42  void at::native::elementwise_kernel<128, 4, at::  ->  _grouped_gemma_rmsnorm_kernel
+        0.39  void at::native::elementwise_kernel<128, 4, at::  ->  _causal_conv1d_fwd_kernel
+        0.36  void at::native::elementwise_kernel<128, 4, at::  ->  chunk_local_cumsum_scalar_kernel
+
+[decode] 3 steps x 4 tok   period 22.82 ms (175 tok/s)   annotated 17.13   busy 20.30   idle 2.52 (host-starved 1.79, queued 0.20)   2392 kernels/step   NCCL not overlapped 6.90 ms
+  category           ms/step after ann    calls   us/tok  % busy
+  nccl_allreduce        4.71      0.52      106  1178.20   23.2%
+  nccl_allgather        2.19      2.19       10   547.43   10.8%
+  moe_marlin            1.76      0.11      102   439.01    8.7%
+  moe_glue              1.15      0.06      306   287.41    5.7%
+  qsa_topk              0.24      0.05       15    60.42    1.2%
+  qsa_attn              0.60      0.12       96   150.24    3.0%
+  gdn                   0.11      0.00       36    26.71    0.5%
+  hc                    0.54      0.04      314   134.60    2.7%
+  gdn_decode            0.47      0.00       36   117.59    2.3%
+  ple                   0.04      0.02        8     9.20    0.2%
+  spec_sample           0.03      0.03        4     6.93    0.1%
+  gemm                  8.73      2.17      869  2182.13   43.0%
+  norm_rope             0.04      0.01       16     9.29    0.2%
+  elementwise           0.85      0.23      440   211.93    4.2%
+  other                 0.06      0.03       34    14.00    0.3%
+  memcpy                0.05      0.01       45    12.12    0.2%
+  memset                0.00      0.00        3     0.99    0.0%
+  idle attributed to (ms/step):
+        1.70  (no cpu op: python / scheduler)
+        0.20  (queued before idle: launch latency / event wait)
+        0.06  (launch to start)
+        0.01  aten::copy_
+        0.01  aten::slice
+        0.01  cudaMemcpyAsync
+  largest idle patterns (ms/step): previous GPU op -> next GPU op
+        1.73  Memcpy DtoH (Device -> Pageable)  ->  Memcpy HtoD (Pinned -> Device)
+        0.16  void cutlass::Kernel2<cutlass_80_wmma_tensorop_b  ->  ncclDevKernel_AllReduce_Sum_bf16_RING_LL(ncclDev
+        0.06  Memcpy HtoD (Pinned -> Device)  ->  void at::native::elementwise_kernel<128, 4, at::
+        0.01  void at::native::vectorized_elementwise_kernel<4  ->  ncclDevKernel_AllReduce_Sum_bf16_RING_LL(ncclDev
+
+== .cache/ple/prof-pc0/dp0_pp0_tp0_dcp0_ep0_rank0.1792251647955806526.pt.trace.json.gz
+
+[prefill_chunk] 10 steps x 1978 tok   period 1161.92 ms (1702 tok/s)   annotated 1109.82   busy 923.56   idle 238.36 (host-starved 234.95, queued 0.16)   2786 kernels/step   NCCL not overlapped 571.83 ms
+  category           ms/step after ann    calls   us/tok  % busy
+  nccl_allreduce      555.86     16.42      106   281.09   60.2%
+  nccl_allgather       15.97     15.97       10     8.07    1.7%
+  moe_marlin           48.91      0.81      102    24.73    5.3%
+  moe_glue              8.32      0.21      306     4.21    0.9%
+  qsa_topk             25.00      1.96       27    12.64    2.7%
+  qsa_attn            112.66      8.72       95    56.97   12.2%
+  gdn                  10.83      0.00      324     5.48    1.2%
+  hc                   30.11      0.75      314    15.23    3.3%
+  ple                   0.44      0.01        7     0.22    0.0%
+  spec_sample           0.01      0.01        2     0.00    0.0%
+  gemm                105.75      5.04      643    53.48   11.5%
+  norm_rope             0.47      0.04       16     0.24    0.1%
+  elementwise           7.98      1.79      821     4.04    0.9%
+  other                 0.07      0.03       14     0.04    0.0%
+  memcpy                1.09      0.11       70     0.55    0.1%
+  memset                0.13      0.01      119     0.07    0.0%
+  idle attributed to (ms/step):
+      232.89  (no cpu op: python / scheduler)
+        0.46  ChunkGatedDeltaRuleFunction
+        0.35  (launch to start)
+        0.22  vllm::qwen_gdn_attention_core_fused_norm_packed
+        0.18  cudaMemcpyAsync
+        0.16  (queued before idle: launch latency / event wait)
+        0.15  vllm::qwen4_exp_grouped_gemma_rmsnorm
+        0.09  aten::mm
+        0.09  aten::copy_
+        0.06  aten::empty
+        0.06  aten::slice
+        0.04  aten::empty_strided
+  largest idle patterns (ms/step): previous GPU op -> next GPU op
+      232.83  Memcpy DtoH (Device -> Pageable)  ->  Memcpy HtoD (Pinned -> Device)
+        0.26  void at::native::elementwise_kernel<128, 4, at::  ->  _grouped_gemma_rmsnorm_kernel
+        0.22  void at::native::elementwise_kernel<128, 4, at::  ->  chunk_local_cumsum_scalar_kernel
+        0.12  void at::native::vectorized_elementwise_kernel<4  ->  void at::native::vectorized_elementwise_kernel<4
+
+[decode] 3 steps x 4 tok   period 23.21 ms (172 tok/s)   annotated 17.79   busy 20.16   idle 3.06 (host-starved 2.28, queued 0.33)   2361 kernels/step   NCCL not overlapped 6.75 ms
+  category           ms/step after ann    calls   us/tok  % busy
+  nccl_allreduce        4.73      0.42      106  1181.95   23.5%
+  nccl_allgather        2.03      2.03       10   506.66   10.1%
+  moe_marlin            1.71      0.11      102   427.24    8.5%
+  moe_glue              1.15      0.06      306   286.92    5.7%
+  qsa_topk              0.29      0.06       15    71.45    1.4%
+  qsa_attn              0.68      0.14       96   170.07    3.4%
+  gdn                   0.11      0.00       36    27.05    0.5%
+  hc                    0.54      0.04      314   134.23    2.7%
+  gdn_decode            0.47      0.00       36   117.37    2.3%
+  ple                   0.03      0.02        8     8.60    0.2%
+  spec_sample           0.02      0.02        4     5.78    0.1%
+  gemm                  8.72      2.16      869  2180.15   43.3%
+  norm_rope             0.04      0.01       16     9.33    0.2%
+  elementwise           0.80      0.23      411   198.97    3.9%
+  other                 0.05      0.03       32    13.29    0.3%
+  memcpy                0.05      0.01       44    11.80    0.2%
+  memset                0.00      0.00        3     0.67    0.0%
+  idle attributed to (ms/step):
+        1.77  (no cpu op: python / scheduler)
+        0.33  (queued before idle: launch latency / event wait)
+        0.16  (launch to start)
+        0.07  vllm::all_reduce
+        0.04  aten::slice
+        0.03  aten::copy_
+        0.02  aten::index
+        0.02  aten::empty
+        0.02  aten::as_strided
+        0.01  _C::vocab_parallel_embedding
+        0.01  aten::select
+        0.01  aten::diff
+  largest idle patterns (ms/step): previous GPU op -> next GPU op
+        1.45  Memcpy DtoH (Device -> Pageable)  ->  Memcpy HtoD (Pinned -> Device)
+        0.27  void cutlass::Kernel2<cutlass_80_wmma_tensorop_b  ->  ncclDevKernel_AllReduce_Sum_bf16_RING_LL(ncclDev
+        0.13  Memcpy DtoD (Device -> Device)  ->  _build_qsa_metadata_kernel
+        0.11  void vllm::vocab_embedding::vocab_parallel_embed  ->  ncclDevKernel_AllReduce_Sum_bf16_RING_LL(ncclDev
+
+== .cache/ple/prof-t2/dp0_pp0_tp0_dcp0_ep0_rank0.1792273680611176129.pt.trace.json.gz
+
+[prefill_partial] 1 steps x 65 tok   period 2096.97 ms (31 tok/s)   annotated 2083.88   busy 282.52   idle 1814.46 (host-starved 1811.94, queued 0.00)   3075 kernels/step   NCCL not overlapped 253.73 ms
+  category           ms/step after ann    calls   us/tok  % busy
+  nccl_allreduce      250.54      6.34      106  3854.50   88.7%
+  nccl_allgather        3.19      3.19       10    49.03    1.1%
+  moe_marlin            6.61      0.28      102   101.66    2.3%
+  moe_glue              1.33      0.07      306    20.41    0.5%
+  qsa_topk              0.05      0.01       15     0.71    0.0%
+  qsa_attn              3.94      0.34       96    60.60    1.4%
+  gdn                   1.98      0.00      324    30.40    0.7%
+  hc                    1.09      0.05      314    16.70    0.4%
+  ple                   0.04      0.02        7     0.64    0.0%
+  spec_sample           0.01      0.01        2     0.09    0.0%
+  gemm                 13.71      2.29      904   210.89    4.9%
+  norm_rope             0.05      0.01       16     0.84    0.0%
+  elementwise           2.74      0.27      853    42.10    1.0%
+  other                 0.06      0.02       20     0.91    0.0%
+  memcpy                0.10      0.01       75     1.47    0.0%
+  memset                0.02      0.00       16     0.31    0.0%
+  idle attributed to (ms/step):
+     1791.26  vllm::qwen4_exp_qsa_with_output
+       13.22  (no cpu op: python / scheduler)
+        1.60  (launch to start)
+        0.60  vllm::qwen_gdn_attention_core_fused_norm_packed
+        0.57  ChunkGatedDeltaRuleFunction
+        0.40  aten::empty
+        0.35  vllm::all_reduce
+        0.33  aten::copy_
+        0.33  aten::mm
+        0.28  aten::slice
+        0.26  aten::empty_strided
+        0.19  aten::as_strided
+  largest idle patterns (ms/step): previous GPU op -> next GPU op
+     1607.21  void at::native::vectorized_elementwise_kernel<4  ->  _qsa_sparse_paged_gqa_splitk_kernel
+      184.06  _qsa_sparse_paged_gqa_splitk_kernel  ->  _qsa_merge_splitk_kernel
+        8.88  Memcpy DtoH (Device -> Pageable)  ->  Memcpy HtoD (Pinned -> Device)
+        1.33  void at::native::vectorized_elementwise_kernel<4  ->  void at::native::vectorized_elementwise_kernel<4
+
+[decode] 59 steps x 4 tok   period 22.99 ms (174 tok/s)   annotated 17.44   busy 20.75   idle 2.23 (host-starved 1.47, queued 0.26)   2392 kernels/step   NCCL not overlapped 7.81 ms
+  category           ms/step after ann    calls   us/tok  % busy
+  nccl_allreduce        5.69      0.51      106  1421.96   27.4%
+  nccl_allgather        2.12      2.12       10   530.57   10.2%
+  moe_marlin            1.72      0.12      102   428.99    8.3%
+  moe_glue              1.14      0.06      306   284.07    5.5%
+  qsa_topk              0.03      0.01       15     6.52    0.1%
+  qsa_attn              0.47      0.10       96   118.49    2.3%
+  gdn                   0.11      0.00       36    26.48    0.5%
+  hc                    0.53      0.04      314   133.24    2.6%
+  gdn_decode            0.47      0.00       36   116.38    2.2%
+  ple                   0.04      0.02        8     9.07    0.2%
+  spec_sample           0.02      0.02        4     6.06    0.1%
+  gemm                  8.69      2.16      869  2173.73   41.9%
+  norm_rope             0.04      0.01       16     9.26    0.2%
+  elementwise           0.85      0.23      440   212.01    4.1%
+  other                 0.05      0.03       34    13.72    0.3%
+  memcpy                0.05      0.01       45    11.89    0.2%
+  memset                0.00      0.00        3     0.74    0.0%
+  idle attributed to (ms/step):
+        1.29  (no cpu op: python / scheduler)
+        0.26  (queued before idle: launch latency / event wait)
+        0.08  (launch to start)
+        0.02  aten::copy_
+        0.02  aten::slice
+        0.01  vllm::all_reduce
+        0.01  aten::as_strided
+  largest idle patterns (ms/step): previous GPU op -> next GPU op
+        1.27  Memcpy DtoH (Device -> Pageable)  ->  Memcpy HtoD (Pinned -> Device)
+        0.21  void cutlass::Kernel2<cutlass_80_wmma_tensorop_b  ->  ncclDevKernel_AllReduce_Sum_bf16_RING_LL(ncclDev
+        0.08  Memcpy HtoD (Pinned -> Device)  ->  void at::native::elementwise_kernel<128, 4, at::
+        0.02  void at::native::vectorized_elementwise_kernel<4  ->  ncclDevKernel_AllReduce_Sum_bf16_RING_LL(ncclDev
+
+== .cache/ple/prof-t2/dp0_pp0_tp0_dcp0_ep0_rank0.1792273716832415116.pt.trace.json.gz
+
+[prefill_partial] 1 steps x 45 tok   period 242.42 ms (186 tok/s)   annotated 229.64   busy 222.16   idle 20.26 (host-starved 18.15, queued 0.03)   3112 kernels/step   NCCL not overlapped 193.62 ms
+  category           ms/step after ann    calls   us/tok  % busy
+  nccl_allreduce      190.31      6.20      106  4229.11   85.7%
+  nccl_allgather        3.31      3.31       10    73.49    1.5%
+  moe_marlin            6.32      0.24      102   140.41    2.8%
+  moe_glue              1.40      0.07      306    31.07    0.6%
+  qsa_topk              0.05      0.01       15     1.04    0.0%
+  qsa_attn              3.36      0.28       96    74.77    1.5%
+  gdn                   2.07      0.00      324    46.11    0.9%
+  hc                    1.02      0.05      314    22.60    0.5%
+  ple                   0.07      0.02        7     1.46    0.0%
+  spec_sample           0.01      0.01        2     0.14    0.0%
+  gemm                 13.22      2.21      941   293.86    6.0%
+  norm_rope             0.07      0.01       16     1.48    0.0%
+  elementwise           3.21      0.25      853    71.41    1.4%
+  other                 0.17      0.03       20     3.74    0.1%
+  memcpy                0.13      0.02       75     2.85    0.1%
+  memset                0.02      0.00       16     0.47    0.0%
+  idle attributed to (ms/step):
+       12.17  (no cpu op: python / scheduler)
+        1.37  (launch to start)
+        0.74  aten::mm
+        0.44  vllm::qwen_gdn_attention_core_fused_norm_packed
+        0.43  ChunkGatedDeltaRuleFunction
+        0.29  aten::empty
+        0.28  aten::copy_
+        0.23  aten::slice
+        0.21  aten::empty_strided
+        0.17  aten::sub
+        0.15  vllm::all_reduce
+        0.13  aten::_to_copy
+  largest idle patterns (ms/step): previous GPU op -> next GPU op
+        9.13  Memcpy DtoH (Device -> Pageable)  ->  Memcpy HtoD (Pinned -> Device)
+        1.09  void at::native::vectorized_elementwise_kernel<4  ->  void at::native::vectorized_elementwise_kernel<4
+        0.62  _hc_gate_mix_kernel  ->  void cutlass::Kernel2<cutlass_80_tensorop_bf16_s
+        0.59  void at::native::vectorized_elementwise_kernel<4  ->  Memcpy HtoD (Pinned -> Device)
+
+[decode] 43 steps x 16 tok   period 41.69 ms (391 tok/s)   annotated 33.17   busy 36.09   idle 5.59 (host-starved 4.80, queued 0.23)   2411 kernels/step   NCCL not overlapped 20.40 ms
+  category           ms/step after ann    calls   us/tok  % busy
+  nccl_allreduce       15.96      0.95      106   980.46   44.2%
+  nccl_allgather        4.44      4.44       10   272.48   12.3%
+  moe_marlin            3.50      0.18      102   215.24    9.7%
+  moe_glue              1.19      0.07      306    73.38    3.3%
+  qsa_topk              0.03      0.01       15     1.72    0.1%
+  qsa_attn              0.79      0.13       96    48.26    2.2%
+  gdn                   0.11      0.00       36     6.58    0.3%
+  hc                    0.62      0.04      314    38.20    1.7%
+  gdn_decode            0.53      0.00       36    32.64    1.5%
+  ple                   0.05      0.03        8     2.84    0.1%
+  spec_sample           0.03      0.03        4     1.80    0.1%
+  gemm                  9.61      2.19      890   590.54   26.6%
+  norm_rope             0.04      0.01       16     2.49    0.1%
+  elementwise           1.52      0.27      441    93.07    4.2%
+  other                 0.06      0.03       32     3.40    0.2%
+  memcpy                0.05      0.01       45     3.20    0.1%
+  memset                0.00      0.00        5     0.30    0.0%
+  idle attributed to (ms/step):
+        4.64  (no cpu op: python / scheduler)
+        0.23  (queued before idle: launch latency / event wait)
+        0.08  (launch to start)
+        0.02  aten::copy_
+        0.01  aten::slice
+  largest idle patterns (ms/step): previous GPU op -> next GPU op
+        4.63  Memcpy DtoH (Device -> Pageable)  ->  Memcpy HtoD (Pinned -> Device)
+        0.11  void at::native::vectorized_elementwise_kernel<4  ->  ncclDevKernel_AllReduce_Sum_bf16_RING_LL(ncclDev
+        0.07  Memcpy HtoD (Pinned -> Device)  ->  void at::native::elementwise_kernel<128, 4, at::
+        0.06  void cutlass::Kernel2<cutlass_80_wmma_tensorop_b  ->  ncclDevKernel_AllReduce_Sum_bf16_RING_LL(ncclDev
+
+[mixed] 1 steps x 200 tok   period 2354.82 ms (85 tok/s)   annotated 2332.81   busy 318.41   idle 2036.41 (host-starved 2033.60, queued 0.04)   3690 kernels/step   NCCL not overlapped 261.69 ms
+  category           ms/step after ann    calls   us/tok  % busy
+  nccl_allreduce      253.99      9.30      106  1269.94   79.8%
+  nccl_allgather        7.70      7.70       10    38.51    2.4%
+  moe_marlin           11.00      0.38      102    54.99    3.5%
+  moe_glue              1.82      0.09      306     9.10    0.6%
+  qsa_topk              0.10      0.01       28     0.48    0.0%
+  qsa_attn             11.57      0.98      109    57.86    3.6%
+  gdn                   2.54      0.00      360    12.71    0.8%
+  hc                    2.69      0.10      314    13.46    0.8%
+  ple                   0.09      0.02       10     0.43    0.0%
+  spec_sample           0.02      0.02        4     0.12    0.0%
+  gemm                 23.45      2.72      891   117.27    7.4%
+  norm_rope             0.08      0.01       16     0.41    0.0%
+  elementwise           8.33      0.56     1351    41.65    2.6%
+  other                 0.49      0.03       83     2.43    0.2%
+  memcpy                0.20      0.02      115     0.99    0.1%
+  memset                0.08      0.01       68     0.40    0.0%
+  idle attributed to (ms/step):
+     1605.77  vllm::qwen4_exp_qsa_with_output
+      389.10  vllm::qwen4_exp_ple_short_conv
+       29.05  (no cpu op: python / scheduler)
+        1.81  vllm::qwen_gdn_attention_core_fused_norm_packed
+        1.79  (launch to start)
+        1.09  ChunkGatedDeltaRuleFunction
+        0.48  aten::empty
+        0.47  aten::mm
+        0.28  aten::copy_
+        0.25  aten::empty_strided
+        0.21  vllm::all_reduce
+        0.20  vllm::qwen4_exp_grouped_gemma_rmsnorm
+  largest idle patterns (ms/step): previous GPU op -> next GPU op
+     1605.80  void at::native::vectorized_elementwise_kernel<4  ->  _qsa_sparse_paged_gqa_splitk_kernel
+      227.94  _ple_conv_kernel  ->  _ple_conv_writeback_kernel
+      161.18  void at::native::vectorized_elementwise_kernel<4  ->  _ple_conv_kernel
+       27.33  Memcpy DtoH (Device -> Pageable)  ->  Memcpy HtoD (Pinned -> Device)
+

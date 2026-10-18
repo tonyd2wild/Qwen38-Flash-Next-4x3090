@@ -1,0 +1,58 @@
+# vLLM at commit 8a728663c1c3eeace834a95f5654fa653cc1998c for the 4x RTX 3090 lane (sm_86).
+# Replaces the pruned vllm/vllm-openai:nightly-8a728663... image. Installs the per-commit wheel that
+# wheels.vllm.ai publishes (the same wheel the nightly image shipped, CUDA 13.0 build), on the same
+# runtime base the nightly used, so the launcher's overlay paths (VP) stay valid:
+#   /usr/local/lib/python3.12/dist-packages/vllm
+# Every input is pinned: base image by digest, wheel by sha256, Python deps by constraints.txt.
+#
+# Build (from the repo root):
+#   docker build -t qwen38fn-vllm:8a728663 -f vllm-w4a16/container/Containerfile vllm-w4a16/container
+FROM docker.io/nvidia/cuda:13.0.3-base-ubuntu24.04@sha256:97d085a7423ee18ec483a2878b9be2c976dc4ba908aef96518beb00e1899dcc4
+
+ARG VLLM_COMMIT=8a728663c1c3eeace834a95f5654fa653cc1998c
+ARG VLLM_WHEEL=vllm-0.28.1rc1.dev388+g8a728663c-cp38-abi3-manylinux_2_28_x86_64.whl
+ARG VLLM_WHEEL_URL=https://wheels.vllm.ai/8a728663c1c3eeace834a95f5654fa653cc1998c/vllm-0.28.1rc1.dev388%2Bg8a728663c-cp38-abi3-manylinux_2_28_x86_64.whl
+ARG VLLM_WHEEL_SHA256=37fb280ce16e43c1efb6b8077ebb1d92b8253c26bb59f9bd7b530534c6863b42
+ARG TORCH_INDEX=https://download.pytorch.org/whl/cu130
+ARG FLASHINFER_VERSION=0.6.18
+
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /vllm-workspace
+
+# Python 3.12 is Ubuntu 24.04's own, so pip --system lands in /usr/local/lib/python3.12/dist-packages.
+# nvcc and friends are there for runtime JIT (FlashInfer, Triton), as in vLLM's own runtime image.
+RUN apt-get update -y \
+ && apt-get install -y --no-install-recommends \
+      curl ca-certificates ffmpeg libsm6 libxext6 libgl1 libibverbs-dev libnuma-dev numactl \
+      python3.12 python3.12-dev python3.12-venv python3-pip \
+      cuda-nvcc-13-0 cuda-cudart-13-0 cuda-nvrtc-13-0 cuda-cuobjdump-13-0 libcurand-dev-13-0 libcublas-dev-13-0 \
+ && rm -rf /var/lib/apt/lists/* \
+ && rm -f /usr/lib/python3.12/EXTERNALLY-MANAGED \
+ && python3 -m pip install --no-cache-dir uv==0.9.5
+
+ENV UV_HTTP_TIMEOUT=500 UV_INDEX_STRATEGY=unsafe-best-match UV_LINK_MODE=copy UV_CACHE_DIR=/opt/uv/cache
+
+COPY constraints.txt /tmp/constraints.txt
+RUN --mount=type=cache,target=/opt/uv/cache \
+    curl -fsSL -o "/tmp/$VLLM_WHEEL" "$VLLM_WHEEL_URL" \
+ && echo "$VLLM_WHEEL_SHA256  /tmp/$VLLM_WHEEL" | sha256sum -c - \
+ && uv pip install --system -c /tmp/constraints.txt --extra-index-url "$TORCH_INDEX" "/tmp/$VLLM_WHEEL" \
+ && uv pip install --system -c /tmp/constraints.txt "flashinfer-jit-cache==$FLASHINFER_VERSION" \
+      --extra-index-url https://flashinfer.ai/whl/cu130 \
+ && rm -f "/tmp/$VLLM_WHEEL"
+
+# Fail the build unless the installed vLLM is this commit, at the path the launcher's overlays target.
+RUN python3 - <<'EOF'
+import importlib.util, os, vllm
+want = "/usr/local/lib/python3.12/dist-packages/vllm"
+assert os.path.dirname(vllm.__file__) == want, vllm.__file__
+assert "g8a728663" in vllm.__version__, vllm.__version__
+for f in ["models/qwen4_exp/nvidia/ple_layer.py", "models/qwen4_exp/nvidia/model_state.py",
+          "models/qwen4_exp/nvidia/qsa.py", "models/qwen4_exp/nvidia/ops/ple.py",
+          "models/qwen4_exp/nvidia/ops/qsa.py", "platforms/interface.py", "config/compilation.py"]:
+    assert os.path.isfile(os.path.join(want, f)), f
+print("vllm", vllm.__version__, "at", want)
+EOF
+RUN echo "$VLLM_COMMIT" > /vllm-workspace/VLLM_COMMIT
+
+ENTRYPOINT ["vllm", "serve"]

@@ -1,0 +1,21 @@
+repeatability probe: 10 x max_tokens=1 with logprobs: 'Write a Python function that returns the n-th Fibonacci number.'
+  0: '```' -0.0185  top [('```', -0.0185), ('#', -4.3935), ('Here', -5.1435)]
+  1: '```' -0.0234  top [('```', -0.0234), ('#', -4.0234), ('Here', -5.2734)]
+  2: '```' -0.0185  top [('```', -0.0185), ('#', -4.3935), ('Here', -5.1435)]
+  3: '```' -0.0323  top [('```', -0.0323), ('#', -3.6573), ('Here', -5.1573)]
+  4: '```' -0.0188  top [('```', -0.0188), ('#', -4.2688), ('Here', -5.3938)]
+  5: '```' -0.0213  top [('```', -0.0213), ('#', -4.1463), ('Here', -5.2713)]
+  6: '```' -0.0228  top [('```', -0.0228), ('#', -4.0228), ('Here', -5.3978)]
+  7: '```' -0.0195  top [('```', -0.0195), ('#', -4.2695), ('Here', -5.2695)]
+  8: '```' -0.0185  top [('```', -0.0185), ('#', -4.3935), ('Here', -5.1435)]
+  9: '```' -0.0241  top [('```', -0.0241), ('#', -4.0241), ('Here', -5.1491)]
+  distinct top-1 logprobs: 10 of 10, range -0.0323 .. -0.0185
+depth 128000: 127611 prompt tokens; cold request to fill the cache
+  cold  pt  127611 hits       0  client TTFT 135.412  server 135.330  prefill 134.952  client-server     82 ms  server-prefill    378 ms
+  chat  pt  127611 hits  127296  client TTFT  0.720  server  0.645  prefill  0.302  client-server     75 ms  server-prefill    343 ms
+  text  pt  127611 hits  127296  client TTFT  0.682  server  0.599  prefill  0.293  client-server     83 ms  server-prefill    306 ms
+  ids   pt  127611 hits  127296  client TTFT  0.426  server  0.321  prefill  0.297  client-server    105 ms  server-prefill     24 ms
+  chat  pt  127611 hits  127296  client TTFT  0.687  server  0.605  prefill  0.294  client-server     82 ms  server-prefill    311 ms
+  text  pt  127611 hits  127296  client TTFT  0.675  server  0.592  prefill  0.293  client-server     83 ms  server-prefill    299 ms
+  ids   pt  127611 hits  127296  client TTFT  0.417  server  0.319  prefill  0.296  client-server     98 ms  server-prefill     23 ms
+wrote /workspace/vllm-w4a16/results/turn-overhead-R15-20261017-213810.json

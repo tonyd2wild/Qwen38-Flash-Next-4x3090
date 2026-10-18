@@ -1,0 +1,2 @@
+[vllm.general_plugins]
+qwen4exp_det_trace = vllm.det_trace:register

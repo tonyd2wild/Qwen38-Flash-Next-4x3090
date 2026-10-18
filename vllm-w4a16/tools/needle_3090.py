@@ -1,5 +1,5 @@
-import json,sys,time,urllib.request,random
-URL="http://100.113.64.18:8090/v1/chat/completions"
+import json,os,sys,time,urllib.request,random
+URL=os.environ.get("URL","http://100.113.64.18:8090").rstrip("/")+"/v1/chat/completions"
 sizes=[int(x) for x in (sys.argv[1:] or ["7000","28000","53000","100000"])]
 random.seed(7)
 words=("the fleet ran a quiet audit of every relay and lane while the sparks idled under the aurora of a late summer sky "
