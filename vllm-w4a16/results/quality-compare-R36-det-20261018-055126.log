@@ -1,0 +1,36 @@
+quality gate compare 2026-10-18 05:51:26  http://localhost:8090  label R36-det  vllm 0.28.1rc1.dev388+g8a728663c
+warm-up: short prompt, count to 100, one ~8K prompt
+  boot facts: {'pool_tokens': 299482, 'max_num_seqs': 6, 'max_model_len': 262144, 'tool_call_parser': 'qwen3_xml', 'reasoning_parser': 'qwen3', 'thinking_off_default': True}
+
+== Frozen prompts (20), temperature 0, non-streamed, top-5 logprobs
+  id                  pt   ct   hits  status     first div  margin   drift  checks
+  code_func           59  304      0  FP-SIZED          64   0.250   0.141  expected=ok
+  code_bugfix        129  246      0  IDENTICAL                      0.153  expected=ok
+  code_refactor      152   94      0  IDENTICAL                      0.064  expected=ok
+  code_sql            68  146      0  FP-SIZED         105   0.375   0.068  expected=ok
+  code_bash           56  303      0  FP-SIZED         146   0.125   0.163  expected=ok
+  prose_explain       29  249      0  FP-SIZED           0   0.125   0.000  
+  prose_summary      180   97      0  FP-SIZED          34   0.000   0.281  
+  prose_email         32   92      0  FP-SIZED          42   0.125   0.043  expected=ok
+  prose_compare       32  162      0  FP-SIZED          89   0.000   0.104  expected=ok
+  tool_read         1304   27      0  IDENTICAL                      0.007  tool_parse=ok tool_expected=ok
+  tool_tests        1302   43    832  IDENTICAL                      0.013  tool_parse=ok tool_expected=ok
+  tool_search       1309   38    832  IDENTICAL                      0.042  tool_parse=ok tool_expected=ok
+  tool_diff         1302   29    832  IDENTICAL                      0.001  tool_parse=ok tool_expected=ok
+  tool_write        1317   93    832  IDENTICAL                      0.284  tool_parse=ok tool_expected=ok
+  long_qa_8k        8012    5      0  IDENTICAL                      0.000  expected=ok
+  long_list_16k    16003   10      0  IDENTICAL                      0.004  expected=ok
+  long_qa_30k      29970   23      0  IDENTICAL                      0.038  expected=ok
+  vision_halves      113    7      0  IDENTICAL                      0.219  expected=ok
+  think_off           28    4      0  IDENTICAL                      0.002  expected=ok no_reasoning_by_default=ok
+  think_on            68   47      0  IDENTICAL                      0.284  expected=ok reasoning_split=ok
+
+== Long-context checks
+  needle  30000: 29,958 tok, TTFT 13.7 s, hits 0, preemptions 0, min free 0.66 / 0.66 / 0.60 / 0.66 GiB: CORRECT
+  needle 100000: 99,726 tok, TTFT 46.1 s, hits 0, preemptions 0, min free 0.66 / 0.66 / 0.60 / 0.66 GiB: CORRECT
+  needle 200000: 199,393 tok, TTFT 94.3 s, hits 0, preemptions 0, min free 0.66 / 0.66 / 0.60 / 0.66 GiB: CORRECT
+  155K cold: 154,443 tok, TTFT 72.4 s (2,134 tok/s), preemptions 0, min free 0.66 / 0.66 / 0.60 / 0.66 GiB
+
+VERDICT PASS  (FP-SIZED 7, IDENTICAL 13; thresholds margin 2.0, drift 1.0, p99 0.25 nat); p99 |dlogprob| 0.110 over 1146 positions
+json: /workspace/vllm-w4a16/results/quality-compare-R36-det-20261018-055126.json
+log: /workspace/vllm-w4a16/results/quality-compare-R36-det-20261018-055126.log

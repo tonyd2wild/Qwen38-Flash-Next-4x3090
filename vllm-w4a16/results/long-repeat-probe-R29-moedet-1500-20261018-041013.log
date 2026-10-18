@@ -1,0 +1,6 @@
+run 0: 1505 prompt tokens, 0.94 s, ids [271, 248068, 198, 760, 1156, 682, 2574, 728]..., first logprobs [-0.0121, -0.1313, -0.5231, -0.0]
+run 1: 1505 prompt tokens, 0.9 s, ids [271, 248068, 198, 760, 1156, 682, 2574, 728]..., first logprobs [-0.0121, -0.1313, -0.5231, -0.0]
+run 2: 1505 prompt tokens, 0.88 s, ids [271, 248068, 198, 760, 1156, 682, 2574, 728]..., first logprobs [-0.0121, -0.1313, -0.5231, -0.0]
+run 3: 1505 prompt tokens, 0.9 s, ids [271, 248068, 198, 760, 1156, 682, 2574, 728]..., first logprobs [-0.0121, -0.1313, -0.5231, -0.0]
+distinct outputs (ids and logprobs) 1 of 4; first differing token vs run 0: [None, None, None]; max |dlogprob| over common prefixes 0.00000
+wrote /workspace/vllm-w4a16/results/long-repeat-probe-R29-moedet-1500-20261018-041013.json

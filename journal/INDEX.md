@@ -2,18 +2,12 @@
 
 Plan: [`PLAN.md`](../PLAN.md) · Rules: [`AGENTS.md`](../AGENTS.md) · Numbers: [`vllm-w4a16/results/perf-2026-10-notes.md`](../vllm-w4a16/results/perf-2026-10-notes.md) · Entry template: [`TEMPLATE.md`](TEMPLATE.md)
 
-**GPU owner right now:** nobody. T4 stopped its last server (R25) at 02:45 on 2026-10-18; GPUs at 15-92 MiB. Last checked: 2026-10-18 02:45 by Opus 5.5 (T4).
+**GPU owner right now:** nobody. T14 stopped its last server (R38) at 06:37 on 2026-10-18; GPUs at 15-92 MiB. Last checked: 2026-10-18 06:37 by Opus 5.5 (T14).
 
-**Next task:** **T14** (temperature-0 nondeterminism root cause), **Opus 5.5 / xhigh**, before the first numerics-changing candidate. Then T10.
-- Measure on the hostpin lane (`launch-qwen38fn-w4a16-hostpin.sh`, now defaulting to `TRITON_CACHE=1 TOKSPLIT=1 MAMBA_FIX=1`; ready in 5-7 min). R24 is the scoreboard baseline (`results/scoreboard-R24-20261018-021245.json`); R25 is the shipping config.
-- The sharpest probe is the gate's `tool_search` token 9: `tools/tool_search_probe.py` (the R21/R25 repeat script, now in the repo).
-  - The baseline picks token 79114 at a 3.75 nat margin.
-  - Gate runs pick 28 at -0.38687 against 79114 at -1.13687 on R21 and on R25, the same to 5 digits, with different code (R25 has the Mamba fix, R21 not).
-  - R22 and R24 pick 79114.
-  - 12 idle repeats right after the gate on the same boot give 79114 with margins 1.25-5.25 (R21) and 5.3-7.8 nat (R25).
-  - So the outcome takes a few discrete values, and the same value comes back bit-exactly on different boots. That suggests state carried between requests (page or buffer contents, batch layout, the order in which blocks are reused) rather than random reduction order. A hypothesis, not a finding: R24 ran the same gate sequence and got the other value. The ruled-out list in the T14 row and in the notes file's first open question still applies.
-- Known noise in the gate to expect: `tool_write` token 4 (margin 1.25), `vision_halves` token 0 (0.875), prose divergences at margins 0-0.125.
-- `tools/mamba_leak_sim.py` is a CPU-only harness for the image's KV manager with this lane's groups, useful if T14 suspects block reuse.
+**Next task:** **T10** (TP2 x PP2 feasibility; Fable 5.1 / xhigh for the feasibility stage, then Opus 5.5 / high for the implementation), per the board. T3 and T6 are listed as its dependencies but T2 reduced them; the feasibility entry should say which of their numbers it needs.
+- The hostpin lane is now **bit-reproducible at temperature 0** (T14): `launch-qwen38fn-w4a16-hostpin.sh` defaults to `MOE_DET=1 QSA_DET=1` on top of `TRITON_CACHE=1 TOKSPLIT=1 MAMBA_FIX=1`. R36 is the scoreboard baseline (`results/scoreboard-R36-20261018-055826.json`); for concurrency rows use a same-session baseline (R24's 6-stream 325-329 was box state; R36/R37 give 301-309).
+- Two gate references: the frozen `results/quality-baseline-2026-10-17.json` (R14, as before) and `results/quality-baseline-det-2026-10-18.json` (R38, the deterministic lane). Against the second, a numerically neutral change gives 20 IDENTICAL. A TP2 x PP2 layout changes the all-reduce sums, so expect FP-sized divergences against both, but every divergence is now the change's own, not noise.
+- Tools from T14: the tracer (`DET_TRACE=1`, `patch/det_trace.py`, `tools/det_trace_diff.py`), `tools/long_repeat_probe.py` (cold repeats of a long prompt via `cache_salt`), `tools/det_probe_moe.py`, `tools/det_check_moe_align.py`, `tools/det_check_qsa_topk.py`, `tools/det_replay_topk.py`.
 
 On every candidate boot, run `quality_gate.py --compare` first, then `scoreboard.py`.
 
@@ -38,7 +32,7 @@ Status values: `todo`, `in progress (model, since)`, `done`, `killed`. Update th
 | T10 | TP2 x PP2 (condition met by T2: comm is 47% of the step and at the host floor; a 2-rank all-reduce moves a third of the bytes) | P8 | T3, T6 | Fable 5.1 feasibility / xhigh, Opus 5.5 implementation / high | 13-p8-tp2pp2.md | todo | |
 | T11 | Fixed overheads for warm and incremental TTFT: tokenization (~0.3 s per 128K turn), `TRITON_CACHE_DIR`, hostpin boot time (8.5 min) | P9 | T2, T5 | Opus 5.5 / high (was Sonnet; changed after T5, user agreed) | [14-p9-fixed-overheads.md](14-p9-fixed-overheads.md) | done (Opus 5.5, 23:28-01:15) | **Kept** (R20-R22). `TOKSPLIT=1`: exact piece-wise tokenization (cuts before `<\|im_start\|>`, after `\n` before a letter, and between a letter and a space-letter; 0 mismatches over ~359K fuzzed cuts) with a piece cache; warm 128K 0.66 -> 0.38 s, 128K + 4K 2.62 -> 2.27 s. `TRITON_CACHE=1`: first-contact JIT 10.3 -> 0.2 s. Hostpin boot 8.5 -> 5.4 min (leader registers first, rotated chunks, barrier, PLE page cache dropped). Gate PASS; decode and cold unchanged |
 | T13 | Recipe: fast lane, `run-host-fast.sh`, final scoreboard and gate, README and ledger, hand-over | - | all kept items | Sonnet 5.5 scripts / high, Opus 5.5 README / high | 15-recipe.md | todo | |
-| T14 | Temperature-0 nondeterminism root cause (T2: not cuBLAS, NCCL, Marlin atomics, short-context top-k, spec decode or prefix caching; differs from prompt position 0, up to 0.4-0.7 nat) | - | T2 | Opus 5.5 / xhigh | 16-nondeterminism.md | todo | |
+| T14 | Temperature-0 nondeterminism root cause (T2: not cuBLAS, NCCL, Marlin atomics, short-context top-k, spec decode or prefix caching; differs from prompt position 0, up to 0.4-0.7 nat) | - | T2 | Opus 5.5 / xhigh | [16-nondeterminism.md](16-nondeterminism.md) | done (Opus 5.5 / xhigh, 03:11-06:46) | **Kept** (R26-R38). Three sources, found with a per-module fingerprint tracer: (1) `moe_align_block_size`'s atomic token order decides which block of an expert a token lands in, and the Marlin MoE GEMM's rounding depends on it; (2) `persistent_topk` returns the QSA selection in a new order every call, with arbitrary ties; (3) at depth (>~33K tokens) it is **not exact** in a few rows per call. `MOE_DET=1` (per-expert ascending order) and `QSA_DET=1` (own exact top-k) are hostpin defaults now: 33 tokens to 100K bit-identical run to run, the gate's 20 prompts identical across 4 boots. Gate PASS; no measurable cost (same-session A/B R36/R37) |
 | - | P10 QSA kernel tuning (parked); P13 PCIe P2P read-only diagnostics, then ask the user | P10, P13 | - | Fable 5.1 / Sonnet 5.5 | - | parked | |
 
 ## Decisions and asks for the user (append here; batch them)
@@ -46,6 +40,7 @@ Status values: `todo`, `in progress (model, since)`, `done`, `killed`. Update th
 - 2026-10-17: P13 (PCIe P2P on the GeForce cards) is out of bounds without approval. Read-only diagnostics will be collected during T2 and presented; no host change until the user decides.
 - 2026-10-17 (T2): the host side caps the all-reduce. Four cards move ~29 GB/s in total through host memory; a host DRAM copy runs at 21-28 GB/s with 4 of 8 memory channels populated (EDAC: channels 0, 3, 5, 6). NCCL is at 82% of that floor, so no software change gives prefill comm more than ~20%. **User, 2026-10-17: the box has 4 x 32 GiB DIMMs and that will not change.** Treat ~29 GB/s through the host as fixed: prefill comm can only shrink by moving fewer bytes (P8 TP2 x PP2). P13 (P2P is `CNS` for every pair; NVLink links inactive) is still open if it ever becomes relevant.
 - 2026-10-17 (T5): the hostpin lane pins ~48 GiB of host RAM while it serves (MemAvailable 119 -> 59 GiB in the sandbox). The host run must leave that free. The sandbox memlock (15.7 GiB) turned out not to limit `cudaHostRegister`, so no host setting is needed.
+- 2026-10-18 (T14): the image's `persistent_topk` selects a slightly wrong QSA top-k set at depth (a few rows per layer beyond ~33K tokens; T14 R34). The hostpin lane now bypasses it (`QSA_DET=1`). **Ask:** should the prefix and tuned lanes, including the host's daily driver, also get `MOE_DET=1 QSA_DET=1`? The rules keep those lanes unchanged unless you say so.
 - Hand-over will need one host sitting: `run-host-fast.sh` (baseline prefix lane, then the fast lane; about 1.5 hours; one log back).
 
 ## Ledger pointer

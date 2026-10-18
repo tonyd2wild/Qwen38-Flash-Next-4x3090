@@ -1,0 +1,4 @@
+run 0: 99678 prompt tokens, 45.56 s, ids [271, 760, 3766, 1414, 369, 449, 303, 981]..., first logprobs [-0.0022, -0.5892, -0.2288, -0.0001]
+run 1: 99678 prompt tokens, 45.26 s, ids [271, 760, 3766, 1414, 369, 449, 303, 981]..., first logprobs [-0.0022, -0.5892, -0.2288, -0.0001]
+distinct outputs (ids and logprobs) 1 of 2; first differing token vs run 0: [None]; max |dlogprob| over common prefixes 0.00000
+wrote /workspace/vllm-w4a16/results/long-repeat-probe-R35-det-100000-20261018-053351.json

@@ -1,0 +1,5 @@
+run 0: 23930 prompt tokens, 11.5 s, ids [271, 248068, 198, 760, 1156, 682, 2574, 728]..., first logprobs [-0.0015, -0.2104, -0.5759, -0.0]
+run 1: 23930 prompt tokens, 11.38 s, ids [271, 248068, 198, 760, 1156, 682, 2574, 728]..., first logprobs [-0.0015, -0.2104, -0.5759, -0.0]
+run 2: 23930 prompt tokens, 11.45 s, ids [271, 248068, 198, 760, 1156, 682, 2574, 728]..., first logprobs [-0.0015, -0.2104, -0.5759, -0.0]
+distinct outputs (ids and logprobs) 1 of 3; first differing token vs run 0: [None, None]; max |dlogprob| over common prefixes 0.00000
+wrote /workspace/vllm-w4a16/results/long-repeat-probe-R30-det-24000-20261018-042739.json

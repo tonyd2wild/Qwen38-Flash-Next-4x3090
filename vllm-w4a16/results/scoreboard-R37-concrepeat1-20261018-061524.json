@@ -1,0 +1,382 @@
+{
+ "label": "R37-concrepeat1",
+ "started": "2026-10-18 06:15:24",
+ "quick": false,
+ "sections": [
+  "concurrency"
+ ],
+ "server": {
+  "url": "http://localhost:8090",
+  "models": [
+   {
+    "id": "qwen3.8-flash-next",
+    "object": "model",
+    "created": 1792304124,
+    "owned_by": "vllm",
+    "root": "/models/qwen38fn",
+    "parent": null,
+    "max_model_len": 262144,
+    "permission": [
+     {
+      "id": "modelperm-b154dc610fa03c08",
+      "object": "model_permission",
+      "created": 1792304124,
+      "allow_create_engine": false,
+      "allow_sampling": true,
+      "allow_logprobs": true,
+      "allow_search_indices": false,
+      "allow_view": true,
+      "allow_fine_tuning": false,
+      "organization": "*",
+      "group": null,
+      "is_blocking": false
+     }
+    ]
+   }
+  ],
+  "version": "0.28.1rc1.dev388+g8a728663c"
+ },
+ "concurrency": [
+  {
+   "streams": 2,
+   "rounds": 2,
+   "requests": 4,
+   "errors": [],
+   "wall_s": 10.956884622573853,
+   "completion_tokens": 2048,
+   "aggregate_tps": 186.91444425549767,
+   "per_stream_decode_median": 100.89309823817604,
+   "per_stream_decode_min": 97.20648868896899,
+   "ttft_p50": 0.5296249389648438,
+   "ttft_p99": 0.5592825412750244,
+   "hits": 3328,
+   "preemptions": 0,
+   "acceptance": {
+    "drafts": 837,
+    "mean_len": 2.447,
+    "per_pos": [
+     0.704,
+     0.456,
+     0.287
+    ]
+   },
+   "requests_detail": [
+    {
+     "pt": 1379,
+     "ct": 512,
+     "wall": 5.404162883758545,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.5592825412750244,
+     "dec": 105.47964089596869,
+     "head": "# Implementation Plan: Fix Double-Counted Refunds in `scripts/reconcile.py`\n\n## "
+    },
+    {
+     "pt": 1382,
+     "ct": 512,
+     "wall": 5.447798728942871,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.2733032703399658,
+     "dec": 98.76098851057432,
+     "head": "# Implementation Plan: Idempotency Key for `POST /orders`\n\n## Goal and semantics"
+    },
+    {
+     "pt": 1379,
+     "ct": 512,
+     "wall": 5.489984750747681,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.5296249389648438,
+     "dec": 103.02520796577775,
+     "head": "# Implementation Plan: Fixing the Refund Double-Count in `scripts/reconcile.py`\n"
+    },
+    {
+     "pt": 1377,
+     "ct": 512,
+     "wall": 5.551084995269775,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.29389405250549316,
+     "dec": 97.20648868896899,
+     "head": "# Implementation Plan: Token-Bucket Rate Limiting for `/search`\n\n## Goal restate"
+    }
+   ]
+  },
+  {
+   "streams": 4,
+   "rounds": 2,
+   "requests": 8,
+   "errors": [],
+   "wall_s": 15.608545064926147,
+   "completion_tokens": 4096,
+   "aggregate_tps": 262.4203590380818,
+   "per_stream_decode_median": 73.19165183860116,
+   "per_stream_decode_min": 65.30463222169669,
+   "ttft_p50": 0.5451645851135254,
+   "ttft_p99": 1.0172135829925537,
+   "hits": 6656,
+   "preemptions": 0,
+   "acceptance": {
+    "drafts": 1672,
+    "mean_len": 2.451,
+    "per_pos": [
+     0.697,
+     0.464,
+     0.291
+    ]
+   },
+   "requests_detail": [
+    {
+     "pt": 1377,
+     "ct": 512,
+     "wall": 7.594281911849976,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 1.0168695449829102,
+     "dec": 77.6960775919164,
+     "head": "# Implementation Plan: Token-Bucket Rate Limiting for `/search`\n\n## Goal restate"
+    },
+    {
+     "pt": 1379,
+     "ct": 512,
+     "wall": 7.648000001907349,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.2677311897277832,
+     "dec": 69.24310171094278,
+     "head": "# Implementation Plan: Fix Double-Counted Refunds in `scripts/reconcile.py`\n\n## "
+    },
+    {
+     "pt": 1382,
+     "ct": 512,
+     "wall": 8.191144943237305,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 1.0172135829925537,
+     "dec": 71.2349980585018,
+     "head": "# Implementation Plan: Idempotency Key for `POST /orders`\n\n## Goal\n\nGive `POST /"
+    },
+    {
+     "pt": 1369,
+     "ct": 512,
+     "wall": 8.842529535293579,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 1.017136812210083,
+     "dec": 65.30463222169669,
+     "head": "# Implementation Plan: Async Migration of `app/services/orders.py`\n\n## Goal and "
+    },
+    {
+     "pt": 1377,
+     "ct": 512,
+     "wall": 7.261956453323364,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.5451645851135254,
+     "dec": 76.08083812939387,
+     "head": "# Implementation Plan: Token-Bucket Rate Limiting for `/search`\n\n## Goal restate"
+    },
+    {
+     "pt": 1369,
+     "ct": 512,
+     "wall": 7.5109543800354,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.3052663803100586,
+     "dec": 70.91954696104773,
+     "head": "# Implementation Plan: Migrating `app/services/orders.py` to Async SQLAlchemy Se"
+    },
+    {
+     "pt": 1379,
+     "ct": 512,
+     "wall": 7.126500606536865,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.3262488842010498,
+     "dec": 75.14830561870052,
+     "head": "# Implementation Plan (pre-tooling prose)\n\n## Goal\n\nThe nightly reconciliation j"
+    },
+    {
+     "pt": 1380,
+     "ct": 512,
+     "wall": 6.76347804069519,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.31492018699645996,
+     "dec": 79.24743161875469,
+     "head": "# Implementation Plan: `scripts/export_orders.py` \u2014 Streaming CSV Order Export\n\n"
+    }
+   ]
+  },
+  {
+   "streams": 6,
+   "rounds": 2,
+   "requests": 12,
+   "errors": [],
+   "wall_s": 20.156210899353027,
+   "completion_tokens": 6144,
+   "aggregate_tps": 304.81919596292823,
+   "per_stream_decode_median": 56.59851508059653,
+   "per_stream_decode_min": 49.127859689786725,
+   "ttft_p50": 0.7930908203125,
+   "ttft_p99": 1.5537147521972656,
+   "hits": 9984,
+   "preemptions": 0,
+   "acceptance": {
+    "drafts": 2503,
+    "mean_len": 2.453,
+    "per_pos": [
+     0.707,
+     0.459,
+     0.287
+    ]
+   },
+   "requests_detail": [
+    {
+     "pt": 1377,
+     "ct": 512,
+     "wall": 9.58929991722107,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 1.0234713554382324,
+     "dec": 59.659103963847066,
+     "head": "# Implementation Plan: Token-Bucket Rate Limiting for `/search`\n\n## Goal restate"
+    },
+    {
+     "pt": 1379,
+     "ct": 512,
+     "wall": 10.051579713821411,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 1.0230827331542969,
+     "dec": 56.60163957276311,
+     "head": "# Implementation Plan (pre-tooling prose)\n\n## Objective\n\nThe nightly reconciliat"
+    },
+    {
+     "pt": 1369,
+     "ct": 512,
+     "wall": 10.646212577819824,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 1.0239427089691162,
+     "dec": 53.10892947595675,
+     "head": "# Implementation Plan: Migrating `app/services/orders.py` to Async SQLAlchemy Se"
+    },
+    {
+     "pt": 1382,
+     "ct": 512,
+     "wall": 10.688429832458496,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.28655052185058594,
+     "dec": 49.127859689786725,
+     "head": "# Implementation Plan: Idempotency Key for `POST /orders`\n\n## Goal and semantics"
+    },
+    {
+     "pt": 1380,
+     "ct": 512,
+     "wall": 10.719629049301147,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 1.5533092021942139,
+     "dec": 55.75043636449995,
+     "head": "# Implementation Plan: `scripts/export_orders.py` \u2014 CSV order export CLI\n\n## 1. "
+    },
+    {
+     "pt": 1376,
+     "ct": 512,
+     "wall": 11.242176055908203,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 1.5537147521972656,
+     "dec": 52.745587054067414,
+     "head": "# Implementation Plan: Cutting Test Runtime from ~9 Minutes to ~4.5 Minutes\n\n## "
+    },
+    {
+     "pt": 1377,
+     "ct": 512,
+     "wall": 9.371497631072998,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.34203386306762695,
+     "dec": 56.59539058842995,
+     "head": "# Implementation plan: token-bucket rate limiting for `GET /search`\n\n## Goal res"
+    },
+    {
+     "pt": 1369,
+     "ct": 512,
+     "wall": 9.983181476593018,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.3336141109466553,
+     "dec": 52.95812082215785,
+     "head": "# Implementation Plan: Migrating `app/services/orders.py` to Async SQLAlchemy Se"
+    },
+    {
+     "pt": 1382,
+     "ct": 512,
+     "wall": 8.46002984046936,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.5781457424163818,
+     "dec": 64.83533862664741,
+     "head": "# Implementation Plan: Idempotency Key for `POST /orders`\n\n## Goal and semantics"
+    },
+    {
+     "pt": 1379,
+     "ct": 512,
+     "wall": 9.12459111213684,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.55816650390625,
+     "dec": 59.65422543447491,
+     "head": "# Implementation Plan (pre-tooling prose)\n\n## Objective\n\nThe nightly reconciliat"
+    },
+    {
+     "pt": 1380,
+     "ct": 512,
+     "wall": 9.214911222457886,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.33188676834106445,
+     "dec": 57.52771436178893,
+     "head": "# Implementation Plan: `scripts/export_orders.py` \u2014 Streaming CSV Order Export\n\n"
+    },
+    {
+     "pt": 1376,
+     "ct": 512,
+     "wall": 9.433181285858154,
+     "finish": "length",
+     "tool_calls": [],
+     "ttft": 0.7930908203125,
+     "dec": 59.14557425510852,
+     "head": "# Implementation Plan: Cutting Test Runtime from ~9 Minutes to ~4.5 Minutes\n\n## "
+    }
+   ]
+  }
+ ],
+ "totals": {
+  "prefix_cache_queries": 33055.0,
+  "prefix_cache_hits": 19968.0,
+  "num_preemptions": 0.0,
+  "spec_decode_num_drafts": 5012.0,
+  "spec_decode_num_draft_tokens": 15036.0,
+  "spec_decode_num_accepted_tokens": 7273.0,
+  "time_to_first_token_seconds_sum": 15.600483417510986,
+  "request_queue_time_seconds_sum": 0.06501203594962135,
+  "request_prefill_time_seconds_sum": 11.88494699599687,
+  "request_decode_time_seconds_sum": 185.5538386440603,
+  "request_inference_time_seconds_sum": 197.43878564005718,
+  "e2e_request_latency_seconds_sum": 201.1477177143097,
+  "accepted_pos0": 3524.0,
+  "accepted_pos1": 2305.0,
+  "accepted_pos2": 1444.0
+ },
+ "summary": {
+  "conc_agg": "186.9 / 262.4 / 304.8",
+  "conc_dec": "100.9 / 73.2 / 56.6",
+  "conc_ttft": "0.53-0.56 / 0.55-1.02 / 0.79-1.55"
+ },
+ "finished": "2026-10-18 06:16:11"
+}

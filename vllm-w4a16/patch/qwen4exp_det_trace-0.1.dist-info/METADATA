@@ -1,0 +1,4 @@
+Metadata-Version: 2.1
+Name: qwen4exp-det-trace
+Version: 0.1
+Summary: T14 activation tracer for the 3090 lane (journal/16-nondeterminism.md); a vLLM general plugin, mounted by DET_TRACE=1

@@ -33,6 +33,7 @@ You are working on the vLLM lane that serves Qwen3.8-Flash-Next on this 4x RTX 3
 - Keep `bench-host.py`'s metric definitions (decode = completion tokens after the first / time after the first token; cold = fresh random prefix; warm = the same prompt again; incremental = cached conversation plus N new tokens) so numbers stay comparable with `current_benchmark.md` and the README.
 - One change per boot, A/B against a same-day baseline. Every boot, failures included, is a ledger row (R13 onward) in `vllm-w4a16/results/perf-2026-10-notes.md`, in the README's row style.
 - Run `quality_gate.py --compare` on every candidate before calling it a win.
+- The hostpin lane is bit-reproducible at temperature 0 since T14 (`MOE_DET=1 QSA_DET=1`; `journal/16-nondeterminism.md`): repeats of one request on an idle server give the same bits. On a candidate, also compare against `results/quality-baseline-det-2026-10-18.json`; a numerically neutral change must come out 20 IDENTICAL there.
 
 ## Per-task workflow
 

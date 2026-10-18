@@ -10,7 +10,11 @@
 # TRITON_CACHE (0|1; 1 = keep Triton's kernel cache in the mounted cache dir across boots), TOKSPLIT (0|1; 1 = exact
 # split tokenization with a piece cache for long prompts, TOKSPLIT_THREADS rayon threads, default 8; journal/14),
 # MAMBA_FIX (0|1; 1 = free every align-mode Mamba state block once no in-flight step reads it; journal/04), MAMBA_TRACE
-# (0|1; 1 = MAMBATRACE log lines from the KV manager for prompts of >= 32K tokens; journal/04).
+# (0|1; 1 = MAMBATRACE log lines from the KV manager for prompts of >= 32K tokens; journal/04), DET_TRACE (0|1; 1 = the
+# T14 activation tracer as a vLLM general plugin, diagnostic only, DET_TRACE_MAX_TOKENS default 512, DET_TRACE_FUNCS
+# functions to wrap as mod:attr,...; journal/16), MOE_DET (0|1; 1 = each expert's token list in a fixed order after
+# moe_align_block_size, so the Marlin MoE GEMMs give the same bits run to run; journal/16), QSA_DET (0|1; 1 = the QSA
+# selection as the exact top-k in ascending order, ties to the lowest index, instead of persistent_topk's set and order).
 set -euo pipefail
 # The upstream nightly-8a728663 tag was pruned; build this image from ../container/Containerfile (same commit, same paths).
 IMAGE="${IMAGE:-qwen38fn-vllm:8a728663}"
@@ -23,7 +27,7 @@ PLE_MODE="${PLE_MODE:-staged}"; GRAPHS="${GRAPHS:-nocompile}"; CAPTURE_SIZES="${
 MTP="${MTP:-0}"; SEQS="${SEQS:-4}"; CHUNK="${CHUNK-4096}"; GMU="${GMU:-0.92}"; MAXLEN="${MAXLEN:-262144}"
 KV_DTYPE="${KV_DTYPE:-fp8_e4m3}"; TP="${TP:-4}"; PORT="${PORT:-8090}"; MODULE="${MODULE:-nvidia}"; OVERLAYS="${OVERLAYS:-1}"
 PREFIX_CACHE="${PREFIX_CACHE:-0}"; GPU_ARGS="${GPU_ARGS:---gpus all}"; TRITON_CACHE="${TRITON_CACHE:-0}"; TOKSPLIT="${TOKSPLIT:-0}"
-MAMBA_FIX="${MAMBA_FIX:-0}"; MAMBA_TRACE="${MAMBA_TRACE:-0}"
+MAMBA_FIX="${MAMBA_FIX:-0}"; MAMBA_TRACE="${MAMBA_TRACE:-0}"; DET_TRACE="${DET_TRACE:-0}"; MOE_DET="${MOE_DET:-0}"; QSA_DET="${QSA_DET:-0}"
 VP=/usr/local/lib/python3.12/dist-packages/vllm; MP="$VP/models/qwen4_exp/$MODULE"
 test -f "$MODEL_HOST/config.json" || { echo "MODEL MISSING at $MODEL_HOST" >&2; exit 3; }
 PLE_ENV=(); case "$PLE_MODE" in
@@ -57,6 +61,28 @@ case "$MAMBA_FIX$MAMBA_TRACE" in
   01|10|11) KVM_ENV=(-e QWEN4EXP_MAMBA_FIX="$MAMBA_FIX" -e QWEN4EXP_MAMBA_TRACE="$MAMBA_TRACE"
                      -v "$PATCH_DIR/single_type_kv_cache_manager.py:$VP/v1/core/single_type_kv_cache_manager.py:ro") ;;
   *) echo "MAMBA_FIX and MAMBA_TRACE must be 0|1" >&2; exit 2 ;;
+esac
+# DET_TRACE=1: patch/det_trace.py as vllm/det_trace.py, loaded in every process through the entry point in the mounted
+# dist-info directory; it records fingerprints only while $CACHE_HOST/det-trace/on exists (tools/det_trace_diff.py).
+case "$DET_TRACE" in
+  0) DET_ENV=(); DET_DIST=() ;;
+  1) DET_ENV=(-e QWEN4EXP_DET_TRACE=1 -e QWEN4EXP_DET_TRACE_MAX_TOKENS="${DET_TRACE_MAX_TOKENS:-512}" -e QWEN4EXP_DET_TRACE_FUNCS="${DET_TRACE_FUNCS:-}"
+              -e QWEN4EXP_DET_TRACE_QSA="${DET_TRACE_QSA:-0}" -e QWEN4EXP_DET_TRACE_DUMP="${DET_TRACE_DUMP:-}"
+              -v "$PATCH_DIR/det_trace.py:$VP/det_trace.py:ro")
+     DET_DIST=(-v "$PATCH_DIR/qwen4exp_det_trace-0.1.dist-info:${VP%/vllm}/qwen4exp_det_trace-0.1.dist-info:ro") ;;
+  *) echo "DET_TRACE must be 0|1" >&2; exit 2 ;;
+esac
+# MOE_DET=1: the overlay patch/moe_align_block_size.py re-sorts each expert's tokens after the atomic align kernel.
+case "$MOE_DET" in
+  0) MOED_ENV=() ;;
+  1) MOED_ENV=(-e QWEN4EXP_MOE_DET=1 -v "$PATCH_DIR/moe_align_block_size.py:$VP/model_executor/layers/fused_moe/moe_align_block_size.py:ro") ;;
+  *) echo "MOE_DET must be 0|1" >&2; exit 2 ;;
+esac
+# QSA_DET=1: the overlay patch/qsa_indexer.py selects the exact top-k itself (radix select; decode rows check persistent_topk).
+case "$QSA_DET" in
+  0) QSAD_ENV=() ;;
+  1) QSAD_ENV=(-e QWEN4EXP_QSA_DET=1 -v "$PATCH_DIR/qsa_indexer.py:$MP/ops/qsa_indexer.py:ro") ;;
+  *) echo "QSA_DET must be 0|1" >&2; exit 2 ;;
 esac
 OVERLAY_MOUNT=(); if [ "$OVERLAYS" = "1" ]; then
   QSA_SFX=""; if [ "$KV_DTYPE" = "fp8_e5m2" ]; then QSA_SFX="_e5m2"; fi   # Ampere: e5m2 variant of the QSA overlay (no fp8e4nv in Triton)
@@ -105,7 +131,7 @@ docker run $GPU_ARGS -d --name "$NAME" --restart no \
   -e HF_HUB_OFFLINE=1 -e TRANSFORMERS_OFFLINE=1 -e VLLM_ENGINE_READY_TIMEOUT_S=3600 \
   -e PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True -e TORCH_CUDA_ARCH_LIST=8.6 \
   "${NCCL_ENV[@]}" -e NCCL_CUMEM_ENABLE=0 -e VLLM_USE_DEEP_GEMM=0 -e VLLM_USE_V2_MODEL_RUNNER=1 -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  "${PLE_ENV[@]}" "${GRAPH_MOUNT[@]}" "${OVERLAY_MOUNT[@]}" "${TRITON_ENV[@]}" "${TOK_ENV[@]}" "${KVM_ENV[@]}" ${DOCKER_EXTRA:-} \
+  "${PLE_ENV[@]}" "${GRAPH_MOUNT[@]}" "${OVERLAY_MOUNT[@]}" "${TRITON_ENV[@]}" "${TOK_ENV[@]}" "${KVM_ENV[@]}" "${DET_ENV[@]}" "${DET_DIST[@]}" "${MOED_ENV[@]}" "${QSAD_ENV[@]}" ${DOCKER_EXTRA:-} \
   "$IMAGE" \
     /models/qwen38fn --served-model-name qwen3.8-flash-next \
     --host 0.0.0.0 --port "$PORT" \
@@ -115,13 +141,18 @@ docker run $GPU_ARGS -d --name "$NAME" --restart no \
     --reasoning-parser qwen3 --enable-auto-tool-choice --tool-call-parser qwen3_xml \
     --default-chat-template-kwargs "{\"enable_thinking\": false}" \
     "${SPEC[@]}" "${GRAPH_ARGS[@]}" "${KV_ARGS[@]}" "${LMO_ARGS[@]}" ${EXTRA:-}
-echo "launched $NAME image=$IMAGE module=$MODULE ple=$PLE_MODE graphs=$GRAPHS kv=$KV_DTYPE tp=$TP gmu=$GMU maxlen=$MAXLEN seqs=$SEQS mtp=$MTP prefix_cache=$PREFIX_CACHE triton_cache=$TRITON_CACHE toksplit=$TOKSPLIT mamba_fix=$MAMBA_FIX mamba_trace=$MAMBA_TRACE"
+echo "launched $NAME image=$IMAGE module=$MODULE ple=$PLE_MODE graphs=$GRAPHS kv=$KV_DTYPE tp=$TP gmu=$GMU maxlen=$MAXLEN seqs=$SEQS mtp=$MTP prefix_cache=$PREFIX_CACHE triton_cache=$TRITON_CACHE toksplit=$TOKSPLIT mamba_fix=$MAMBA_FIX mamba_trace=$MAMBA_TRACE det_trace=$DET_TRACE moe_det=$MOE_DET qsa_det=$QSA_DET"
 sleep 3; docker ps --format "{{.Names}} {{.Status}}" | grep "$NAME" || { echo "$NAME exited"; docker logs "$NAME" 2>&1 | tail -5; exit 1; }
 # Each overlay must be the file Python actually imports: compare the mounted source with the module file in the container.
-OVL=(); for m in "${PLE_ENV[@]}" "${OVERLAY_MOUNT[@]}" "${GRAPH_MOUNT[@]}" "${TOK_ENV[@]}" "${KVM_ENV[@]}"; do case "$m" in /*:*:ro) OVL+=("$m") ;; esac; done
+OVL=(); for m in "${PLE_ENV[@]}" "${OVERLAY_MOUNT[@]}" "${GRAPH_MOUNT[@]}" "${TOK_ENV[@]}" "${KVM_ENV[@]}" "${DET_ENV[@]}" "${MOED_ENV[@]}" "${QSAD_ENV[@]}"; do case "$m" in /*:*:ro) OVL+=("$m") ;; esac; done
 for m in "${OVL[@]}"; do src="${m%%:*}"; dst="${m#*:}"; dst="${dst%:ro}"
   mod="${dst#$VP/}"; mod="vllm.${mod%.py}"; mod="${mod//\//.}"
   got=$(docker exec "$NAME" python3 -c "import hashlib,importlib.util as u; f=u.find_spec('$mod').origin; print(f, hashlib.sha256(open(f,'rb').read()).hexdigest())")
   want=$(sha256sum "$src" | cut -d' ' -f1)
   if [ "$got" = "$dst $want" ]; then echo "overlay ok  $mod <- $src"; else echo "OVERLAY MISMATCH $mod: imports '$got', want $dst $want" >&2; exit 4; fi
 done
+# The tracer's dist-info is a directory, not a module: check that Python sees its entry point instead.
+if [ "$DET_TRACE" = "1" ]; then
+  ep=$(docker exec "$NAME" python3 -c "from importlib.metadata import entry_points as e; print([p.value for p in e(group='vllm.general_plugins') if p.name=='qwen4exp_det_trace'])")
+  if [ "$ep" = "['vllm.det_trace:register']" ]; then echo "plugin ok   qwen4exp_det_trace -> vllm.det_trace:register"; else echo "PLUGIN MISSING qwen4exp_det_trace: $ep" >&2; exit 4; fi
+fi

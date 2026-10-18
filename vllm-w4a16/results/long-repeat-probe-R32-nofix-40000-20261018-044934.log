@@ -1,0 +1,5 @@
+run 0: 39878 prompt tokens, 18.98 s, ids [271, 248068, 198, 760, 1156, 682, 2574, 728]..., first logprobs [-0.0013, -0.4883, -0.6326, -0.0001]
+run 1: 39878 prompt tokens, 18.26 s, ids [271, 760, 3766, 1414, 369, 449, 303, 981]..., first logprobs [-0.0022, -0.708, -0.2293, -0.0001]
+run 2: 39878 prompt tokens, 18.24 s, ids [271, 248068, 198, 760, 1156, 682, 2574, 728]..., first logprobs [-0.0015, -0.5906, -0.6931, -0.0]
+distinct outputs (ids and logprobs) 3 of 3; first differing token vs run 0: [1, None]; max |dlogprob| over common prefixes 0.10228
+wrote /workspace/vllm-w4a16/results/long-repeat-probe-R32-nofix-40000-20261018-044934.json

@@ -1,0 +1,33 @@
+scoreboard 2026-10-18 06:14:07  http://localhost:8090  model qwen3.8-flash-next  label R37  vllm 0.28.1rc1.dev388+g8a728663c  sections decode,concurrency
+warm-up: short prompt, count to 100, one ~8K prompt
+
+== Decode, single stream (count median of 5, prose 1 run, code median of 3)
+  count run 1: 391 tokens, TTFT 158 ms, decode 205.3 tok/s
+  count run 2: 391 tokens, TTFT 154 ms, decode 204.2 tok/s
+  count run 3: 391 tokens, TTFT 156 ms, decode 205.2 tok/s
+  count run 4: 391 tokens, TTFT 155 ms, decode 204.2 tok/s
+  count run 5: 391 tokens, TTFT 156 ms, decode 204.6 tok/s
+  COUNT median 204.6 tok/s, TTFT median 156 ms, acceptance mean length 4.0 per position [1.0, 1.0, 1.0]
+  prose run 1: 512 tokens, TTFT 157 ms, decode 136.1 tok/s
+  PROSE median 136.1 tok/s, TTFT median 157 ms, acceptance mean length 2.607 per position [0.76, 0.526, 0.321]
+  code run 1: 512 tokens, TTFT 175 ms, decode 183.5 tok/s
+  code run 2: 512 tokens, TTFT 160 ms, decode 182.3 tok/s
+  code run 3: 512 tokens, TTFT 156 ms, decode 179.8 tok/s
+  CODE median 182.3 tok/s, TTFT median 160 ms, acceptance mean length 3.486 per position [0.923, 0.836, 0.727]
+
+== Concurrency (N streams x 2 rounds, agent system prompt + 8 tools, tool_choice none, max 512, temperature 0)
+  2 streams: 4 requests, 2048 tokens in 11.3 s = 181.0 tok/s aggregate; per-stream decode median 100.4 (min 90.8); TTFT p50 0.66 s p99 0.93 s
+  4 streams: 8 requests, 4096 tokens in 15.6 s = 261.9 tok/s aggregate; per-stream decode median 72.0 (min 62.7); TTFT p50 0.32 s p99 1.06 s
+  6 streams: 12 requests, 6144 tokens in 20.3 s = 302.7 tok/s aggregate; per-stream decode median 54.9 (min 51.3); TTFT p50 0.57 s p99 1.56 s
+
+== Scoreboard rows (R37), notes-file order
+| Decode, count to 100, median of 5 (tok/s) | 204.6 (accept 4.0) |
+| Decode, prose 512 tokens (tok/s) | 136.1 (accept 2.607) |
+| Decode, code prompt (tok/s) | 182.3 (accept 3.486) |
+| Concurrency 2 / 4 / 6: aggregate tok/s | 181.0 / 261.9 / 302.7 |
+| Concurrency 2 / 4 / 6: per-stream decode median (tok/s) | 100.4 / 72.0 / 54.9 |
+| Concurrency 2 / 4 / 6: TTFT p50-p99 (s) | 0.66-0.93 / 0.32-1.06 / 0.57-1.56 |
+
+  preemptions during run: 0; whole-run acceptance {'drafts': 6155, 'mean_len': 2.645, 'per_pos': [0.733, 0.529, 0.384]}
+json: /workspace/vllm-w4a16/results/scoreboard-R37-20261018-061407.json
+log: /workspace/vllm-w4a16/results/scoreboard-R37-20261018-061407.log
