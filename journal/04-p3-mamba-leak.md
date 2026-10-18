@@ -173,7 +173,7 @@ R25 (shipping config): **REVIEW**. 11 IDENTICAL, 8 FP-SIZED (among them `tool_wr
 - **The value:** the baseline has 79114 at -0.023 with 28 at -3.77; R25 picked 28 at -0.38687 over 79114 at -1.13687.
 - **R21 had the same numbers to 5 digits,** with no Mamba fix; R22 and R24 picked 79114.
 - **The fix's code path for this request is the image's.** 1,309 prompt tokens with an 832-token prefix hit and 38 output tokens is one chunk and no new block. The only recorded state slot is the hit block, and both versions free it at the same step.
-- **12 idle repeats right after the gate on this boot** (`.cache/ple/r21-repeat-tool-search.py`, output in `.cache/ple/r25-repeat-tool-search.out`) all pick 79114, with margins 5.3-7.8 nat (R21's repeats: 1.25-5.25).
+- **12 idle repeats right after the gate on this boot** (`.cache/ple/r21-repeat-tool-search.py`, now `tools/tool_search_probe.py`; output in `.cache/ple/r25-repeat-tool-search.out`) all pick 79114, with margins 5.3-7.8 nat (R21's repeats: 1.25-5.25).
 
 Reviewed: T14 noise, not the fix; noted in INDEX as T14's sharpest probe.
 

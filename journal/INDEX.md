@@ -6,7 +6,7 @@ Plan: [`PLAN.md`](../PLAN.md) · Rules: [`AGENTS.md`](../AGENTS.md) · Numbers: 
 
 **Next task:** **T14** (temperature-0 nondeterminism root cause), **Opus 5.5 / xhigh**, before the first numerics-changing candidate. Then T10.
 - Measure on the hostpin lane (`launch-qwen38fn-w4a16-hostpin.sh`, now defaulting to `TRITON_CACHE=1 TOKSPLIT=1 MAMBA_FIX=1`; ready in 5-7 min). R24 is the scoreboard baseline (`results/scoreboard-R24-20261018-021245.json`); R25 is the shipping config.
-- The sharpest probe is the gate's `tool_search` token 9 (`.cache/ple/r21-repeat-tool-search.py`, gitignored; copy it into `tools/` if you keep it).
+- The sharpest probe is the gate's `tool_search` token 9: `tools/tool_search_probe.py` (the R21/R25 repeat script, now in the repo).
   - The baseline picks token 79114 at a 3.75 nat margin.
   - Gate runs pick 28 at -0.38687 against 79114 at -1.13687 on R21 and on R25, the same to 5 digits, with different code (R25 has the Mamba fix, R21 not).
   - R22 and R24 pick 79114.
